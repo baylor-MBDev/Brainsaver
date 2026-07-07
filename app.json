@@ -2,7 +2,8 @@
   "expo": {
     "name": "DOOMTYPE",
     "slug": "doomtype",
-    "version": "1.2.1",
+    "version": "1.2.2",
+    "icon": "./assets/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "backgroundColor": "#EFEBFF",
@@ -16,7 +17,11 @@
     },
     "android": {
       "package": "dev.mockingbird.doomtype",
-      "versionCode": 4
+      "versionCode": 5,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#EFEBFF"
+      }
     },
     "plugins": [
       "expo-font"
