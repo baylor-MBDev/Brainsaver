@@ -16,6 +16,9 @@
     },
     "android": {
       "package": "dev.mockingbird.doomtype"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

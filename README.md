@@ -13,6 +13,12 @@ npx expo start
 
 Scan the QR with Expo Go (iOS or Android). Everything works in Expo Go except the actual OS-level app interception; use "Simulate opening Instagram" on the home screen to run the gate.
 
+### On your phone, no computer needed
+
+Open this repo in Expo Snack, then tap My Device to launch it in Expo Go:
+
+https://snack.expo.dev/@git/github.com/baylor-MBDev/Brainsaver
+
 ## What's in the box
 
 - Onboarding (3 beats, sets the voice)
