@@ -1,0 +1,48 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - name: Generate native Android project
+        run: npx expo prebuild --platform android --no-install
+      - name: Build release APK
+        run: cd android && ./gradlew assembleRelease
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk doomtype.apk
+      - name: Attach APK to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: DOOMTYPE Android build ${{ github.run_number }}
+          body: |
+            Installable Android APK, built from `${{ github.sha }}`.
+
+            On your phone: download `doomtype.apk`, open it, and allow
+            installing from this source when prompted.
+          files: doomtype.apk
