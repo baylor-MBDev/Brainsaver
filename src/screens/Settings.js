@@ -9,17 +9,27 @@ const INTERVALS = [5, 10, 15];
 
 export default function Settings({ navigation }) {
   const { state, update } = useStore();
-  const [draft, setDraft] = useState(state.phrase);
+  const [draft, setDraft] = useState('');
 
-  const savePhrase = () => {
+  const addPhrase = () => {
     const clean = draft.toLowerCase().replace(/[^a-z]/g, '');
-    if (clean.length >= 10) {
-      update({ phrase: clean });
-      setDraft(clean);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } else {
+    if (clean.length < 10) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
     }
+    if (state.phrases.includes(clean)) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+    update({ phrases: [...state.phrases, clean] });
+    setDraft('');
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const removePhrase = (p) => {
+    if (state.phrases.length <= 1) return; // always keep at least one
+    Haptics.selectionAsync();
+    update({ phrases: state.phrases.filter((x) => x !== p) });
   };
 
   return (
@@ -44,17 +54,33 @@ export default function Settings({ navigation }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.label}>THE PHRASE</Text>
-          <Text style={styles.hint}>Lowercase letters only, 10+ characters, no spaces. Make it hurt a little.</Text>
+          <Text style={styles.label}>YOUR PHRASES</Text>
+          <Text style={styles.hint}>
+            One is picked at random each rep, so it never turns into muscle memory. Lowercase letters only, 10+ characters, no spaces.
+          </Text>
+
+          {state.phrases.map((p) => (
+            <View key={p} style={styles.phraseRow}>
+              <Text style={styles.phraseText}>{p}</Text>
+              {state.phrases.length > 1 && (
+                <Pressable onPress={() => removePhrase(p)} hitSlop={10}>
+                  <Text style={styles.phraseRemove}>✕</Text>
+                </Pressable>
+              )}
+            </View>
+          ))}
+
           <TextInput
             style={styles.input}
             value={draft}
             onChangeText={setDraft}
+            placeholder="add another phrase"
+            placeholderTextColor={colors.faded}
             autoCapitalize="none"
             autoCorrect={false}
             spellCheck={false}
           />
-          <Keycap label="SAVE PHRASE" small onPress={savePhrase} />
+          <Keycap label="ADD PHRASE" small onPress={addPhrase} />
         </View>
 
         <View style={styles.section}>
@@ -99,4 +125,11 @@ const styles = StyleSheet.create({
     fontSize: 15, padding: 14, color: colors.ink,
   },
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  phraseRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    borderWidth: 3, borderColor: colors.ink, borderRadius: 14,
+    backgroundColor: colors.keyFace, paddingVertical: 12, paddingHorizontal: 14,
+  },
+  phraseText: { flex: 1, fontFamily: fonts.monoBold, fontSize: 14, color: colors.ink },
+  phraseRemove: { fontFamily: fonts.monoBold, fontSize: 15, color: colors.rot },
 });
