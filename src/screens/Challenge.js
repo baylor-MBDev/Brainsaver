@@ -17,11 +17,12 @@ export default function Challenge({ navigation, route }) {
   const app = route?.params?.app ?? 'Instagram';
   const pkg = route?.params?.pkg;
   const enforced = route?.params?.enforced === true;
-  const { state, update, repsRequired } = useStore();
+  const { state, update, repsRequired, randomPhrase } = useStore();
   const total = repsRequired();
 
   const [rep, setRep] = useState(1);
   const [text, setText] = useState('');
+  const [phrase, setPhrase] = useState(randomPhrase);
   const [kbVisible, setKbVisible] = useState(false);
   const shake = useRef(new Animated.Value(0)).current;
 
@@ -35,8 +36,6 @@ export default function Challenge({ navigation, route }) {
       hide.remove();
     };
   }, []);
-
-  const phrase = state.phrase;
 
   const wrong = () => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -61,6 +60,7 @@ export default function Challenge({ navigation, route }) {
       if (rep < total) {
         setRep(rep + 1);
         setText('');
+        setPhrase(randomPhrase());
       } else {
         update({ opensToday: state.opensToday + 1 });
         if (enforced && pkg) {

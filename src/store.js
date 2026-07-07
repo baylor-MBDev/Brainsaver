@@ -9,7 +9,7 @@ const KEY = 'doomtype-state-v1';
 
 const DEFAULTS = {
   onboarded: false,
-  phrase: 'imdestroyingmymentalhealth',
+  phrases: ['imdestroyingmymentalhealth'], // typed at the gate; one is picked at random each rep
   intervalMinutes: 10, // re-gate cadence while inside a rotted app
   escalation: true, // repeat count grows as opens pile up
   guardedApps: ['instagram', 'tiktok'],
@@ -30,6 +30,11 @@ export function StoreProvider({ children }) {
     AsyncStorage.getItem(KEY).then((raw) => {
       if (raw) {
         const saved = JSON.parse(raw);
+        // Migrate the old single-phrase field to the phrases list.
+        if (saved.phrase && !saved.phrases) {
+          saved.phrases = [saved.phrase];
+        }
+        delete saved.phrase;
         const today = new Date().toDateString();
         if (saved.lastOpenDate !== today) {
           const underLimit = saved.opensToday < 5;
@@ -58,8 +63,15 @@ export function StoreProvider({ children }) {
   const repsRequired = () =>
     state.escalation ? Math.min(1 + Math.floor(state.opensToday / 4), 3) : 1;
 
+  // Picks a phrase at random from the list, so multi-rep challenges (and
+  // repeat opens) don't let muscle memory take over from actually reading it.
+  const randomPhrase = () => {
+    const list = state.phrases.length ? state.phrases : DEFAULTS.phrases;
+    return list[Math.floor(Math.random() * list.length)];
+  };
+
   return (
-    <Ctx.Provider value={{ state, update, ready, repsRequired }}>
+    <Ctx.Provider value={{ state, update, ready, repsRequired, randomPhrase }}>
       {children}
     </Ctx.Provider>
   );
