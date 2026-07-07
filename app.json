@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "DOOMTYPE",
+    "slug": "doomtype",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#EFEBFF",
+    "splash": {
+      "backgroundColor": "#221C3A",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "dev.mockingbird.doomtype"
+    },
+    "android": {
+      "package": "dev.mockingbird.doomtype"
+    }
+  }
+}
