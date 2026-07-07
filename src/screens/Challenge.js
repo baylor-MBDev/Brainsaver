@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, TextInput, StyleSheet, SafeAreaView, Animated, KeyboardAvoidingView, Platform,
+  View, Text, TextInput, StyleSheet, SafeAreaView, Animated, Keyboard, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Keycap from '../components/Keycap';
@@ -22,7 +22,19 @@ export default function Challenge({ navigation, route }) {
 
   const [rep, setRep] = useState(1);
   const [text, setText] = useState('');
+  const [kbVisible, setKbVisible] = useState(false);
   const shake = useRef(new Animated.Value(0)).current;
+
+  // With the keyboard up, vertical space halves; drop the headline block so
+  // the phrase, input, and the backout button all stay on screen.
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => setKbVisible(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKbVisible(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   const phrase = state.phrase;
 
@@ -75,14 +87,11 @@ export default function Challenge({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.wrap}
-      >
+      <KeyboardAvoidingView behavior="padding" style={[styles.wrap, kbVisible && styles.wrapCompact]}>
         <View style={styles.top}>
           <View style={styles.topText}>
             <Text style={styles.eyebrow}>YOU ARE OPENING {app.toUpperCase()}</Text>
-            <Text style={styles.headline}>SAY IT.</Text>
+            {!kbVisible && <Text style={styles.headline}>SAY IT.</Text>}
             <Text style={styles.sub}>
               Open #{state.opensToday + 1} today.{total > 1 ? ` Rot level requires ${total} reps. This is rep ${rep}.` : ''}
             </Text>
@@ -96,7 +105,7 @@ export default function Challenge({ navigation, route }) {
                     ? 'worried'
                     : 'relieved'
               }
-              size={80}
+              size={kbVisible ? 64 : 80}
             />
           </Animated.View>
         </View>
@@ -132,7 +141,9 @@ export default function Challenge({ navigation, route }) {
           onPress={backOut}
           wide
         />
-        <Text style={styles.backoutNote}>backing out counts as a win. no shame in the smart move.</Text>
+        {!kbVisible && (
+          <Text style={styles.backoutNote}>backing out counts as a win. no shame in the smart move.</Text>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -141,6 +152,7 @@ export default function Challenge({ navigation, route }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.rot, paddingTop: 40 },
   wrap: { flex: 1, padding: 24, justifyContent: 'center', gap: 20 },
+  wrapCompact: { gap: 12, paddingVertical: 8 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   topText: { flex: 1, gap: 8 },
   eyebrow: { fontFamily: fonts.monoBold, fontSize: 12, color: colors.keyFace, letterSpacing: 2 },
