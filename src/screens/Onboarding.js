@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import Keycap from '../components/Keycap';
+import Brain from '../components/Brain';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
 
 const BEATS = [
   {
+    mood: 'dead',
     big: 'YOUR BRAIN\nIS ROTTING.',
     small: 'Average person checks social apps 96 times a day. You are probably not below average. No offense.',
     cta: 'RUDE. CONTINUE',
   },
   {
+    mood: 'worried',
     big: 'SO WE MADE\nYOU A TOLL.',
     small: 'Every time you open a rotted app, you type one honest sentence first:\n\nimdestroyingmymentalhealth\n\nEvery 10 minutes inside, you type it again. No paste. No autocorrect. Just you and the truth.',
     cta: 'THAT IS EVIL. GO ON',
   },
   {
+    mood: 'proud',
     big: 'SHAME,\nBUT MAKE IT\nSELF CARE.',
     small: 'Backing out at the gate counts as a win. Days under 5 opens build your streak. Full rot is reversible. Probably.',
     cta: 'START TYPING',
@@ -40,6 +44,7 @@ export default function Onboarding({ navigation }) {
       <View style={styles.wrap}>
         <Text style={styles.logo}>DOOMTYPE</Text>
         <View style={styles.body}>
+          <Brain mood={b.mood} size={120} style={styles.brain} />
           <Text style={styles.big}>{b.big}</Text>
           <Text style={styles.small}>{b.small}</Text>
         </View>
@@ -59,6 +64,7 @@ const styles = StyleSheet.create({
   wrap: { flex: 1, padding: 24, justifyContent: 'space-between' },
   logo: { fontFamily: fonts.monoBold, fontSize: 14, color: colors.rot, letterSpacing: 4 },
   body: { flex: 1, justifyContent: 'center' },
+  brain: { marginBottom: 24 },
   big: { fontFamily: fonts.display, fontSize: 40, lineHeight: 46, color: colors.ink, marginBottom: 20 },
   small: { fontFamily: fonts.mono, fontSize: 14, lineHeight: 22, color: colors.ink },
   dots: { flexDirection: 'row', gap: 8, marginBottom: 20 },
