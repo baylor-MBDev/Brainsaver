@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="guard_service_description">DOOMTYPE watches for the apps you chose to guard and puts the typing gate in front of them. It never reads screen content.</string>
+</resources>

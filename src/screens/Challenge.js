@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import Keycap from '../components/Keycap';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
+import { grantPass, goHome, returnToGuardedApp } from '../native/guard';
 
 // The whole product is this screen. Full rot-orange takeover, the phrase
 // rendered as keycaps, an input that accepts nothing but the exact truth.
@@ -13,6 +14,8 @@ import { colors, fonts } from '../theme';
 
 export default function Challenge({ navigation, route }) {
   const app = route?.params?.app ?? 'Instagram';
+  const pkg = route?.params?.pkg;
+  const enforced = route?.params?.enforced === true;
   const { state, update, repsRequired } = useStore();
   const total = repsRequired();
 
@@ -47,9 +50,12 @@ export default function Challenge({ navigation, route }) {
         setText('');
       } else {
         update({ opensToday: state.opensToday + 1 });
-        // Production: lift the shield / dismiss the overlay here,
-        // then schedule the re-gate in intervalMinutes. See src/native/README.md
+        if (enforced && pkg) {
+          // Timed pass; the service re-gates when it expires.
+          grantPass(pkg, state.intervalMinutes);
+        }
         navigation.goBack();
+        if (enforced && pkg) returnToGuardedApp();
       }
     }
   };
@@ -58,6 +64,9 @@ export default function Challenge({ navigation, route }) {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     update({ backoutsToday: state.backoutsToday + 1 });
     navigation.goBack();
+    // Backing out of a real open must not drop the user back into the
+    // guarded app underneath; send them to the launcher instead.
+    if (enforced) goHome();
   };
 
   // Render the phrase as keycaps, lit as they're typed
@@ -115,7 +124,7 @@ export default function Challenge({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.rot },
+  safe: { flex: 1, backgroundColor: colors.rot, paddingTop: 40 },
   wrap: { flex: 1, padding: 24, justifyContent: 'center', gap: 20 },
   top: { gap: 8 },
   eyebrow: { fontFamily: fonts.monoBold, fontSize: 12, color: colors.keyFace, letterSpacing: 2 },

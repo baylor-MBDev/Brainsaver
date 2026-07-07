@@ -55,7 +55,7 @@ export default function Onboarding({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.paper },
+  safe: { flex: 1, backgroundColor: colors.paper, paddingTop: 40 },
   wrap: { flex: 1, padding: 24, justifyContent: 'space-between' },
   logo: { fontFamily: fonts.monoBold, fontSize: 14, color: colors.rot, letterSpacing: 4 },
   body: { flex: 1, justifyContent: 'center' },

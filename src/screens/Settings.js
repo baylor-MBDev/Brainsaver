@@ -79,7 +79,7 @@ export default function Settings({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.paper },
+  safe: { flex: 1, backgroundColor: colors.paper, paddingTop: 40 },
   wrap: { padding: 24, gap: 28, paddingBottom: 48 },
   headline: { fontFamily: fonts.display, fontSize: 36, color: colors.ink },
   section: { gap: 10 },
