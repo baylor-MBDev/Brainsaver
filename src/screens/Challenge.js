@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import Keycap from '../components/Keycap';
+import Brain from '../components/Brain';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
 import { grantPass, goHome, returnToGuardedApp } from '../native/guard';
@@ -79,11 +80,25 @@ export default function Challenge({ navigation, route }) {
         style={styles.wrap}
       >
         <View style={styles.top}>
-          <Text style={styles.eyebrow}>YOU ARE OPENING {app.toUpperCase()}</Text>
-          <Text style={styles.headline}>SAY IT.</Text>
-          <Text style={styles.sub}>
-            Open #{state.opensToday + 1} today.{total > 1 ? ` Rot level requires ${total} reps. This is rep ${rep}.` : ''}
-          </Text>
+          <View style={styles.topText}>
+            <Text style={styles.eyebrow}>YOU ARE OPENING {app.toUpperCase()}</Text>
+            <Text style={styles.headline}>SAY IT.</Text>
+            <Text style={styles.sub}>
+              Open #{state.opensToday + 1} today.{total > 1 ? ` Rot level requires ${total} reps. This is rep ${rep}.` : ''}
+            </Text>
+          </View>
+          <Animated.View style={{ transform: [{ translateX: shake }] }}>
+            <Brain
+              mood={
+                text.length === 0
+                  ? 'scream'
+                  : text.length < phrase.length * 0.7
+                    ? 'worried'
+                    : 'relieved'
+              }
+              size={80}
+            />
+          </Animated.View>
         </View>
 
         <View style={styles.phraseWrap}>
@@ -126,7 +141,8 @@ export default function Challenge({ navigation, route }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.rot, paddingTop: 40 },
   wrap: { flex: 1, padding: 24, justifyContent: 'center', gap: 20 },
-  top: { gap: 8 },
+  top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  topText: { flex: 1, gap: 8 },
   eyebrow: { fontFamily: fonts.monoBold, fontSize: 12, color: colors.keyFace, letterSpacing: 2 },
   headline: { fontFamily: fonts.display, fontSize: 52, color: colors.ink },
   sub: { fontFamily: fonts.mono, fontSize: 13, color: colors.keyFace },

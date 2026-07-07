@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, AppState } from 'react-native';
 import Keycap from '../components/Keycap';
 import RotMeter from '../components/RotMeter';
+import Brain, { moodForOpens } from '../components/Brain';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
 import {
@@ -52,9 +53,12 @@ export default function Home({ navigation }) {
           <Keycap label="⚙" small onPress={() => navigation.navigate('Settings')} />
         </View>
 
-        <Text style={styles.streak}>
-          {state.streak > 0 ? `🔥 ${state.streak} day streak under 5 opens` : 'no streak yet. day one starts now.'}
-        </Text>
+        <View style={styles.brainRow}>
+          <Brain mood={moodForOpens(state.opensToday, state.streak)} size={84} />
+          <Text style={styles.streak}>
+            {state.streak > 0 ? `🔥 ${state.streak} day streak under 5 opens` : 'no streak yet. day one starts now.'}
+          </Text>
+        </View>
 
         <RotMeter opensToday={state.opensToday} />
 
@@ -120,7 +124,8 @@ const styles = StyleSheet.create({
   wrap: { padding: 24, paddingBottom: 48, gap: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   logo: { fontFamily: fonts.display, fontSize: 24, color: colors.ink },
-  streak: { fontFamily: fonts.monoBold, fontSize: 13, color: colors.ink },
+  brainRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  streak: { flex: 1, fontFamily: fonts.monoBold, fontSize: 13, color: colors.ink },
   statRow: { flexDirection: 'row', gap: 12 },
   stat: {
     flex: 1,
