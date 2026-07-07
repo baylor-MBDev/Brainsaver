@@ -1,9 +1,16 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, AppState } from 'react-native';
 import Keycap from '../components/Keycap';
 import RotMeter from '../components/RotMeter';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
+import {
+  guardAvailable,
+  isServiceEnabled,
+  hasOverlayPermission,
+  openAccessibilitySettings,
+  openOverlaySettings,
+} from '../native/guard';
 
 function Stat({ value, label, color = colors.ink }) {
   return (
@@ -16,6 +23,26 @@ function Stat({ value, label, color = colors.ink }) {
 
 export default function Home({ navigation }) {
   const { state } = useStore();
+  const [armed, setArmed] = useState({ service: false, overlay: false });
+
+  const refreshArmed = useCallback(() => {
+    if (!guardAvailable()) return;
+    setArmed({ service: isServiceEnabled(), overlay: hasOverlayPermission() });
+  }, []);
+
+  useEffect(() => {
+    refreshArmed();
+    const appState = AppState.addEventListener('change', (s) => {
+      if (s === 'active') refreshArmed();
+    });
+    const unsubFocus = navigation.addListener('focus', refreshArmed);
+    return () => {
+      appState.remove();
+      unsubFocus();
+    };
+  }, [navigation, refreshArmed]);
+
+  const fullyArmed = armed.service && armed.overlay;
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -46,6 +73,31 @@ export default function Home({ navigation }) {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>REAL ENFORCEMENT</Text>
+          {!guardAvailable() ? (
+            <Text style={styles.sectionNote}>
+              Lives in the installed Android app. Here you get the simulator below.
+            </Text>
+          ) : fullyArmed ? (
+            <Text style={[styles.sectionNote, { color: colors.growth }]}>
+              ARMED. Open a guarded app and the gate opens with it. Every {state.intervalMinutes} minutes inside, it comes back.
+            </Text>
+          ) : (
+            <>
+              <Text style={styles.sectionNote}>
+                Two Android permissions and the gate stops being a suggestion. DOOMTYPE never reads what's on your screen; it only watches which app is in front.
+              </Text>
+              {!armed.service && (
+                <Keycap label="1. ENABLE APP WATCHING" onPress={openAccessibilitySettings} wide />
+              )}
+              {!armed.overlay && (
+                <Keycap label="2. ALLOW OPENING OVER APPS" onPress={openOverlaySettings} wide />
+              )}
+            </>
+          )}
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>TEST THE GATE</Text>
           <Text style={styles.sectionNote}>
             In production this fires automatically when a guarded app opens, and again every {state.intervalMinutes} minutes inside it.
@@ -64,7 +116,7 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.paper },
+  safe: { flex: 1, backgroundColor: colors.paper, paddingTop: 40 },
   wrap: { padding: 24, paddingBottom: 48, gap: 20 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   logo: { fontFamily: fonts.display, fontSize: 24, color: colors.ink },
