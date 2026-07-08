@@ -24,6 +24,7 @@ jobs:
       - run: npm ci
       - run: npx expo export --platform web --output-dir dist
       - run: node scripts/build-single-file.js
+      - run: cp legal/privacy.html dist-single/privacy.html
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
