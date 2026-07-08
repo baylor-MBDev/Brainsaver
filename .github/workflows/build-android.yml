@@ -31,18 +31,46 @@ jobs:
       - run: npm ci
       - name: Generate native Android project
         run: npx expo prebuild --platform android --no-install
+      - name: Decode Play release keystore
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
       - name: Build release APK
+        run: |
+          cd android && ./gradlew assembleRelease \
+            -PRELEASE_STORE_FILE=release.keystore \
+            -PRELEASE_STORE_PASSWORD="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -PRELEASE_KEY_ALIAS="${{ secrets.ANDROID_KEY_ALIAS }}" \
+            -PRELEASE_KEY_PASSWORD="${{ secrets.ANDROID_KEY_PASSWORD }}"
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+      - name: Build release APK (debug-signed, no Play keystore configured yet)
         run: cd android && ./gradlew assembleRelease
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 == '' }}
+      - name: Build Play Store bundle (AAB)
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: |
+          cd android && ./gradlew bundleRelease \
+            -PRELEASE_STORE_FILE=release.keystore \
+            -PRELEASE_STORE_PASSWORD="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -PRELEASE_KEY_ALIAS="${{ secrets.ANDROID_KEY_ALIAS }}" \
+            -PRELEASE_KEY_PASSWORD="${{ secrets.ANDROID_KEY_PASSWORD }}"
       - name: Rename APK
         run: cp android/app/build/outputs/apk/release/app-release.apk doomtype.apk
-      - name: Attach APK to release
+      - name: Rename AAB
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        run: cp android/app/build/outputs/bundle/release/app-release.aab doomtype.aab
+      - name: Attach build to release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
           name: DOOMTYPE Android build ${{ github.run_number }}
+          fail_on_unmatched_files: false
           body: |
             Installable Android APK, built from `${{ github.sha }}`.
 
             On your phone: download `doomtype.apk`, open it, and allow
             installing from this source when prompted.
-          files: doomtype.apk
+
+            ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && '`doomtype.aab` is the Play Store upload bundle, signed with the release keystore.' || '' }}
+          files: |
+            doomtype.apk
+            doomtype.aab
