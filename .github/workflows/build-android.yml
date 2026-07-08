@@ -28,25 +28,33 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
+      - name: Check for Play release keystore
+        id: signing
+        run: |
+          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
       - run: npm ci
       - name: Generate native Android project
         run: npx expo prebuild --platform android --no-install
       - name: Decode Play release keystore
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        if: steps.signing.outputs.present == 'true'
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
-      - name: Build release APK
+      - name: Build release APK (Play keystore)
+        if: steps.signing.outputs.present == 'true'
         run: |
           cd android && ./gradlew assembleRelease \
             -PRELEASE_STORE_FILE=release.keystore \
             -PRELEASE_STORE_PASSWORD="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
             -PRELEASE_KEY_ALIAS="${{ secrets.ANDROID_KEY_ALIAS }}" \
             -PRELEASE_KEY_PASSWORD="${{ secrets.ANDROID_KEY_PASSWORD }}"
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
       - name: Build release APK (debug-signed, no Play keystore configured yet)
+        if: steps.signing.outputs.present == 'false'
         run: cd android && ./gradlew assembleRelease
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 == '' }}
       - name: Build Play Store bundle (AAB)
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        if: steps.signing.outputs.present == 'true'
         run: |
           cd android && ./gradlew bundleRelease \
             -PRELEASE_STORE_FILE=release.keystore \
@@ -56,7 +64,7 @@ jobs:
       - name: Rename APK
         run: cp android/app/build/outputs/apk/release/app-release.apk doomtype.apk
       - name: Rename AAB
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        if: steps.signing.outputs.present == 'true'
         run: cp android/app/build/outputs/bundle/release/app-release.aab doomtype.aab
       - name: Attach build to release
         uses: softprops/action-gh-release@v2
@@ -70,7 +78,7 @@ jobs:
             On your phone: download `doomtype.apk`, open it, and allow
             installing from this source when prompted.
 
-            ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && '`doomtype.aab` is the Play Store upload bundle, signed with the release keystore.' || '' }}
+            ${{ steps.signing.outputs.present == 'true' && '`doomtype.aab` is the Play Store upload bundle, signed with the release keystore.' || '' }}
           files: |
             doomtype.apk
             doomtype.aab
