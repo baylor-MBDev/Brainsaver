@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DOOMTYPE — Privacy Policy</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --paper: #EFEBFF;
+    --ink: #221C3A;
+    --rot: #FF5C38;
+    --faded: #6b6482;
+    --rule: rgba(34, 28, 58, 0.15);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #17132a;
+      --ink: #EFEBFF;
+      --faded: #a79fc4;
+      --rule: rgba(239, 235, 255, 0.18);
+    }
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    padding: 48px 20px 80px;
+  }
+  main { max-width: 640px; margin: 0 auto; }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .eyebrow {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rot);
+    margin: 0 0 12px;
+  }
+  .updated {
+    font-size: 13px;
+    color: var(--faded);
+    margin: 0 0 40px;
+  }
+  h2 {
+    font-size: 17px;
+    margin: 40px 0 10px;
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+  }
+  h2:first-of-type { border-top: none; padding-top: 0; margin-top: 32px; }
+  p, li { font-size: 15px; color: var(--ink); }
+  ul { padding-left: 22px; margin: 10px 0; }
+  li { margin-bottom: 6px; }
+  a { color: var(--rot); }
+  .callout {
+    background: rgba(255, 92, 56, 0.08);
+    border: 1px solid rgba(255, 92, 56, 0.3);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 14px;
+    margin: 20px 0;
+  }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9em;
+    background: var(--rule);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">DOOMTYPE</p>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated July 8, 2026</p>
+
+  <p>
+    DOOMTYPE is a screen-time tool that puts a typing gate in front of apps
+    you choose to guard. This page explains exactly what the app does and
+    does not do with your data.
+  </p>
+
+  <div class="callout">
+    <strong>The short version:</strong> DOOMTYPE has no account, no servers,
+    and no analytics. Everything it stores lives only on your device. Nothing
+    is ever sent anywhere.
+  </div>
+
+  <h2>What the app stores</h2>
+  <p>All of it stays on your device, in the app's local storage:</p>
+  <ul>
+    <li>Your gate phrase(s)</li>
+    <li>Which apps you've chosen to guard</li>
+    <li>Your re-gate interval and escalation setting</li>
+    <li>Daily counters (opens, phrases typed, backouts) and your streak</li>
+  </ul>
+  <p>
+    Uninstalling the app, or clearing its storage in Android settings,
+    permanently deletes all of this. There is no cloud backup, account, or
+    sync — because there is nothing to sync to.
+  </p>
+
+  <h2>The Accessibility Service permission</h2>
+  <p>
+    DOOMTYPE uses Android's Accessibility API for one purpose: to notice when
+    a guarded app comes to the foreground, so it can show the typing gate.
+    Specifically, the service:
+  </p>
+  <ul>
+    <li>Only receives the <strong>package name</strong> of the app that just came to the foreground (e.g. <code>com.instagram.android</code>)</li>
+    <li>Never reads screen content, text you type elsewhere, or anything displayed by other apps — this is disabled at the configuration level, not just by policy</li>
+    <li>Never transmits anything over the network — the app has no server to send it to</li>
+  </ul>
+
+  <h2>The "display over other apps" permission</h2>
+  <p>
+    This is what lets the gate screen appear on top of a guarded app. It's
+    used for exactly that, and nothing else.
+  </p>
+
+  <h2>Permissions the app does not use</h2>
+  <p>
+    DOOMTYPE does not request access to your contacts, photos, location,
+    microphone, camera, or files. It does not use device storage permissions
+    at all — its local data lives in the app's private storage.
+  </p>
+
+  <h2>Third parties</h2>
+  <p>
+    DOOMTYPE does not include analytics, crash reporting, advertising, or any
+    other third-party SDK. No data is shared with anyone, because none
+    leaves your device.
+  </p>
+
+  <h2>Children's privacy</h2>
+  <p>
+    DOOMTYPE does not knowingly collect any information from anyone,
+    including children, because it does not collect information at all —
+    everything described above stays local to the device it's installed on.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>
+    If this policy changes, the "Last updated" date at the top of this page
+    will change too. Meaningful changes will also be noted in the app's
+    release notes.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions about this policy or the app: <a href="mailto:baylorbower1@gmail.com">baylorbower1@gmail.com</a>
+  </p>
+</main>
+</body>
+</html>
