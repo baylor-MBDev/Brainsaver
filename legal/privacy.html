@@ -89,9 +89,10 @@
   <div class="callout">
     <strong>The short version:</strong> DOOMTYPE has no account, no servers,
     and no analytics of its own. Everything it stores lives only on your
-    device. The one thing that ever leaves it: during a pushup session, the
-    pose-detection library sends Google anonymous performance statistics.
-    Never camera images.
+    device. The one thing that ever leaves it: on Android, during a pushup
+    session, the pose-detection library sends Google anonymous performance
+    statistics. Never camera images. On iPhone, nothing leaves the device at
+    all.
   </div>
 
   <h2>What the app stores</h2>
@@ -105,12 +106,12 @@
     <li>While a walk is in progress, the step-counter reading it started from</li>
   </ul>
   <p>
-    Uninstalling the app, or clearing its storage in Android settings,
+    Uninstalling the app (or, on Android, clearing its storage in settings)
     permanently deletes all of this. There is no cloud backup, account, or
     sync — because there is nothing to sync to.
   </p>
 
-  <h2>The Accessibility Service permission</h2>
+  <h2>Android: the Accessibility Service permission</h2>
   <p>
     DOOMTYPE uses Android's Accessibility API for one purpose: to notice when
     a guarded app comes to the foreground, so it can show the typing gate.
@@ -122,10 +123,24 @@
     <li>Never transmits anything over the network — the app has no server to send it to</li>
   </ul>
 
-  <h2>The "display over other apps" permission</h2>
+  <h2>Android: the "display over other apps" permission</h2>
   <p>
     This is what lets the gate screen appear on top of a guarded app. It's
     used for exactly that, and nothing else.
+  </p>
+
+  <h2>iPhone: Screen Time and notifications</h2>
+  <p>
+    On iPhone, guarded apps are blocked by Apple's Screen Time system, which
+    DOOMTYPE uses with your permission. You pick the apps in Apple's own
+    picker, and Apple gives DOOMTYPE only opaque tokens: DOOMTYPE never
+    learns which apps you picked, what you do in them, or how long you use
+    them. The tokens stay on your device.
+  </p>
+  <p>
+    The block screen's "open the gate" button sends you a local notification
+    that opens DOOMTYPE. It is created on your phone and never passes through
+    any server.
   </p>
 
   <h2>The camera (pushups)</h2>
@@ -137,7 +152,9 @@
     never recorded, saved, or sent anywhere.
   </p>
   <p>
-    The pose model runs on Google's MediaPipe library, which reports
+    On iPhone the pose model is Apple's built-in Vision framework, which
+    sends nothing anywhere. On Android it runs on Google's MediaPipe
+    library, which reports
     anonymous usage statistics to Google so Google can maintain it: how many
     frames it processed, how long they took, the library version, and your
     phone's model and Android version. It doesn't include camera images,
@@ -147,9 +164,10 @@
     is sent.
   </p>
 
-  <h2>The physical activity permission (walks)</h2>
+  <h2>Physical activity / Motion &amp; Fitness (walks)</h2>
   <p>
-    Walks read your phone's built-in step counter: one reading when a walk
+    Walks read your phone's built-in step counter (on iPhone, through
+    Motion &amp; Fitness): one reading when a walk
     starts, then more while you check your progress. Only the step count is
     used, and it stays on your device.
   </p>
@@ -164,16 +182,17 @@
   <h2>Third parties</h2>
   <p>
     DOOMTYPE does not include analytics, crash reporting, or advertising
-    SDKs. Pushup counting uses Android's CameraX and Google's MediaPipe; the
+    SDKs. On Android, pushup counting uses CameraX and Google's MediaPipe; the
     MediaPipe usage statistics described above are the only data that leaves
     your device, and they go only to Google. Nothing is sold or used for
-    advertising.
+    advertising. On iPhone, pushup counting uses only Apple's built-in
+    frameworks.
   </p>
 
   <h2>Children's privacy</h2>
   <p>
     DOOMTYPE does not collect personal information from anyone, including
-    children. Apart from MediaPipe's anonymous performance statistics
+    children. Apart from MediaPipe's anonymous performance statistics on Android
     described above, everything stays on the device it's installed on.
   </p>
 

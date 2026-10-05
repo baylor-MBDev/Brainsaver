@@ -29,23 +29,31 @@ APKs (our GitHub Releases pipeline) don't need this.
 Expo Go and web: the module is absent; `guard.js` no-ops and the app falls
 back to the simulate button.
 
-## iOS (Screen Time API) — ROADMAP
+## iOS (Screen Time API) — IMPLEMENTED
 
-Package: `react-native-device-activity` (Expo config plugin, works with EAS
-builds).
+Built on `react-native-device-activity` (its config plugin adds the
+ActivityMonitorExtension, ShieldAction, and ShieldConfiguration targets);
+JS in `src/native/screenTime.js`, notification handoff in
+`modules/doomtype-guard/ios`.
 
-1. Request Family Controls authorization (requires the Family Controls
-   entitlement from Apple; apply early, approval takes time)
-2. Replace the mock AppPicker with `FamilyActivityPicker` (returns opaque
-   tokens, not app names)
-3. Apply a ManagedSettings shield to selected tokens
-4. Shield button deep-links into DOOMTYPE -> Challenge screen
-5. On success, lift the shield and schedule a DeviceActivity monitor for
-   `intervalMinutes`
-6. Monitor fires -> re-apply the shield mid-session -> user is bounced back
-   to the gate
+1. Home asks for Family Controls authorization (individual), then notification permission
+2. AppPicker shows Apple's `FamilyActivityPicker` sheet; the selection
+   (opaque tokens) is persisted natively under `doomtype-guarded`
+3. The selection is shielded. The shield's primary button posts a local
+   notification (thread `doomtype-gate`); strict mode drops the secondary button
+4. Tapping the notification hits `GateNotifications` (installed as the
+   `UNUserNotificationCenter` delegate by an Expo AppDelegate subscriber),
+   which stores a pending gate and emits `onGateRequested`. JS routes to the
+   Challenge screen exactly like Android
+5. Passing the gate unblocks the selection and starts a DeviceActivity
+   interval starting when the pass ends; its `intervalDidStart` action
+   re-blocks the selection, even with DOOMTYPE closed. Apple requires
+   intervals of 15+ minutes, so the interval is padded; only its start matters
+6. Backstop: returning to DOOMTYPE after a pass expired re-locks too
 
-## Exercise -- IMPLEMENTED (Android)
+Needs the Family Controls entitlement; see `docs/app-store-submission.md`.
+
+## Exercise -- IMPLEMENTED (Android + iOS)
 
 Lives in `modules/doomtype-exercise` with the JS bridge in
 `src/native/exercise.js`.
@@ -64,3 +72,8 @@ Lives in `modules/doomtype-exercise` with the JS bridge in
 
 Runtime permissions: `CAMERA` when a pushup session starts,
 `ACTIVITY_RECOGNITION` (Android 10+) when a walk starts.
+
+iOS: the same JS surface from `modules/doomtype-exercise/ios`. Apple
+Vision's body pose request stands in for MediaPipe (joints mapped to
+MediaPipe's landmark indices), and CoreMotion's pedometer reports steps
+since local midnight in place of the since-boot counter.
