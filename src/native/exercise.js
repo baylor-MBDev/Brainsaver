@@ -1,13 +1,14 @@
 import { Platform, PermissionsAndroid } from 'react-native';
 
-// Bridge to the doomtype-exercise native module (Android builds only): the
-// pose-detecting camera view and the hardware step counter. In Expo Go and on
+// Bridge to the doomtype-exercise native module: the pose-detecting camera
+// view and the step counter. Android uses CameraX + MediaPipe and the
+// hardware step counter; iOS uses Vision and CoreMotion. In Expo Go and on
 // the web the module is absent, so everything here reports "unavailable" and
 // the UI hides the exercise options.
 
 let native = null;
 let PoseCameraView = null;
-if (Platform.OS === 'android') {
+if (Platform.OS === 'android' || Platform.OS === 'ios') {
   try {
     const core = require('expo-modules-core');
     native = core.requireNativeModule('DoomtypeExercise');
@@ -36,23 +37,36 @@ export const stepsAvailable = () => {
 let promptOpen = false;
 export const isPermissionPromptOpen = () => promptOpen;
 
-async function request(permission) {
-  if (await PermissionsAndroid.check(permission)) return true;
+async function prompting(ask) {
   promptOpen = true;
   try {
-    const result = await PermissionsAndroid.request(permission);
-    return result === PermissionsAndroid.RESULTS.GRANTED;
+    return await ask();
   } finally {
     promptOpen = false;
   }
 }
 
-export const ensureCameraPermission = () => request(PermissionsAndroid.PERMISSIONS.CAMERA);
+async function requestAndroid(permission) {
+  if (await PermissionsAndroid.check(permission)) return true;
+  const result = await prompting(() => PermissionsAndroid.request(permission));
+  return result === PermissionsAndroid.RESULTS.GRANTED;
+}
 
-// Step counting needs activity recognition from Android 10 (API 29) on.
-export const ensureActivityPermission = () =>
-  Platform.Version >= 29
-    ? request(PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION)
-    : Promise.resolve(true);
+export const ensureCameraPermission = () => {
+  if (Platform.OS === 'ios') return prompting(() => native.requestCameraPermission());
+  return requestAndroid(PermissionsAndroid.PERMISSIONS.CAMERA);
+};
+
+// Android 10+ needs activity recognition for the step counter. iOS asks for
+// Motion & Fitness access itself on the first step reading.
+export const ensureActivityPermission = () => {
+  if (Platform.OS === 'android' && Platform.Version >= 29) {
+    return requestAndroid(PermissionsAndroid.PERMISSIONS.ACTIVITY_RECOGNITION);
+  }
+  return Promise.resolve(true);
+};
 
 export const readStepCounter = () => native.readStepCounter();
+
+// Names the permission to point people at when step reading fails.
+export const activityPermissionName = Platform.OS === 'ios' ? 'Motion & Fitness' : 'Physical activity';

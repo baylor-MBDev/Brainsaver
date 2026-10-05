@@ -9,7 +9,7 @@ import {
   BANK_CAP_MIN, PUSHUP_GOAL, PUSHUP_REWARD_MIN, STEP_GOAL, STEP_REWARD_MIN, creditBank, walkSteps,
 } from '../exercise/bank';
 import {
-  pushupsAvailable, stepsAvailable, ensureActivityPermission, readStepCounter,
+  pushupsAvailable, stepsAvailable, ensureActivityPermission, readStepCounter, activityPermissionName,
 } from '../native/exercise';
 
 // Home's "earn time" block: the bank balance, pushups, and step walks.
@@ -48,7 +48,7 @@ export default function EarnTime({ navigation }) {
   const startWalk = async () => {
     setWalkError(null);
     if (!(await ensureActivityPermission())) {
-      setWalkError('Walks need the "Physical activity" permission to read your step counter.');
+      setWalkError(`Walks need the "${activityPermissionName}" permission to read your step counter.`);
       return;
     }
     try {
@@ -56,7 +56,7 @@ export default function EarnTime({ navigation }) {
       setWalked(0);
       update({ walk: { baseline, startedAt: Date.now() } });
     } catch (e) {
-      setWalkError("Couldn't read your step counter. Try again in a moment.");
+      setWalkError(`Couldn't read your step counter. Check that DOOMTYPE has "${activityPermissionName}" access in Settings.`);
     }
   };
 
@@ -91,7 +91,7 @@ export default function EarnTime({ navigation }) {
       </Text>
 
       {!pushups && !steps && (
-        <Text style={styles.note}>Pushups and walks run in the installed Android app.</Text>
+        <Text style={styles.note}>Pushups and walks run in the installed phone app.</Text>
       )}
 
       {pushups && (
