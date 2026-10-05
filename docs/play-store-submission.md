@@ -77,10 +77,10 @@ intercepts the apps you've chosen -- no simulate button required.
 WHAT IT DOESN'T DO
 DOOMTYPE never reads your screen. It only ever sees the package name
 of whichever app just came to the foreground -- never content, never
-what you type elsewhere. Pushup counting runs entirely on your phone;
-camera frames are never saved or sent. Nothing it stores ever leaves
-your device: no account, no server, no analytics, no ads. Full details
-in the privacy policy.
+what you type elsewhere. Camera frames are processed on your phone and
+never saved or sent. No account, no server, no ads. Full details --
+including the anonymous performance stats the pose-detection library
+reports to Google -- in the privacy policy.
 
 Guard Instagram, TikTok, X, YouTube, Reddit, Snapchat, Facebook -- or
 all of them.
@@ -95,12 +95,14 @@ all of them.
 ## Data Safety form
 
 Play's Data Safety questionnaire walks through each data category asking
-whether the app collects or shares it. DOOMTYPE's honest answer is **no**
-across the board, because everything (phrases, guarded-app list, counters,
-streak, settings) lives in local on-device storage and is never transmitted
-anywhere -- there's no backend to send it to.
+whether the app collects or shares it. DOOMTYPE's own data (phrases,
+guarded-app list, counters, streak, settings, earned time) lives in local
+on-device storage and is never transmitted -- there's no backend. The one
+exception comes from a library, MediaPipe's usage stats, covered at the
+end of this section; it changes the first answer below to **Yes** and adds
+Diagnostics.
 
-Answers, in order the form typically asks:
+Baseline answers, before the MediaPipe exception:
 
 - **Does your app collect or share any of the required user data types?**
   → No
@@ -128,6 +130,31 @@ device doesn't count. Camera frames are analyzed on-device to count
 pushups and discarded; the step count is read from the phone's sensor and
 stored locally. Don't tick Photos/videos or Health & fitness.
 
+**MediaPipe's usage stats: this one does need declaring.** The pose
+library (`com.google.mediapipe:tasks-core`) always sends Google a usage
+report when it runs: frame counts, latencies, library version, device
+model and OS version. It goes through Google's `datatransport` library,
+and there's no switch to turn it off. (This was confirmed by inspecting
+the 0.10.32 bytecode: `TaskRunner` always builds a `TasksStatsProtoLogger`,
+which sends through `RemoteLoggingClient`.) Data that SDKs in your app
+send off-device counts as collected, so with the earlier answers changed
+accordingly:
+
+- **Does your app collect or share any of the required user data types?**
+  → Yes
+- **App info and performance → Diagnostics** → Collected. Not shared
+  (it goes to Google as the library's provider). Not processed
+  ephemerally. Optional, since it only happens if the user starts a
+  pushup session. Purpose: Analytics.
+- **Is all user data encrypted in transit?** → Yes (`datatransport`
+  sends over HTTPS)
+- Everything else stays "not collected"
+
+If you'd rather keep the original "no data collected" answer, the pose
+engine has to be swapped for one without built-in reporting (e.g. LiteRT
+running a MoveNet model). The rep counter in `src/exercise/` only needs
+landmark positions, so that swap stays inside the native module.
+
 ## Permission justifications
 
 The readiness report in each CI build log lists the APK's final
@@ -140,7 +167,8 @@ permissions. The ones a reviewer may ask about:
 | `CAMERA` | Count pushups with on-device pose detection, only during a pushup session |
 | `ACTIVITY_RECOGNITION` | Read the step counter for earned walks |
 | `VIBRATE` | Haptic feedback on the keycaps and gate |
-| `INTERNET` | Included by React Native itself; the app makes no network requests |
+| `INTERNET` | Included by React Native; DOOMTYPE's own code makes no network requests (MediaPipe's usage stats use it) |
+| `ACCESS_NETWORK_STATE` | Added by Google's `datatransport` (via MediaPipe) to wait for a connection before sending its usage stats |
 
 Camera and activity recognition are ordinary runtime permissions with no
 separate Play declaration form. The camera is only requested when a user

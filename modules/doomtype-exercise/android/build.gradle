@@ -22,5 +22,9 @@ dependencies {
   implementation "androidx.camera:camera-view:$camerax"
   // On-device pose model runner. The model file itself is fetched into
   // src/main/assets by scripts/fetch-pose-model.sh (see .gitignore).
-  implementation "com.google.mediapipe:tasks-vision:0.10.21"
+  // 0.10.26.1+ ships 16 KB-aligned native libs, which Play requires; 0.10.33+
+  // moved the native code to another artifact, so stay on 0.10.32 unless
+  // that's re-checked. Note: MediaPipe reports anonymous usage stats to
+  // Google (no images), disclosed in legal/privacy.html.
+  implementation "com.google.mediapipe:tasks-vision:0.10.32"
 }

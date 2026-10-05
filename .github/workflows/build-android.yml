@@ -79,6 +79,9 @@ jobs:
           BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
           echo "== Permissions in the APK =="
           "$BT/aapt2" dump permissions doomtype.apk
+          echo "== Where each permission comes from =="
+          grep -A1 '^uses-permission#' android/app/build/outputs/logs/manifest-merger-release-report.txt \
+            | grep -v '^--$' | sed -E 's/ +/ /g; s/(\]).*/\1/'
           echo "== 16 KB zip alignment =="
           "$BT/zipalign" -c -P 16 4 doomtype.apk && echo "zip alignment OK"
           echo "== ELF LOAD alignment, arm64-v8a (needs 0x4000 or higher) =="
