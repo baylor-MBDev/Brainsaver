@@ -83,7 +83,7 @@ export default function Home({ navigation }) {
           <Text style={styles.sectionTitle}>REAL ENFORCEMENT</Text>
           {!guardAvailable() ? (
             <Text style={styles.sectionNote}>
-              Lives in the installed Android app. Here you get the simulator below.
+              Real blocking runs in the Android app. You can still try the gate below.
             </Text>
           ) : fullyArmed ? (
             <Text style={[styles.sectionNote, { color: colors.growth }]}>
@@ -105,12 +105,12 @@ export default function Home({ navigation }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>TEST THE GATE</Text>
+          <Text style={styles.sectionTitle}>TRY THE GATE</Text>
           <Text style={styles.sectionNote}>
-            In production this fires automatically when a guarded app opens, and again every {state.intervalMinutes} minutes inside it.
+            This is what fires when a guarded app opens, and again every {state.intervalMinutes} minutes inside it. It counts like a real open.
           </Text>
           <Keycap
-            label="SIMULATE OPENING INSTAGRAM"
+            label="OPEN THE GATE NOW"
             color={colors.rot}
             textColor={colors.keyFace}
             onPress={() => navigation.navigate('Challenge', { app: 'Instagram' })}
