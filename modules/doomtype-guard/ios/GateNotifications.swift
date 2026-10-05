@@ -46,12 +46,9 @@ final class GateNotifications: NSObject, UNUserNotificationCenterDelegate {
     withCompletionHandler completionHandler: @escaping () -> Void
   ) {
     guard isGate(response.notification) else {
-      if let previous = previous,
-         previous.responds(to: #selector(UNUserNotificationCenterDelegate.userNotificationCenter(_:didReceive:withCompletionHandler:))) {
-        previous.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completionHandler)
-      } else {
-        completionHandler()
-      }
+      let handled: Void? = previous?.userNotificationCenter?(
+        center, didReceive: response, withCompletionHandler: completionHandler)
+      if handled == nil { completionHandler() }
       return
     }
     // The shield fills the subtitle with the app's name; an unfilled
@@ -68,11 +65,10 @@ final class GateNotifications: NSObject, UNUserNotificationCenterDelegate {
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
   ) {
-    if !isGate(notification),
-       let previous = previous,
-       previous.responds(to: #selector(UNUserNotificationCenterDelegate.userNotificationCenter(_:willPresent:withCompletionHandler:))) {
-      previous.userNotificationCenter?(center, willPresent: notification, withCompletionHandler: completionHandler)
-      return
+    if !isGate(notification) {
+      let handled: Void? = previous?.userNotificationCenter?(
+        center, willPresent: notification, withCompletionHandler: completionHandler)
+      if handled != nil { return }
     }
     completionHandler([.banner, .list, .sound])
   }

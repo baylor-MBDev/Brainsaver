@@ -12,7 +12,7 @@ class PoseCameraView: ExpoView, AVCaptureVideoDataOutputSampleBufferDelegate {
   let onPose = EventDispatcher()
   let onCameraError = EventDispatcher()
 
-  private let session = AVCaptureSession()
+  private let session: AVCaptureSession
   private let sessionQueue = DispatchQueue(label: "doomtype.pose.session")
   private let videoQueue = DispatchQueue(label: "doomtype.pose.video")
   private let previewLayer: AVCaptureVideoPreviewLayer
@@ -35,6 +35,8 @@ class PoseCameraView: ExpoView, AVCaptureVideoDataOutputSampleBufferDelegate {
   ]
 
   required init(appContext: AppContext? = nil) {
+    let session = AVCaptureSession()
+    self.session = session
     previewLayer = AVCaptureVideoPreviewLayer(session: session)
     super.init(appContext: appContext)
     previewLayer.videoGravity = .resizeAspectFill
