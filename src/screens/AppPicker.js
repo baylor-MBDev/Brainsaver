@@ -4,10 +4,9 @@ import * as Haptics from 'expo-haptics';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
 
-// Prototype picker. In production:
-// iOS -> FamilyActivityPicker (you never see app names, just opaque tokens)
-// Android -> installed app list via a small native module + UsageStats permission
-// See src/native/README.md
+// A curated list of the usual suspects, mapped to Android packages in
+// src/native/guard.js. An iOS build would need FamilyActivityPicker instead
+// (see src/native/README.md).
 
 const APPS = [
   { id: 'instagram', name: 'Instagram', emoji: '📸' },
@@ -52,7 +51,7 @@ export default function AppPicker({ navigation }) {
         })}
 
         <Text style={styles.note}>
-          Prototype list. The production build uses Apple's FamilyActivityPicker on iOS and the installed-apps list on Android.
+          These are the apps DOOMTYPE can guard today. Changes apply the next time you open one.
         </Text>
       </ScrollView>
     </SafeAreaView>

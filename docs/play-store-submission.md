@@ -10,6 +10,8 @@ built in this repo vs. what only you can do in the Play Console UI.
 - Signed release build pipeline (`.github/workflows/build-android.yml`) --
   produces `doomtype.aab` once the 4 signing secrets are added (see below)
 - Unused permissions stripped (`app.json` -> `blockedPermissions`)
+- `versionCode` stamped by CI as 100 + run number (`app.config.js`), so
+  every upload is higher than the last; `versionName` stays in `app.json`
 - Privacy policy live at https://baylor-mbdev.github.io/Brainsaver/privacy.html
 - Store graphics in `assets/store/`: `feature-graphic.png` (1024x500) and 5
   phone screenshots (1080x2160)

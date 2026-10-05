@@ -42,7 +42,13 @@ jobs:
       - name: Fetch pose model
         run: ./scripts/fetch-pose-model.sh
       - name: Generate native Android project
-        run: npx expo prebuild --platform android --no-install
+        # Every build gets a higher versionCode than the last (Play requires
+        # it). Offset by 100 so it stays above the hand-set codes 1-7.
+        run: |
+          export ANDROID_VERSION_CODE=$((100 + GITHUB_RUN_NUMBER))
+          echo "versionCode $ANDROID_VERSION_CODE"
+          npx expo prebuild --platform android --no-install
+          grep -q "versionCode $ANDROID_VERSION_CODE" android/app/build.gradle
       - name: Decode Play release keystore
         if: steps.signing.outputs.present == 'true'
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
