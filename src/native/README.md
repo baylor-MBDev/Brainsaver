@@ -44,3 +44,23 @@ builds).
    `intervalMinutes`
 6. Monitor fires -> re-apply the shield mid-session -> user is bounced back
    to the gate
+
+## Exercise -- IMPLEMENTED (Android)
+
+Lives in `modules/doomtype-exercise` with the JS bridge in
+`src/native/exercise.js`.
+
+- `PoseCameraView`: CameraX preview plus MediaPipe's pose landmarker running
+  on-device in live-stream mode. Emits the 33 landmarks for each processed
+  frame as `onPose`; frames are never stored or sent. Rep counting happens in
+  JS (`src/exercise/pushupCounter.js`, unit tested in `test/`), so tuning the
+  thresholds never needs a native rebuild.
+- `readStepCounter()`: one reading of the hardware step counter (cumulative
+  since boot). Walks store a baseline and diff later readings against it, so
+  steps keep counting with the app closed.
+- The pose model (`pose_landmarker_lite.task`, 5.8 MB) isn't committed. Run
+  `scripts/fetch-pose-model.sh` before a local native build; CI does this
+  automatically and verifies the checksum.
+
+Runtime permissions: `CAMERA` when a pushup session starts,
+`ACTIVITY_RECOGNITION` (Android 10+) when a walk starts.

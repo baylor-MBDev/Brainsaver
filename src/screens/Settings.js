@@ -98,6 +98,23 @@ export default function Settings({ navigation }) {
           </View>
         </View>
 
+        <View style={styles.section}>
+          <View style={styles.switchRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.label}>NO ESCAPE MODE</Text>
+              <Text style={styles.hint}>
+                No never-mind button, and the back button does nothing at the gate. The only ways in: type it, or spend minutes earned with pushups and walks.
+              </Text>
+            </View>
+            <Switch
+              value={state.strictMode}
+              onValueChange={(v) => update({ strictMode: v })}
+              trackColor={{ true: colors.rot, false: colors.faded }}
+              thumbColor={colors.keyFace}
+            />
+          </View>
+        </View>
+
         <Keycap label="BACK" onPress={() => navigation.goBack()} wide />
       </ScrollView>
     </SafeAreaView>

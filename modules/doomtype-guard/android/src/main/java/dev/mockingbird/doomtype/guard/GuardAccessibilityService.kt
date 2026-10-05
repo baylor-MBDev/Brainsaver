@@ -13,13 +13,19 @@ import android.view.accessibility.AccessibilityEvent
 // apps is never read (canRetrieveWindowContent is off in the service config).
 class GuardAccessibilityService : AccessibilityService() {
   private val handler = Handler(Looper.getMainLooper())
-  private var lastLaunchAt = 0L
+  private var regate: Runnable? = null
 
   override fun onAccessibilityEvent(event: AccessibilityEvent) {
     if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
     val pkg = event.packageName?.toString() ?: return
-    if (pkg == packageName) return
+    val previous = lastForeground
     lastForeground = pkg
+    // Act only on transitions into an app. Repeat events from the same app
+    // (its own dialogs and activities) are ignored, but arriving at a guarded
+    // app from anywhere else -- including straight back from the gate --
+    // always re-checks the pass. A time-based debounce here used to leave a
+    // window where bouncing off the gate and back slipped through.
+    if (pkg == packageName || pkg == previous) return
     maybeChallenge(pkg)
   }
 
@@ -34,14 +40,12 @@ class GuardAccessibilityService : AccessibilityService() {
     val passUntil = prefs.getLong(KEY_PASS_PREFIX + pkg, 0L)
     if (now < passUntil) {
       // Re-gate the moment the pass expires if the app is still in front.
-      handler.postDelayed({
-        if (lastForeground == pkg) maybeChallenge(pkg)
-      }, passUntil - now + 500)
+      regate?.let { handler.removeCallbacks(it) }
+      val next = Runnable { if (lastForeground == pkg) maybeChallenge(pkg) }
+      regate = next
+      handler.postDelayed(next, passUntil - now + 500)
       return
     }
-
-    if (now - lastLaunchAt < 2000) return // debounce bursts of window events
-    lastLaunchAt = now
 
     prefs.edit().putString(KEY_PENDING, pkg).apply()
     val launch = packageManager.getLaunchIntentForPackage(packageName) ?: return

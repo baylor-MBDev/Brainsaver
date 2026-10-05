@@ -13,6 +13,7 @@ import Home from './src/screens/Home';
 import Challenge from './src/screens/Challenge';
 import AppPicker from './src/screens/AppPicker';
 import Settings from './src/screens/Settings';
+import Pushups from './src/screens/Pushups';
 
 const Stack = createNativeStackNavigator();
 const navigationRef = createNavigationContainerRef();
@@ -57,6 +58,11 @@ function Router() {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="AppPicker" component={AppPicker} />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen
+        name="Pushups"
+        component={Pushups}
+        options={{ presentation: 'fullScreenModal', animation: 'fade' }}
+      />
       <Stack.Screen
         name="Challenge"
         component={Challenge}

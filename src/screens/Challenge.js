@@ -1,17 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View, Text, TextInput, StyleSheet, SafeAreaView, Animated, Keyboard, KeyboardAvoidingView, Platform,
+  View, Text, TextInput, StyleSheet, SafeAreaView, Animated, AppState, BackHandler, Keyboard,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import Keycap from '../components/Keycap';
 import Brain from '../components/Brain';
+import PushupSession from '../components/PushupSession';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
 import { grantPass, goHome, returnToGuardedApp } from '../native/guard';
+import { pushupsAvailable, isPermissionPromptOpen } from '../native/exercise';
+import { PUSHUP_GOAL, PUSHUP_REWARD_MIN, creditBank, spendBank } from '../exercise/bank';
 
 // The whole product is this screen. Full rot-orange takeover, the phrase
 // rendered as keycaps, an input that accepts nothing but the exact truth.
-// No paste. No autocorrect. Backing out is celebrated.
+// No paste. No autocorrect. Backing out is celebrated -- unless strict mode
+// is on, in which case the only ways in are typing it or spending time
+// earned with pushups and walks.
 
 export default function Challenge({ navigation, route }) {
   const app = route?.params?.app ?? 'Instagram';
@@ -19,12 +26,17 @@ export default function Challenge({ navigation, route }) {
   const enforced = route?.params?.enforced === true;
   const { state, update, repsRequired, randomPhrase } = useStore();
   const total = repsRequired();
+  const strict = state.strictMode;
 
+  const [mode, setMode] = useState('type'); // 'type' | 'pushups'
   const [rep, setRep] = useState(1);
   const [text, setText] = useState('');
   const [phrase, setPhrase] = useState(randomPhrase);
   const [kbVisible, setKbVisible] = useState(false);
   const shake = useRef(new Animated.Value(0)).current;
+  // Set once the gate is closing on purpose, so the leave-detection below
+  // doesn't also fire for our own exit.
+  const exiting = useRef(false);
 
   // With the keyboard up, vertical space halves; drop the headline block so
   // the phrase, input, and the backout button all stay on screen.
@@ -56,31 +68,108 @@ export default function Challenge({ navigation, route }) {
     setText(value);
     if (value === phrase) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      update({ typedToday: state.typedToday + 1 });
+      update((prev) => ({ typedToday: prev.typedToday + 1 }));
       if (rep < total) {
         setRep(rep + 1);
         setText('');
         setPhrase(randomPhrase());
       } else {
-        update({ opensToday: state.opensToday + 1 });
-        if (enforced && pkg) {
-          // Timed pass; the service re-gates when it expires.
-          grantPass(pkg, state.intervalMinutes);
-        }
-        navigation.goBack();
-        if (enforced && pkg) returnToGuardedApp();
+        update((prev) => ({ opensToday: prev.opensToday + 1 }));
+        letIn(state.intervalMinutes);
       }
     }
   };
 
+  // Every way through the gate ends here with a timed pass; the service
+  // re-gates when it expires.
+  const letIn = (minutes) => {
+    exiting.current = true;
+    if (enforced && pkg) grantPass(pkg, minutes);
+    navigation.goBack();
+    if (enforced && pkg) returnToGuardedApp();
+  };
+
   const backOut = () => {
+    if (strict) return;
+    exiting.current = true;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    update({ backoutsToday: state.backoutsToday + 1 });
+    update((prev) => ({ backoutsToday: prev.backoutsToday + 1 }));
     navigation.goBack();
     // Backing out of a real open must not drop the user back into the
     // guarded app underneath; send them to the launcher instead.
     if (enforced) goHome();
   };
+
+  // Spend earned minutes instead of typing. One re-gate interval at a time.
+  const spendable = spendBank(state.bankMinutes, state.intervalMinutes).minutes;
+  const spend = () => {
+    if (spendable <= 0) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    update((prev) => ({
+      bankMinutes: spendBank(prev.bankMinutes, spendable).bank,
+      opensToday: prev.opensToday + 1,
+    }));
+    letIn(spendable);
+  };
+
+  // Earned on the spot: bank the reward, then spend from it straight away.
+  const pushupsDone = (reps) => {
+    const credited = creditBank(state.bankMinutes, PUSHUP_REWARD_MIN);
+    const { minutes, bank } = spendBank(credited, state.intervalMinutes);
+    update((prev) => ({
+      bankMinutes: bank,
+      earnedToday: prev.earnedToday + (credited - state.bankMinutes),
+      pushupsToday: prev.pushupsToday + reps,
+      opensToday: prev.opensToday + 1,
+    }));
+    letIn(minutes);
+  };
+
+  const startPushups = () => {
+    Keyboard.dismiss();
+    setMode('pushups');
+  };
+
+  // Hardware back: leaves the pushup camera, backs out of the gate, or --
+  // in strict mode -- does nothing at all.
+  const onBack = useRef(null);
+  onBack.current = () => {
+    if (mode === 'pushups') setMode('type');
+    else backOut();
+    return true;
+  };
+  useFocusEffect(
+    useCallback(() => {
+      const sub = BackHandler.addEventListener('hardwareBackPress', () => onBack.current());
+      return () => sub.remove();
+    }, [])
+  );
+
+  // Leaving DOOMTYPE (home button, recents) with the gate up isn't getting
+  // in, so close the gate. Otherwise reopening DOOMTYPE itself would land on
+  // a gate with no way past it in strict mode. The guarded app gets a fresh
+  // gate the next time it's opened. Permission dialogs also pause the app,
+  // so those don't count as leaving.
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next !== 'background' || exiting.current || isPermissionPromptOpen()) return;
+      exiting.current = true;
+      navigation.goBack();
+    });
+    return () => sub.remove();
+  }, [navigation]);
+
+  if (mode === 'pushups') {
+    return (
+      <PushupSession
+        onDone={pushupsDone}
+        onCancel={() => setMode('type')}
+        cancelLabel="BACK TO TYPING"
+      />
+    );
+  }
+
+  const canPushups = pushupsAvailable();
 
   // Render the phrase as keycaps, lit as they're typed
   const chars = phrase.split('');
@@ -134,15 +223,45 @@ export default function Challenge({ navigation, route }) {
           />
         </Animated.View>
 
-        <Keycap
-          label="ACTUALLY, NEVER MIND"
-          color={colors.growth}
-          textColor={colors.keyFace}
-          onPress={backOut}
-          wide
-        />
-        {!kbVisible && (
-          <Text style={styles.backoutNote}>backing out counts as a win. no shame in the smart move.</Text>
+        {(spendable > 0 || canPushups) && (
+          <View style={styles.altRow}>
+            {spendable > 0 && (
+              <Keycap
+                label={`SPEND ${spendable} MIN`}
+                color={colors.zap}
+                onPress={spend}
+                small
+                wide
+                style={styles.altKey}
+              />
+            )}
+            {canPushups && (
+              <Keycap
+                label={`${PUSHUP_GOAL} PUSHUPS`}
+                onPress={startPushups}
+                small
+                wide
+                style={styles.altKey}
+              />
+            )}
+          </View>
+        )}
+
+        {strict ? (
+          <Text style={styles.backoutNote}>no escape mode. type it or earn it.</Text>
+        ) : (
+          <>
+            <Keycap
+              label="ACTUALLY, NEVER MIND"
+              color={colors.growth}
+              textColor={colors.keyFace}
+              onPress={backOut}
+              wide
+            />
+            {!kbVisible && (
+              <Text style={styles.backoutNote}>backing out counts as a win. no shame in the smart move.</Text>
+            )}
+          </>
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -182,6 +301,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 16,
   },
+  altRow: { flexDirection: 'row', gap: 10 },
+  altKey: { flex: 1 },
   backoutNote: {
     fontFamily: fonts.mono,
     fontSize: 11,
