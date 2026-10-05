@@ -10,7 +10,7 @@ import { colors } from './src/theme';
 import {
   consumePendingChallenge, appNameForPackage, syncGuardedApps, onGateRequested,
 } from './src/native/guard';
-import { configureShield, relockIfExpired } from './src/native/screenTime';
+import { configureShield, ensureLocked } from './src/native/screenTime';
 import Onboarding from './src/screens/Onboarding';
 import Home from './src/screens/Home';
 import Challenge from './src/screens/Challenge';
@@ -50,7 +50,7 @@ function Router() {
   useEffect(() => {
     const sub = AppState.addEventListener('change', (s) => {
       if (s !== 'active') return;
-      relockIfExpired();
+      ensureLocked();
       checkPendingChallenge();
     });
     const gate = onGateRequested(checkPendingChallenge);

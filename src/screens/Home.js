@@ -47,7 +47,7 @@ export default function Home({ navigation }) {
       notify: await hasNotificationPermission(),
     };
     setSt(next);
-    if (next.authorized && next.picked > 0) screenTime.lockNow();
+    if (next.authorized && next.picked > 0) screenTime.ensureLocked();
   }, []);
 
   const allowScreenTime = async () => {

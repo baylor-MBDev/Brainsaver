@@ -19,7 +19,9 @@ import { Platform } from 'react-native';
 export const SELECTION_ID = 'doomtype-guarded';
 const RELOCK_ACTIVITY = 'doomtype-relock';
 const MIN_INTERVAL_MIN = 16;
-let passUntil = 0;
+// When the current pass ends (ms), kept in the library's shared defaults so
+// it survives DOOMTYPE being killed mid-pass.
+const PASS_KEY = 'doomtype.passUntil';
 
 let lib = null;
 if (Platform.OS === 'ios') {
@@ -113,17 +115,29 @@ export const configureShield = ({ strict }) => {
   );
 };
 
+const passUntil = () => {
+  try {
+    return Number(lib.userDefaultsGet(PASS_KEY)) || 0;
+  } catch (e) {
+    return 0;
+  }
+};
+
+export const passActive = () => !!lib && Date.now() < passUntil();
+
 // Shield the picked apps now, and cancel any pending pass.
 export const lockNow = () => {
   if (!lib || !lib.getFamilyActivitySelectionId(SELECTION_ID)) return;
   lib.stopMonitoring([RELOCK_ACTIVITY]);
   lib.blockSelection(selection, 'doomtype-lock');
+  lib.userDefaultsRemove(PASS_KEY);
 };
 
-export const unlockAll = () => {
-  if (!lib) return;
-  lib.stopMonitoring([RELOCK_ACTIVITY]);
-  lib.resetBlocks('doomtype-off');
+// Shield the picked apps unless a pass is running. Safe to call any time
+// DOOMTYPE comes to the front; it also backs up the scheduled re-lock.
+export const ensureLocked = () => {
+  if (!lib || passActive()) return;
+  lockNow();
 };
 
 const components = (d) => ({
@@ -159,14 +173,6 @@ export const grantPass = async (minutes) => {
     // Couldn't schedule the re-lock: don't hand out an open-ended pass.
     return;
   }
+  lib.userDefaultsSet(PASS_KEY, until.getTime());
   lib.unblockSelection(selection, 'doomtype-pass');
-  passUntil = until.getTime();
-};
-
-// Backstop for the scheduled re-lock: whenever DOOMTYPE comes to the front
-// after a pass ran out, make sure the shield is back.
-export const relockIfExpired = () => {
-  if (!lib || !passUntil || Date.now() < passUntil) return;
-  passUntil = 0;
-  lockNow();
 };

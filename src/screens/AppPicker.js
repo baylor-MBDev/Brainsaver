@@ -43,8 +43,8 @@ function ScreenTimePicker() {
   const done = () => {
     setPicking(false);
     refresh();
-    // New picks are shielded straight away; dropped ones are freed.
-    screenTime.lockNow();
+    // New picks are shielded straight away (unless a pass is running).
+    screenTime.ensureLocked();
   };
 
   useEffect(refresh, [refresh]);
