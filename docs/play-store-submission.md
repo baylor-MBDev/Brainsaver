@@ -58,6 +58,16 @@ Backing out at the gate counts as a win. Days under 5 opens build
 your streak. A rot meter tracks how the day is going, with a little
 brain mascot that feels it right alongside you.
 
+MOVE FIRST, SCROLL LATER
+Earn your time instead of typing for it. Do 10 pushups -- counted by
+your camera with on-device pose detection -- or walk 1,000 steps, and
+bank 10 minutes you can spend at the gate. Short on banked time? Drop
+and do the pushups right there at the gate.
+
+NO ESCAPE MODE
+Turn it on and the gate loses its exit: no never-mind button, no back
+button. Type it or earn it.
+
 WHAT MAKES IT REAL
 DOOMTYPE isn't a simulator. Once you enable the two Android
 permissions it asks for (Accessibility, to notice when a guarded app
@@ -67,9 +77,10 @@ intercepts the apps you've chosen -- no simulate button required.
 WHAT IT DOESN'T DO
 DOOMTYPE never reads your screen. It only ever sees the package name
 of whichever app just came to the foreground -- never content, never
-what you type elsewhere. Nothing it stores ever leaves your device:
-no account, no server, no analytics, no ads. Full details in the
-privacy policy.
+what you type elsewhere. Pushup counting runs entirely on your phone;
+camera frames are never saved or sent. Nothing it stores ever leaves
+your device: no account, no server, no analytics, no ads. Full details
+in the privacy policy.
 
 Guard Instagram, TikTok, X, YouTube, Reddit, Snapchat, Facebook -- or
 all of them.
@@ -110,6 +121,38 @@ foreground-app-detection behavior, describe it exactly as the privacy
 policy does: the service receives only the package name of the
 foregrounded app, to decide whether to show the gate; it never reads
 screen content and never transmits anything over the network.
+
+**Camera and step counter.** Both stay "not collected." Play's definition
+of collection is data sent off the device, and data processed only on the
+device doesn't count. Camera frames are analyzed on-device to count
+pushups and discarded; the step count is read from the phone's sensor and
+stored locally. Don't tick Photos/videos or Health & fitness.
+
+## Permission justifications
+
+The readiness report in each CI build log lists the APK's final
+permissions. The ones a reviewer may ask about:
+
+| Permission | Why |
+|---|---|
+| `BIND_ACCESSIBILITY_SERVICE` | Detect when a guarded app opens (see declaration below) |
+| `SYSTEM_ALERT_WINDOW` | Show the gate over the guarded app |
+| `CAMERA` | Count pushups with on-device pose detection, only during a pushup session |
+| `ACTIVITY_RECOGNITION` | Read the step counter for earned walks |
+| `VIBRATE` | Haptic feedback on the keycaps and gate |
+| `INTERNET` | Included by React Native itself; the app makes no network requests |
+
+Camera and activity recognition are ordinary runtime permissions with no
+separate Play declaration form. The camera is only requested when a user
+starts pushups, and activity recognition only when they start a walk.
+
+## 16 KB page size
+
+Play rejects apps targeting Android 15+ whose native libraries aren't
+16 KB page-aligned. Each CI build's "Play readiness report" step checks
+every `.so` in the APK and marks any that fail with `NOT 16KB`. If one
+appears, it has to be fixed (usually by updating the library that ships
+it) before uploading.
 
 ## Accessibility Service declaration
 

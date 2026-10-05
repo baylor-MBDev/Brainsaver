@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.SystemClock
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
@@ -43,7 +45,6 @@ class PoseCameraView(context: Context, appContext: AppContext) : ExpoView(contex
     // TextureView-backed; SurfaceView misbehaves inside React Native's hierarchy.
     implementationMode = PreviewView.ImplementationMode.COMPATIBLE
     scaleType = PreviewView.ScaleType.FILL_CENTER
-    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
   }
 
   private var facing = "front"
@@ -56,7 +57,10 @@ class PoseCameraView(context: Context, appContext: AppContext) : ExpoView(contex
   private var running = false
 
   init {
-    addView(previewView)
+    addView(
+      previewView,
+      LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+    )
   }
 
   fun setFacing(value: String) {

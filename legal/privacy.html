@@ -78,7 +78,7 @@
 <main>
   <p class="eyebrow">DOOMTYPE</p>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated July 8, 2026</p>
+  <p class="updated">Last updated October 5, 2026</p>
 
   <p>
     DOOMTYPE is a screen-time tool that puts a typing gate in front of apps
@@ -99,6 +99,8 @@
     <li>Which apps you've chosen to guard</li>
     <li>Your re-gate interval and escalation setting</li>
     <li>Daily counters (opens, phrases typed, backouts) and your streak</li>
+    <li>Earned-time balance and today's pushup count</li>
+    <li>While a walk is in progress, the step-counter reading it started from</li>
   </ul>
   <p>
     Uninstalling the app, or clearing its storage in Android settings,
@@ -124,18 +126,35 @@
     used for exactly that, and nothing else.
   </p>
 
+  <h2>The camera (pushups)</h2>
+  <p>
+    The camera is only on while a pushup session is on screen, and only after
+    you grant permission. Each frame is analyzed on your device by a pose
+    model bundled inside the app, which finds the positions of your joints;
+    those positions are used to count reps and then discarded. Frames are
+    never recorded, saved, or sent anywhere.
+  </p>
+
+  <h2>The physical activity permission (walks)</h2>
+  <p>
+    Walks read your phone's built-in step counter: one reading when a walk
+    starts, then more while you check your progress. Only the step count is
+    used, and it stays on your device.
+  </p>
+
   <h2>Permissions the app does not use</h2>
   <p>
     DOOMTYPE does not request access to your contacts, photos, location,
-    microphone, camera, or files. It does not use device storage permissions
-    at all — its local data lives in the app's private storage.
+    microphone, or files. It does not use device storage permissions at all
+    — its local data lives in the app's private storage.
   </p>
 
   <h2>Third parties</h2>
   <p>
-    DOOMTYPE does not include analytics, crash reporting, advertising, or any
-    other third-party SDK. No data is shared with anyone, because none
-    leaves your device.
+    DOOMTYPE does not include analytics, crash reporting, or advertising
+    SDKs. Pushup counting uses Android's CameraX and Google's open-source
+    MediaPipe library, both running entirely on your device. No data is
+    shared with anyone, because none leaves your device.
   </p>
 
   <h2>Children's privacy</h2>
