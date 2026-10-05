@@ -7,7 +7,10 @@ import { useFonts, ArchivoBlack_400Regular } from '@expo-google-fonts/archivo-bl
 import { SpaceMono_400Regular, SpaceMono_700Bold } from '@expo-google-fonts/space-mono';
 import { StoreProvider, useStore } from './src/store';
 import { colors } from './src/theme';
-import { consumePendingChallenge, appNameForPackage, syncGuardedApps } from './src/native/guard';
+import {
+  consumePendingChallenge, appNameForPackage, syncGuardedApps, onGateRequested,
+} from './src/native/guard';
+import { configureShield, relockIfExpired } from './src/native/screenTime';
 import Onboarding from './src/screens/Onboarding';
 import Home from './src/screens/Home';
 import Challenge from './src/screens/Challenge';
@@ -18,8 +21,9 @@ import Pushups from './src/screens/Pushups';
 const Stack = createNativeStackNavigator();
 const navigationRef = createNavigationContainerRef();
 
-// The enforcement service relaunches the app with a pending challenge when a
-// guarded app hits the foreground; route it straight to the gate.
+// The enforcement layer leaves a pending challenge when a guarded app is
+// opened (Android: the accessibility service relaunches us; iOS: the user
+// taps the Screen Time shield's notification); route it straight to the gate.
 function checkPendingChallenge() {
   const pkg = consumePendingChallenge();
   if (pkg && navigationRef.isReady()) {
@@ -38,11 +42,22 @@ function Router() {
     if (ready) syncGuardedApps(state.guardedApps);
   }, [ready, state.guardedApps]);
 
+  // iOS: the shield only offers a way out when strict mode is off.
+  useEffect(() => {
+    if (ready) configureShield({ strict: state.strictMode });
+  }, [ready, state.strictMode]);
+
   useEffect(() => {
     const sub = AppState.addEventListener('change', (s) => {
-      if (s === 'active') checkPendingChallenge();
+      if (s !== 'active') return;
+      relockIfExpired();
+      checkPendingChallenge();
     });
-    return () => sub.remove();
+    const gate = onGateRequested(checkPendingChallenge);
+    return () => {
+      sub.remove();
+      gate.remove();
+    };
   }, []);
 
   if (!ready) {

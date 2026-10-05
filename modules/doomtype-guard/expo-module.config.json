@@ -1,6 +1,10 @@
 {
-  "platforms": ["android"],
+  "platforms": ["android", "apple"],
   "android": {
     "modules": ["dev.mockingbird.doomtype.guard.DoomtypeGuardModule"]
+  },
+  "apple": {
+    "modules": ["DoomtypeGuardModule"],
+    "appDelegateSubscribers": ["DoomtypeGuardAppDelegate"]
   }
 }

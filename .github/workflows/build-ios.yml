@@ -1,0 +1,82 @@
+name: Build iOS
+
+# Compiles the whole iOS app -- main app plus the three Screen Time
+# extensions -- for the simulator, without signing. It proves the Swift and
+# the native config are sound before there's an Apple developer account.
+# Signed device/TestFlight builds come later (docs/app-store-submission.md).
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_16.4*.app | head -1)"
+          xcodebuild -version
+      - run: npm ci
+      - name: Unit tests
+        run: npm test
+      - name: Generate native iOS project
+        run: npx expo prebuild --platform ios --no-install
+      - name: Check targets
+        run: |
+          for id in dev.mockingbird.doomtype dev.mockingbird.doomtype.ActivityMonitorExtension \
+                    dev.mockingbird.doomtype.ShieldAction dev.mockingbird.doomtype.ShieldConfiguration; do
+            grep -q "PRODUCT_BUNDLE_IDENTIFIER = $id;" ios/DOOMTYPE.xcodeproj/project.pbxproj \
+              || { echo "missing target $id"; exit 1; }
+          done
+          /usr/libexec/PlistBuddy -c 'Print :NSCameraUsageDescription' ios/DOOMTYPE/Info.plist
+          /usr/libexec/PlistBuddy -c 'Print :NSMotionUsageDescription' ios/DOOMTYPE/Info.plist
+      - name: Install pods
+        run: cd ios && pod install
+      - name: Build for simulator (Release, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace ios/DOOMTYPE.xcworkspace \
+            -scheme DOOMTYPE \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build | tee xcodebuild.log | grep -E '(error|warning: .*Doomtype|BUILD (SUCCEEDED|FAILED)|\*\*)' || true
+          grep -q 'BUILD SUCCEEDED' xcodebuild.log
+      - name: Show build errors
+        if: failure()
+        run: grep -E -B2 -A6 'error:' xcodebuild.log | head -200 || true
+      - name: Check app bundle
+        run: |
+          APP=build/Build/Products/Release-iphonesimulator/DOOMTYPE.app
+          ls "$APP/PlugIns"
+          for ext in ActivityMonitorExtension ShieldAction ShieldConfiguration; do
+            test -d "$APP/PlugIns/$ext.appex" || { echo "missing $ext.appex"; exit 1; }
+          done
+          test -f "$APP/main.jsbundle"
+      - name: Zip simulator app
+        run: cd build/Build/Products/Release-iphonesimulator && zip -qry "$GITHUB_WORKSPACE/DOOMTYPE-simulator.zip" DOOMTYPE.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DOOMTYPE-ios-simulator
+          path: DOOMTYPE-simulator.zip
+          retention-days: 14

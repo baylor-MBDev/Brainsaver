@@ -13,7 +13,13 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "dev.mockingbird.doomtype"
+      "bundleIdentifier": "dev.mockingbird.doomtype",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "DOOMTYPE uses the camera to count your pushups. Video is analyzed on your phone and never saved or sent anywhere.",
+        "NSMotionUsageDescription": "DOOMTYPE reads your step count so a walk can earn you screen time.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "dev.mockingbird.doomtype",
@@ -29,7 +35,13 @@
     },
     "plugins": [
       "expo-font",
-      "./plugins/withReleaseSigning.js"
+      "./plugins/withReleaseSigning.js",
+      [
+        "react-native-device-activity",
+        {
+          "appGroup": "group.dev.mockingbird.doomtype"
+        }
+      ]
     ]
   }
 }

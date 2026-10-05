@@ -8,3 +8,4 @@ dist-single/
 /android/
 /ios/
 modules/doomtype-exercise/android/src/main/assets/pose_landmarker_lite.task
+/targets/

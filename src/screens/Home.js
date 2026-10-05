@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, AppState } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, AppState, Platform } from 'react-native';
 import Keycap from '../components/Keycap';
 import RotMeter from '../components/RotMeter';
 import EarnTime from '../components/EarnTime';
@@ -12,7 +12,12 @@ import {
   hasOverlayPermission,
   openAccessibilitySettings,
   openOverlaySettings,
+  hasNotificationPermission,
+  requestNotificationPermission,
 } from '../native/guard';
+import * as screenTime from '../native/screenTime';
+
+const ios = Platform.OS === 'ios';
 
 function Stat({ value, label, color = colors.ink }) {
   return (
@@ -26,11 +31,34 @@ function Stat({ value, label, color = colors.ink }) {
 export default function Home({ navigation }) {
   const { state } = useStore();
   const [armed, setArmed] = useState({ service: false, overlay: false });
+  // iOS: Screen Time access, picked apps, and notifications (the shield's
+  // only way to reach the gate).
+  const [st, setSt] = useState({ authorized: false, picked: 0, notify: false });
 
-  const refreshArmed = useCallback(() => {
+  const refreshArmed = useCallback(async () => {
     if (!guardAvailable()) return;
-    setArmed({ service: isServiceEnabled(), overlay: hasOverlayPermission() });
+    if (!ios) {
+      setArmed({ service: isServiceEnabled(), overlay: hasOverlayPermission() });
+      return;
+    }
+    const next = {
+      authorized: screenTime.isAuthorized(),
+      picked: screenTime.selectionCount(),
+      notify: await hasNotificationPermission(),
+    };
+    setSt(next);
+    if (next.authorized && next.picked > 0) screenTime.lockNow();
   }, []);
+
+  const allowScreenTime = async () => {
+    await screenTime.requestAuthorization();
+    refreshArmed();
+  };
+
+  const allowNotifications = async () => {
+    await requestNotificationPermission();
+    refreshArmed();
+  };
 
   useEffect(() => {
     refreshArmed();
@@ -44,7 +72,8 @@ export default function Home({ navigation }) {
     };
   }, [navigation, refreshArmed]);
 
-  const fullyArmed = armed.service && armed.overlay;
+  const fullyArmed = ios ? st.authorized && st.picked > 0 && st.notify : armed.service && armed.overlay;
+  const guardedCount = ios ? st.picked : state.guardedApps.length;
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -74,7 +103,7 @@ export default function Home({ navigation }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>GUARDED APPS</Text>
           <Text style={styles.sectionNote}>
-            {state.guardedApps.length} apps behind the gate. Tap one to feel what your future self feels.
+            {guardedCount} {ios ? 'apps or categories' : 'apps'} behind the gate. Tap one to feel what your future self feels.
           </Text>
           <Keycap label="VIEW GUARDED APPS" onPress={() => navigation.navigate('AppPicker')} wide />
         </View>
@@ -83,8 +112,32 @@ export default function Home({ navigation }) {
           <Text style={styles.sectionTitle}>REAL ENFORCEMENT</Text>
           {!guardAvailable() ? (
             <Text style={styles.sectionNote}>
-              Real blocking runs in the Android app. You can still try the gate below.
+              Real blocking runs in the installed phone app. You can still try the gate below.
             </Text>
+          ) : fullyArmed && ios ? (
+            <Text style={[styles.sectionNote, { color: colors.growth }]}>
+              ARMED. Guarded apps are shielded. Tap OPEN THE GATE on the shield, then the notification, and earn your way in. Every pass ends after {state.intervalMinutes} minutes.
+            </Text>
+          ) : ios ? (
+            <>
+              <Text style={styles.sectionNote}>
+                Three steps and Screen Time does the blocking. Apple never tells DOOMTYPE which apps you pick or what you do in them.
+              </Text>
+              {!st.authorized && (
+                <Keycap label="1. ALLOW SCREEN TIME" onPress={allowScreenTime} wide />
+              )}
+              {st.picked === 0 && (
+                <Keycap
+                  label="2. PICK APPS TO GUARD"
+                  onPress={() => navigation.navigate('AppPicker')}
+                  disabled={!st.authorized}
+                  wide
+                />
+              )}
+              {!st.notify && (
+                <Keycap label="3. ALLOW NOTIFICATIONS" onPress={allowNotifications} wide />
+              )}
+            </>
           ) : fullyArmed ? (
             <Text style={[styles.sectionNote, { color: colors.growth }]}>
               ARMED. Open a guarded app and the gate opens with it. Every {state.intervalMinutes} minutes inside, it comes back.

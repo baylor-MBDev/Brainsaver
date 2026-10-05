@@ -1,12 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import Keycap from '../components/Keycap';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
+import * as screenTime from '../native/screenTime';
 
-// A curated list of the usual suspects, mapped to Android packages in
-// src/native/guard.js. An iOS build would need FamilyActivityPicker instead
-// (see src/native/README.md).
+// Android: a curated list of the usual suspects, mapped to packages in
+// src/native/guard.js. iOS: Apple's own picker, since iOS apps can only be
+// guarded through the opaque tokens it hands back.
 
 const APPS = [
   { id: 'instagram', name: 'Instagram', emoji: '📸' },
@@ -18,7 +20,94 @@ const APPS = [
   { id: 'facebook', name: 'Facebook', emoji: '📘' },
 ];
 
-export default function AppPicker({ navigation }) {
+function ScreenTimePicker() {
+  const { state } = useStore();
+  const [picking, setPicking] = useState(false);
+  const [summary, setSummary] = useState(screenTime.selectionSummary());
+  const [authorized, setAuthorized] = useState(screenTime.isAuthorized());
+
+  const refresh = useCallback(() => {
+    setSummary(screenTime.selectionSummary());
+    setAuthorized(screenTime.isAuthorized());
+  }, []);
+
+  const pick = async () => {
+    if (!authorized && !(await screenTime.requestAuthorization())) {
+      refresh();
+      return;
+    }
+    setAuthorized(true);
+    setPicking(true);
+  };
+
+  const done = () => {
+    setPicking(false);
+    refresh();
+    // New picks are shielded straight away; dropped ones are freed.
+    screenTime.lockNow();
+  };
+
+  useEffect(refresh, [refresh]);
+
+  const Sheet = screenTime.SelectionSheet;
+  const parts = summary
+    ? [
+        [summary.applicationCount, 'app'],
+        [summary.categoryCount, 'category', 'categories'],
+        [summary.webDomainCount, 'website'],
+      ]
+        .filter(([n]) => n > 0)
+        .map(([n, one, many]) => `${n} ${n === 1 ? one : many || `${one}s`}`)
+    : [];
+
+  return (
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.wrap}>
+        <Text style={styles.headline}>PICK YOUR{'\n'}POISON.</Text>
+        <Text style={styles.sub}>
+          Guarded apps are shielded until you get through the gate. Each pass lasts {state.intervalMinutes} min.
+        </Text>
+        <View style={[styles.row, parts.length > 0 && styles.rowOn]}>
+          <Text style={styles.emoji}>🧠</Text>
+          <Text style={[styles.name, parts.length > 0 && styles.nameOn]}>
+            {parts.length > 0 ? parts.join(', ') : 'Nothing guarded yet'}
+          </Text>
+        </View>
+        <Keycap
+          label={parts.length > 0 ? 'CHANGE GUARDED APPS' : 'CHOOSE APPS'}
+          color={colors.rot}
+          textColor={colors.keyFace}
+          onPress={pick}
+          wide
+        />
+        {!authorized && (
+          <Text style={styles.note}>
+            DOOMTYPE needs Screen Time access first. If you said no before, turn it on in Settings › Screen Time.
+          </Text>
+        )}
+        <Text style={styles.note}>
+          Apple shows DOOMTYPE only a count, never which apps you picked or what you do in them.
+        </Text>
+      </ScrollView>
+      {picking && Sheet && (
+        <Sheet
+          style={styles.anchor}
+          familyActivitySelectionId={screenTime.SELECTION_ID}
+          headerText="Pick the apps that eat your day."
+          footerText="They'll stay shielded until you earn your way in."
+          onDismissRequest={done}
+        />
+      )}
+    </SafeAreaView>
+  );
+}
+
+export default function AppPicker(props) {
+  if (Platform.OS === 'ios' && screenTime.screenTimeAvailable()) return <ScreenTimePicker {...props} />;
+  return <CuratedPicker {...props} />;
+}
+
+function CuratedPicker() {
   const { state, update } = useStore();
 
   const toggle = (id) => {
@@ -82,5 +171,6 @@ const styles = StyleSheet.create({
   pillOff: { borderColor: colors.faded },
   pillText: { fontFamily: fonts.monoBold, fontSize: 10, color: colors.faded },
   pillTextOn: { color: colors.keyFace },
+  anchor: { position: 'absolute', width: 1, height: 1 },
   note: { fontFamily: fonts.mono, fontSize: 11, color: colors.faded, marginTop: 8, lineHeight: 17 },
 });

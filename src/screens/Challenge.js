@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, SafeAreaView, Animated, AppState, BackHandler, Keyboard,
-  KeyboardAvoidingView, Platform,
+  KeyboardAvoidingView, Platform, Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -87,6 +87,10 @@ export default function Challenge({ navigation, route }) {
     if (enforced && pkg) grantPass(pkg, minutes);
     navigation.goBack();
     if (enforced && pkg) returnToGuardedApp();
+    // iOS won't let one app open another, so say where to go.
+    if (enforced && Platform.OS === 'ios') {
+      Alert.alert('Unlocked.', `${app} is open for ${minutes} minutes. Swipe back to it.`);
+    }
   };
 
   const backOut = () => {
