@@ -1,0 +1,26 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'dev.mockingbird.doomtype'
+version = '1.0.0'
+
+android {
+  namespace "dev.mockingbird.doomtype.exercise"
+  defaultConfig {
+    versionCode 1
+    versionName '1.0.0'
+  }
+}
+
+dependencies {
+  def camerax = "1.4.2"
+  implementation "androidx.camera:camera-core:$camerax"
+  implementation "androidx.camera:camera-camera2:$camerax"
+  implementation "androidx.camera:camera-lifecycle:$camerax"
+  implementation "androidx.camera:camera-view:$camerax"
+  // On-device pose model runner. The model file itself is fetched into
+  // src/main/assets by scripts/fetch-pose-model.sh (see .gitignore).
+  implementation "com.google.mediapipe:tasks-vision:0.10.21"
+}

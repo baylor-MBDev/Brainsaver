@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Pushup counting: frames are analyzed on-device and never stored or sent. -->
+  <uses-permission android:name="android.permission.CAMERA" />
+  <!-- Reading the hardware step counter for earned walks. -->
+  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+  <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />
+</manifest>

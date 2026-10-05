@@ -18,6 +18,11 @@ const DEFAULTS = {
   backoutsToday: 0, // times the user bailed at the gate. wins.
   lastOpenDate: null,
   streak: 0, // consecutive days under 5 opens
+  strictMode: false, // no backing out of the gate: type it or spend earned time
+  bankMinutes: 0, // earned by exercise, spent at the gate; expires at midnight
+  earnedToday: 0, // minutes earned today
+  pushupsToday: 0,
+  walk: null, // { baseline, startedAt } while a step walk is in progress
 };
 
 const Ctx = createContext(null);
@@ -42,6 +47,9 @@ export function StoreProvider({ children }) {
           saved.opensToday = 0;
           saved.typedToday = 0;
           saved.backoutsToday = 0;
+          saved.bankMinutes = 0;
+          saved.earnedToday = 0;
+          saved.pushupsToday = 0;
           saved.lastOpenDate = today;
         }
         setState({ ...DEFAULTS, ...saved });
@@ -50,9 +58,13 @@ export function StoreProvider({ children }) {
     });
   }, []);
 
+  // Accepts a patch, or a function of the latest state returning a patch.
+  // Use the function form when the new value depends on the old one, so
+  // back-to-back updates (credit then spend) can't clobber each other.
   const update = (patch) => {
     setState((prev) => {
-      const next = { ...prev, ...patch, lastOpenDate: new Date().toDateString() };
+      const changes = typeof patch === 'function' ? patch(prev) : patch;
+      const next = { ...prev, ...changes, lastOpenDate: new Date().toDateString() };
       AsyncStorage.setItem(KEY, JSON.stringify(next));
       return next;
     });

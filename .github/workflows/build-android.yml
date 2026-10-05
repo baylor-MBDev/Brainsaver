@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: android-build
+  group: android-build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -37,6 +37,10 @@ jobs:
             echo "present=false" >> "$GITHUB_OUTPUT"
           fi
       - run: npm ci
+      - name: Unit tests
+        run: npm test
+      - name: Fetch pose model
+        run: ./scripts/fetch-pose-model.sh
       - name: Generate native Android project
         run: npx expo prebuild --platform android --no-install
       - name: Decode Play release keystore
@@ -66,7 +70,26 @@ jobs:
       - name: Rename AAB
         if: steps.signing.outputs.present == 'true'
         run: cp android/app/build/outputs/bundle/release/app-release.aab doomtype.aab
+      # Play Console needs both of these to be right: every declared
+      # permission has to be justified in the listing, and native libraries
+      # must be 16 KB page-aligned for apps targeting Android 15+.
+      - name: Play readiness report
+        continue-on-error: true
+        run: |
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          echo "== Permissions in the APK =="
+          "$BT/aapt2" dump permissions doomtype.apk
+          echo "== 16 KB zip alignment =="
+          "$BT/zipalign" -c -P 16 4 doomtype.apk && echo "zip alignment OK"
+          echo "== ELF LOAD alignment, arm64-v8a (needs 0x4000 or higher) =="
+          rm -rf so && unzip -q -o doomtype.apk 'lib/arm64-v8a/*' -d so
+          for f in so/lib/arm64-v8a/*.so; do
+            align=$(readelf -lW "$f" | awk '$1 == "LOAD" {print $NF}' | sort -u | tr '\n' ' ')
+            case "$align" in *0x1000*) verdict="NOT 16KB" ;; *) verdict="ok" ;; esac
+            echo "$verdict  $(basename "$f")  $align"
+          done
       - name: Attach build to release
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
@@ -82,3 +105,12 @@ jobs:
           files: |
             doomtype.apk
             doomtype.aab
+      # Branch builds are for checking that things compile; keep them out of
+      # the public release list.
+      - name: Upload branch build
+        if: github.ref != 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: doomtype-${{ github.run_number }}
+          path: doomtype.apk
+          retention-days: 7

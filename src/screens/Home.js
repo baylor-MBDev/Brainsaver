@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, AppState } from 'react-native';
 import Keycap from '../components/Keycap';
 import RotMeter from '../components/RotMeter';
+import EarnTime from '../components/EarnTime';
 import Brain, { moodForOpens } from '../components/Brain';
 import { useStore } from '../store';
 import { colors, fonts } from '../theme';
@@ -67,6 +68,8 @@ export default function Home({ navigation }) {
           <Stat value={state.typedToday} label="phrases typed" />
           <Stat value={state.backoutsToday} label="backouts (wins)" color={colors.growth} />
         </View>
+
+        <EarnTime navigation={navigation} />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>GUARDED APPS</Text>
