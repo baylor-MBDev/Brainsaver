@@ -169,3 +169,13 @@ test('export: Instantly CSV round-trips multi-line copy; blockers enforced', asy
   assert.equal(calls.phone, '(254) 555-0142');
   assert.match(calls.opener, /This is Baylor with Mockingbird/);
 });
+
+test('CSV export defuses spreadsheet formulas but keeps phone numbers', async () => {
+  const { toCsv } = await import('../engine/lib/util.js');
+  const csv = toCsv([{ name: '=HYPERLINK("http://x","click")', phone: '+1 254 555 0142', note: '@SUM(A1)', minus: '-cmd|calc' }]);
+  const [row] = parseCsv(csv);
+  assert.equal(row.name, `'=HYPERLINK("http://x","click")`);
+  assert.equal(row.phone, '+1 254 555 0142');
+  assert.equal(row.note, `'@SUM(A1)`);
+  assert.equal(row.minus, `'-cmd|calc`);
+});

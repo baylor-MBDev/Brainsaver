@@ -114,7 +114,7 @@ export async function report({ store }) {
   }
 
   const skipReasons = all.filter((co) => co.stage === 'skipped').reduce((acc, co) => {
-    const reason = (co.skipReason ?? 'unknown').replace(/\d+/g, 'N');
+    const reason = (co.skipReason ?? 'unknown').replace(/\s*\(.*\)$/, '');
     acc[reason] = (acc[reason] ?? 0) + 1;
     return acc;
   }, {});

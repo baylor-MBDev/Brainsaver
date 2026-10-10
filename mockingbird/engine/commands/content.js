@@ -3,7 +3,7 @@ import path from 'node:path';
 import { buildDemo, writeDemoRootFiles } from '../demo/build.js';
 import { createClaude, hasClaude } from '../lib/claude.js';
 import { ROOT, dataDir, env } from '../lib/env.js';
-import { c, log, table } from '../lib/log.js';
+import { c, log, table, displayPath } from '../lib/log.js';
 import { addEvent } from '../lib/store.js';
 import { mapPool } from '../lib/util.js';
 import { loadTopics, planTopics, writePost } from '../seo/blog.js';
@@ -45,13 +45,13 @@ export async function demo({ config, store }, args) {
           addEvent(co, 'demo:built', result.url ?? result.slug);
           return co;
         });
-        log.info(`  ${c.green('built')}  ${company.name}  ${c.dim(result.url ?? path.relative(process.cwd(), result.file))}`);
+        log.info(`  ${c.green('built')}  ${company.name}  ${c.dim(result.url ?? displayPath(result.file))}`);
       } catch (err) {
         log.error(`${company.id}: ${err.message}`);
       }
     });
     if (!config.site?.demoBaseUrl) log.warn('site.demoBaseUrl is empty in mockingbird.config.js, so demos have no public URL yet (the pitch won\'t link them).');
-    log.info(c.dim(`Preview locally: open ${path.relative(process.cwd(), outDir)}/<slug>/index.html`));
+    log.info(c.dim(`Preview locally: open ${displayPath(outDir)}/<slug>/index.html`));
   } else {
     log.info('No website leads need a concept page. (Demos are built for qualified website leads.)');
   }
@@ -92,7 +92,7 @@ export async function blog({ config }, args) {
   }
   if (action === 'write') {
     const result = await writePost({ config, claude, topicId: args.values.topic, publish: Boolean(args.values.publish) });
-    log.ok(`${result.words} words → ${path.relative(process.cwd(), result.file)} (${result.topic.status})`);
+    log.ok(`${result.words} words → ${displayPath(result.file)} (${result.topic.status})`);
     for (const p of result.problems) log.warn(`Left as a draft: ${p}`);
     log.info(c.dim('Preview it with `mb site dev --drafts`.'));
     return;

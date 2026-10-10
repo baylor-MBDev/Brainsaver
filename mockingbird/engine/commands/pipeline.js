@@ -100,7 +100,7 @@ function applyAudit(company, result, config) {
   setStage(company, 'audited', `${result.primaryService} ${result.scores[result.primaryService]}`);
   const best = result.scores[result.primaryService];
   if (best >= config.scoring.qualifyAt) setStage(company, 'qualified', `${result.primaryService} score ${best}`);
-  else skip(company, `best opportunity score ${best} is under ${config.scoring.qualifyAt}`);
+  else skip(company, `low opportunity score (${result.primaryService} ${best}, needs ${config.scoring.qualifyAt})`);
   return company;
 }
 

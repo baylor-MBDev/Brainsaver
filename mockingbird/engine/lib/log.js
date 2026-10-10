@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 const useColor = process.stdout.isTTY && !process.env.NO_COLOR;
 const paint = (code) => (text) => (useColor ? `\x1b[${code}m${text}\x1b[0m` : String(text));
 
@@ -37,3 +39,11 @@ export function table(rows, columns) {
   const body = rows.map((r) => columns.map((col, i) => fit(col.get(r), widths[i])).join('  '));
   return [header, ...body].join('\n');
 }
+
+/** A path relative to where you ran the command, unless that gets silly. */
+export function displayPath(file) {
+  const rel = path.relative(process.cwd(), file);
+  return rel && !rel.startsWith('..') ? rel : file;
+}
+
+export const plural = (n, word, many = `${word}s`) => `${n} ${n === 1 ? word : many}`;

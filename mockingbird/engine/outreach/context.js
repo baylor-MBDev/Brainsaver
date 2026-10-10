@@ -1,5 +1,6 @@
 import { primaryContact } from '../lib/store.js';
 import { senderName } from '../lib/config.js';
+import { distinctFindings } from '../audit/score.js';
 
 export const DEMO_TOKEN = '[DEMO_LINK]';
 
@@ -7,7 +8,7 @@ export const DEMO_TOKEN = '[DEMO_LINK]';
 export function pitchContext(company, config) {
   const service = company.primaryService ?? company.serviceHint ?? 'websites';
   const contact = primaryContact(company);
-  const findings = (company.findings ?? []).filter((f) => f.service === service && f.weight > 0);
+  const findings = distinctFindings((company.findings ?? []).filter((f) => f.service === service && f.weight > 0).sort((a, b) => b.weight - a.weight));
   const observed = findings.filter((f) => f.kind !== 'context');
   const context = findings.filter((f) => f.kind === 'context');
   return {

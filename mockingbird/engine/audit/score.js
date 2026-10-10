@@ -18,6 +18,33 @@ const AUTOMATION_INDUSTRIES = /dent|orthodont|medical|clinic|health|chiropract|p
 // Industries where customers come back often enough to keep an app installed.
 const APP_INDUSTRIES = /fitness|gym|yoga|pilates|crossfit|martial|boxing|dance|church|ministr|restaurant|cafe|coffee|bakery|food|car wash|salon|barber|spa|retail|boutique|club|golf|sports|school|academy|tutor|daycare|childcare|pet|grooming|franchise|startup|saas|software|marketplace|app\b|events|venue|hotel|travel/i;
 
+// Findings that make the same point. A pitch should use at most one from
+// each group, or the follow-up just repeats the opener.
+const OVERLAPS = [
+  ['site-down', 'ssl-error', 'no-https', 'no-https-redirect', 'mixed-content'],
+  ['very-slow', 'slow', 'slow-lcp', 'slow-server'],
+  ['seo-basics', 'psi-seo'],
+  ['no-cta', 'phone-not-tappable'],
+  ['no-chat', 'human-chat', 'form-to-inbox'],
+  ['web-only-engagement', 'no-app', 'third-party-app'],
+  ['no-website', 'reviews-no-site'],
+  ['dead-analytics', 'no-analytics'],
+  ['legacy-markup', 'frames', 'flash', 'old-jquery'],
+];
+const groupOf = (id) => OVERLAPS.findIndex((group) => group.includes(id));
+
+/** Strongest finding per overlap group, order preserved. */
+export function distinctFindings(findings) {
+  const seen = new Set();
+  return findings.filter((f) => {
+    const g = groupOf(f.id);
+    if (g === -1) return true;
+    if (seen.has(g)) return false;
+    seen.add(g);
+    return true;
+  });
+}
+
 const clamp = (n) => Math.max(0, Math.min(100, Math.round(n)));
 const seconds = (ms) => `${(ms / 1000).toFixed(1)}s`;
 
@@ -167,10 +194,11 @@ export function scoreLead(company, audit, { icpService, icpBonus = 10, now = new
   for (const key of Object.keys(scores)) scores[key] = clamp(scores[key]);
 
   const primaryService = Object.entries(scores).sort((a, b) => b[1] - a[1] || (a[0] === icpService ? -1 : 1))[0][0];
-  const talkingPoints = findings
-    .filter((f) => f.service === primaryService && f.weight > 0)
-    .sort((a, b) => (a.kind === b.kind ? b.weight - a.weight : a.kind === 'observed' ? -1 : 1))
-    .slice(0, 4);
+  const talkingPoints = distinctFindings(
+    findings
+      .filter((f) => f.service === primaryService && f.weight > 0)
+      .sort((a, b) => (a.kind === b.kind ? b.weight - a.weight : a.kind === 'observed' ? -1 : 1)),
+  ).slice(0, 4);
 
   return { scores, primaryService, findings: findings.sort((a, b) => b.weight - a.weight), talkingPoints };
 }

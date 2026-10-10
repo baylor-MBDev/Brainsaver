@@ -3,7 +3,7 @@ import path from 'node:path';
 import { ActionError, exportLeads, suppress } from '../lib/actions.js';
 import { sendingBlockers } from '../lib/config.js';
 import { ROOT, env } from '../lib/env.js';
-import { c, log } from '../lib/log.js';
+import { c, log, displayPath, plural } from '../lib/log.js';
 import { setStage } from '../lib/store.js';
 import { nowIso, parseCsv } from '../lib/util.js';
 import { FORMATS } from '../outreach/export.js';
@@ -27,7 +27,7 @@ export async function exportCmd({ store, config }, args) {
     const out = args.values.out ?? path.join(ROOT, 'exports', `${nowIso().slice(0, 10)}-${format}.csv`);
     await mkdir(path.dirname(out), { recursive: true });
     await writeFile(out, csv);
-    log.ok(`${exported.length} leads → ${path.relative(process.cwd(), out)}${markQueued && format !== 'calls' ? ' (marked queued)' : ''}`);
+    log.ok(`${plural(exported.length, 'lead')} → ${displayPath(out)}${markQueued && format !== 'calls' ? ' (marked queued)' : ''}`);
     if (format === 'instantly' || format === 'smartlead') {
       log.info(c.dim(`In the campaign: subject {{subject}}, step bodies {{email_1}} / {{email_2}} / {{email_3}}, follow-ups as replies in the same thread.`));
     }

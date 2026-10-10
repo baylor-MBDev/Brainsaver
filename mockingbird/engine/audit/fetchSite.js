@@ -1,3 +1,5 @@
+import { lookup } from 'node:dns/promises';
+import { isIP } from 'node:net';
 import { hostOf } from '../lib/util.js';
 
 export const AUDIT_USER_AGENT =
@@ -45,19 +47,68 @@ function decode(bytes, contentType) {
   }
 }
 
+function isPrivateIp(ip) {
+  if (isIP(ip) === 4) {
+    const [a, b] = ip.split('.').map(Number);
+    return a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127);
+  }
+  if (isIP(ip) === 6) {
+    const v = ip.toLowerCase();
+    if (v.startsWith('::ffff:')) return isPrivateIp(v.slice(7));
+    return v === '::1' || v === '::' || /^f[cd]/.test(v) || v.startsWith('fe80');
+  }
+  return false;
+}
+
+/**
+ * Website URLs can come from strangers (the free-audit form on our site), so
+ * never fetch loopback, private-network, or link-local addresses, including
+ * via DNS or a redirect. The DNS step is skipped when a fetch implementation
+ * is injected (tests use fake hosts).
+ */
+export async function isPublicHost(host, { resolve = true } = {}) {
+  if (!host) return false;
+  const h = host.replace(/^\[|\]$/g, '');
+  if (isIP(h)) return !isPrivateIp(h);
+  if (!h.includes('.') || /(?:^|\.)(?:localhost|local|internal|lan|home\.arpa)$/i.test(h)) return false;
+  if (!resolve) return true;
+  try {
+    const addresses = await lookup(h, { all: true });
+    return addresses.every((a) => !isPrivateIp(a.address));
+  } catch {
+    return true; // unresolvable: let the fetch report ENOTFOUND
+  }
+}
+
 /** One GET with timings. Never throws: failures come back as { ok: false, error }. */
-export async function getPage(url, { fetch: fetchImpl = globalThis.fetch, timeoutMs = 20_000 } = {}) {
+export async function getPage(url, { fetch: fetchImpl, timeoutMs = 20_000 } = {}) {
+  const doFetch = fetchImpl ?? globalThis.fetch;
   const started = performance.now();
   try {
-    const res = await fetchImpl(url, {
-      redirect: 'follow',
-      headers: {
-        'user-agent': AUDIT_USER_AGENT,
-        accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8',
-        'accept-language': 'en-US,en;q=0.9',
-      },
-      signal: AbortSignal.timeout(timeoutMs),
-    });
+    // Follow redirects by hand so every hop gets the public-host check.
+    let current = url;
+    let res;
+    for (let hop = 0; ; hop++) {
+      if (!(await isPublicHost(hostOf(current), { resolve: !fetchImpl }))) {
+        return { ok: false, url, error: 'BLOCKED_HOST', message: `Refusing to fetch a private or local address: ${current}`, totalMs: 0 };
+      }
+      res = await doFetch(current, {
+        redirect: 'manual',
+        headers: {
+          'user-agent': AUDIT_USER_AGENT,
+          accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8',
+          'accept-language': 'en-US,en;q=0.9',
+        },
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      const location = res.headers.get('location');
+      if (res.status >= 300 && res.status < 400 && location && hop < 6) {
+        await res.body?.cancel().catch(() => {});
+        current = new URL(location, current).href;
+        continue;
+      }
+      break;
+    }
     const ttfbMs = Math.round(performance.now() - started);
     const bytes = await readCapped(res);
     const contentType = res.headers.get('content-type') ?? '';
@@ -65,7 +116,7 @@ export async function getPage(url, { fetch: fetchImpl = globalThis.fetch, timeou
       ok: res.ok,
       status: res.status,
       url,
-      finalUrl: res.url || url,
+      finalUrl: current,
       headers: Object.fromEntries(res.headers.entries()),
       contentType,
       html: /html|xml|text\/plain/i.test(contentType) || !contentType ? decode(bytes, contentType) : '',
@@ -116,6 +167,7 @@ export async function fetchHomepage(homepageUrl, options = {}) {
 
   if (result.https && page.ok) {
     try {
+      if (!(await isPublicHost(host, { resolve: !options.fetch }))) throw new Error('private host');
       const res = await (options.fetch ?? globalThis.fetch)(httpUrl, {
         redirect: 'manual',
         headers: { 'user-agent': AUDIT_USER_AGENT },

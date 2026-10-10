@@ -102,9 +102,16 @@ export async function mapPool(items, concurrency, fn) {
 
 // --- CSV (RFC 4180) -------------------------------------------------------
 
+// Scraped text can start with "=" or "@", which spreadsheet apps run as a
+// formula when someone opens the export. Neutralize those (but leave phone
+// numbers like "+1 254 555 0142" alone).
+function defuseFormula(s) {
+  return /^[=@\t\r]/.test(s) || (/^[+-]/.test(s) && /[A-Za-z(|!]/.test(s)) ? `'${s}` : s;
+}
+
 function csvCell(value) {
   if (value === null || value === undefined) return '';
-  const s = Array.isArray(value) ? value.join('; ') : String(value);
+  const s = defuseFormula(Array.isArray(value) ? value.join('; ') : String(value));
   return /[",\r\n]/.test(s) || /^\s|\s$/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 

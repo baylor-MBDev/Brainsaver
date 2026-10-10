@@ -5,7 +5,7 @@ import { checkConnectivity } from '../audit/network.js';
 import { auditReport } from '../audit/report.js';
 import { d1Query } from '../lib/cloudflare.js';
 import { dataDir, env } from '../lib/env.js';
-import { c, log } from '../lib/log.js';
+import { c, log, displayPath } from '../lib/log.js';
 import { addEvent, companyId, setStage } from '../lib/store.js';
 import { normalizeDomain, nowIso, truncate } from '../lib/util.js';
 
@@ -49,7 +49,7 @@ export async function checkCmd({ config, store }, args) {
   if (!args.values.name && result.audit.brand?.name) company.name = result.audit.brand.name;
   printFindings(company);
   const file = await writeReport(company, config);
-  log.ok(`Report: ${path.relative(process.cwd(), file)}`);
+  log.ok(`Report: ${displayPath(file)}`);
   if (args.values.save) {
     const { id, name, website, source } = company;
     await store.upsertFromSource({ id, name, website, domain, source, contacts: [] });
@@ -105,7 +105,7 @@ export async function inbound({ config, store }, args) {
     const report = updated.inbound.type === 'audit' && result ? await writeReport(updated, config) : null;
     log.info(`\n${c.bold(updated.name)}  ${c.dim(`${row.type ?? 'contact'} · ${row.email}${row.service ? ` · ${row.service}` : ''}`)}`);
     if (row.message) log.info(`  “${truncate(row.message.replace(/\s+/g, ' '), 200)}”`);
-    if (report) log.info(`  ${c.green('report')} ${path.relative(process.cwd(), report)}`);
+    if (report) log.info(`  ${c.green('report')} ${displayPath(report)}`);
     else if (result) log.info(c.dim(`  best fit: ${updated.primaryService} (${updated.scores[updated.primaryService]})`));
 
     if (!args.values['dry-run']) await d1Query("UPDATE inbound_leads SET status = 'imported' WHERE id = ?", [row.id]);

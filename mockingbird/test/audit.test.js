@@ -137,3 +137,21 @@ test('modern dental site scores as an automation lead, not a website lead', asyn
   assert.ok(result.scores.websites < 30, `websites ${result.scores.websites}`);
   assert.equal(result.primaryService, 'automation');
 });
+
+test('audits never fetch private or local addresses, even via a redirect', async () => {
+  const { getPage, isPublicHost } = await import('../engine/audit/fetchSite.js');
+  for (const host of ['localhost', 'printer.local', 'db.internal', '10.0.0.5', '127.0.0.1', '169.254.169.254', '192.168.1.1', '[::1]', 'fd00::1']) {
+    assert.equal(await isPublicHost(host, { resolve: false }), false, host);
+  }
+  assert.equal(await isPublicHost('8.8.8.8', { resolve: false }), true);
+  assert.equal(await isPublicHost('example.com', { resolve: false }), true);
+
+  const fetch = fakeFetch({
+    'https://sneaky.com/': { status: 302, redirect: 'http://192.168.1.1/admin' },
+  });
+  const direct = await getPage('http://127.0.0.1:8080/', { fetch });
+  assert.equal(direct.error, 'BLOCKED_HOST');
+  const viaRedirect = await getPage('https://sneaky.com/', { fetch });
+  assert.equal(viaRedirect.error, 'BLOCKED_HOST');
+  assert.ok(!fetch.calls.some((c) => c.url.includes('192.168.1.1')), 'the private address is never requested');
+});

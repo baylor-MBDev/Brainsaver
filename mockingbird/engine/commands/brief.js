@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { labelFor } from '../audit/fingerprints.js';
 import { dataDir } from '../lib/env.js';
-import { log } from '../lib/log.js';
+import { log, displayPath } from '../lib/log.js';
 import { primaryContact } from '../lib/store.js';
 import { nowIso } from '../lib/util.js';
 
@@ -99,6 +99,6 @@ export async function brief({ config, store }, args) {
   await mkdir(dir, { recursive: true });
   const file = args.values.out ?? path.join(dir, `${company.id}.md`);
   await writeFile(file, buildBrief(company, config));
-  log.ok(`Brief: ${path.relative(process.cwd(), file)}`);
+  log.ok(`Brief: ${displayPath(file)}`);
   log.info('Start the build in Claude Code with: "Build this client\'s site from the brief at <path>, in a new repo, deploying to Cloudflare."');
 }
