@@ -1,0 +1,2181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+<meta name="mb-token" content="__MB_TOKEN__">
+<title>Mockingbird · Review</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABLUlEQVR42u1XrQ7CMBDuCzWZ5jlwNTNoPOEZkCRoNBkOj0XMESQGhVhCgr7lYITuRrv+ZTfBJZemXe++b9f2rhVSgSCaSwWFVFBJBZBIq8ZnTvH0TiYVlAlBTVo2WC0CWeI/dolIphMoBwTXIyE+aw5Mmotmc3ARKMTAa9/ZC4IR/KV/AlYC8xXAevduQ5y72AubsS7LjR84ztfFRMJIAJlTcSVBwVHQX1QEUB5PgOnCDo7fcR4V7wigbg9+JEzg6Cf4FOyPXYe3O8Bk1p6HfRyngvbRx/B07jq+XL8ksMU+FbRLkgf6APoIJklEphCbxlzAvTOhaZP5npSoVGwj4QseXAt+JZqQbBlVjCiJEPDoahhbrEZTjtmvZOyXUvZrOfvDZBRPM/bHKdvzvAYML43YxgmMZwAAAABJRU5ErkJggg==">
+<style nonce="__MB_NONCE__">
+:root {
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --panel-2: #f0f2f5;
+  --hover: #f4f6fa;
+  --selected: #ebf0ff;
+  --border: #e3e6eb;
+  --border-strong: #cdd2da;
+  --text: #15181d;
+  --muted: #5b6472;
+  --faint: #8a929f;
+  --accent: #2D5BFF;
+  --accent-hover: #1f4cf0;
+  --accent-text: #2350f0;
+  --accent-weak: rgba(45, 91, 255, 0.1);
+  --focus: #2D5BFF;
+  --ok: #0f7a4f;
+  --ok-bg: #e4f5ec;
+  --warn: #8f5c00;
+  --warn-bg: #fff4d9;
+  --warn-border: #efd28a;
+  --err: #c42b2b;
+  --err-bg: #fdeceb;
+  --danger-fill: #cf3434;
+  --web-bar: #2D5BFF;
+  --web-bg: rgba(45, 91, 255, 0.1);
+  --web-text: #1f47d1;
+  --auto-bar: #7a5af8;
+  --auto-bg: rgba(122, 90, 248, 0.12);
+  --auto-text: #5a3cc9;
+  --apps-bar: #ff6a3d;
+  --apps-bg: rgba(255, 106, 61, 0.14);
+  --apps-text: #a93d18;
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.16), 0 2px 6px rgba(16, 24, 40, 0.08);
+  --toast-bg: #1d2128;
+  --toast-text: #f4f6f8;
+  --radius: 8px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0f12;
+    --panel: #15181d;
+    --panel-2: #1c2027;
+    --hover: #1b1f26;
+    --selected: #18223d;
+    --border: #262b33;
+    --border-strong: #3a414c;
+    --text: #e6e9ee;
+    --muted: #a3abb7;
+    --faint: #737c88;
+    --accent-hover: #4470ff;
+    --accent-text: #93acff;
+    --accent-weak: rgba(45, 91, 255, 0.22);
+    --focus: #819eff;
+    --ok: #4fc792;
+    --ok-bg: rgba(79, 199, 146, 0.13);
+    --warn: #f1b955;
+    --warn-bg: rgba(241, 185, 85, 0.11);
+    --warn-border: rgba(241, 185, 85, 0.35);
+    --err: #ff7f7f;
+    --err-bg: rgba(255, 127, 127, 0.13);
+    --web-bg: rgba(45, 91, 255, 0.25);
+    --web-text: #aabfff;
+    --auto-bg: rgba(122, 90, 248, 0.27);
+    --auto-text: #cbbcff;
+    --apps-bg: rgba(255, 106, 61, 0.2);
+    --apps-text: #ffb196;
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+    --toast-bg: #e8ebf0;
+    --toast-text: #15181d;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { height: 100%; }
+body {
+  margin: 0;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--accent-text); text-decoration: none; }
+a:hover { text-decoration: underline; }
+a.ext::after { content: '\2009\2197'; font-size: 0.85em; }
+code, .mono { font-family: var(--mono); font-size: 0.92em; }
+code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+h1, h2, h3, h4 { margin: 0; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline-offset: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+.label { color: var(--muted); font-size: 12px; font-weight: 500; }
+.good { color: var(--ok); }
+.meh { color: var(--warn); }
+.bad { color: var(--err); }
+.warn-text { color: var(--warn); }
+.err-text { color: var(--err); }
+
+kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 2px 4px;
+  font: 500 10.5px/1.1 var(--mono);
+  text-align: center;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+}
+
+/* --- buttons and inputs ---------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.btn:hover:not(:disabled) { background: var(--hover); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn.primary kbd { color: #fff; background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.45); }
+.btn.danger { background: var(--danger-fill); border-color: var(--danger-fill); color: #fff; }
+.btn.danger:hover:not(:disabled) { filter: brightness(1.08); background: var(--danger-fill); }
+.btn.danger-ghost { color: var(--err); }
+.btn.subtle { background: transparent; border-color: transparent; }
+.btn.subtle:hover:not(:disabled) { background: var(--hover); }
+.btn.small { padding: 4px 9px; font-size: 12.5px; }
+.btn.icon { width: 32px; justify-content: center; padding: 6px 0; font-weight: 600; }
+.btn.attn { border-color: var(--accent); color: var(--accent-text); }
+.btn[aria-pressed='true'] { background: var(--accent-weak); border-color: var(--accent); color: var(--accent-text); }
+.linkish { border: 0; padding: 0; background: none; color: var(--accent-text); font-weight: 600; cursor: pointer; text-decoration: underline; }
+input[type='text'], input[type='search'], select, textarea {
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  background: var(--panel);
+  color: var(--text);
+}
+input[type='text'], input[type='search'] { padding: 6px 9px; font-size: 13px; }
+select { padding: 5px 8px; font-size: 13px; max-width: 100%; }
+input::placeholder, textarea::placeholder { color: var(--faint); }
+
+/* --- top bar --------------------------------------------------------- */
+.topbar { flex: none; background: var(--panel); border-bottom: 1px solid var(--border); padding: 8px 16px 0; }
+.top-row { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; padding-bottom: 8px; }
+.brand { display: flex; align-items: center; gap: 8px; margin-right: auto; min-width: 0; }
+.brand-mark { width: 12px; height: 12px; border-radius: 4px; background: var(--accent); flex: none; }
+.brand strong { font-size: 15px; letter-spacing: -0.01em; }
+.brand-sub { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.segmented { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 7px; overflow: hidden; background: var(--panel); }
+.segmented button { border: 0; background: none; color: var(--muted); padding: 5px 10px; font-size: 12.5px; cursor: pointer; white-space: nowrap; }
+.segmented button + button { border-left: 1px solid var(--border); }
+.segmented button:hover { background: var(--hover); }
+.segmented button[aria-pressed='true'] { background: var(--accent-weak); color: var(--accent-text); font-weight: 600; }
+.segmented button:focus-visible { outline-offset: -2px; }
+.search { position: relative; display: flex; align-items: center; }
+.search input { width: 250px; padding-right: 30px; }
+.search kbd { position: absolute; right: 7px; pointer-events: none; }
+.top-actions { display: flex; align-items: center; gap: 6px; }
+.export-wrap { position: relative; }
+.export-flag { width: 7px; height: 7px; border-radius: 50%; background: var(--warn); }
+
+.funnel { display: flex; align-items: center; gap: 4px; overflow-x: auto; padding: 1px 1px 9px; scrollbar-width: thin; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 12.5px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.chip:hover { background: var(--hover); }
+.chip-label { text-transform: capitalize; }
+.chip-count { color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.chip.empty .chip-label, .chip.empty .chip-count { color: var(--faint); }
+.chip[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip[aria-pressed='true'] .chip-label, .chip[aria-pressed='true'] .chip-count { color: #fff; }
+.chip.side { background: transparent; border-style: dashed; font-size: 12px; }
+.chip.side .chip-label { color: var(--muted); }
+.chip.side[aria-pressed='true'] { background: var(--muted); border: 1px solid var(--muted); }
+.chip.side[aria-pressed='true'] .chip-label { color: var(--panel); }
+.chip.side[aria-pressed='true'] .chip-count { color: var(--panel); }
+.chev { color: var(--faint); font-size: 12px; flex: none; }
+.funnel-sep { flex: none; width: 1px; height: 18px; margin: 0 6px; background: var(--border-strong); }
+
+.banner { flex: none; padding: 7px 16px; background: var(--warn-bg); border-bottom: 1px solid var(--warn-border); font-size: 13px; }
+.banner summary { cursor: pointer; }
+.banner strong { color: var(--warn); }
+.banner ul { margin: 4px 0 2px; padding-left: 22px; }
+
+/* --- export popover ---------------------------------------------------- */
+.popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 40;
+  width: min(340px, calc(100vw - 24px));
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 10px;
+}
+.pop-title { font-size: 14px; }
+.radios { border: 0; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+.radios legend { padding: 0; margin-bottom: 4px; color: var(--muted); font-size: 12px; font-weight: 500; }
+.radio, .check { display: flex; align-items: flex-start; gap: 7px; font-size: 13px; cursor: pointer; }
+.check { flex-wrap: wrap; }
+.check small { flex-basis: 100%; padding-left: 21px; color: var(--muted); font-size: 11.5px; margin-top: -2px; }
+.radio input, .check input { margin: 2px 0 0; accent-color: var(--accent); }
+.exp-note { margin: 0; font-size: 12.5px; color: var(--muted); }
+.exp-result { font-size: 12.5px; display: grid; gap: 4px; }
+.exp-result:empty { display: none; }
+.exp-result ul { margin: 0; padding-left: 18px; }
+.exp-result p { margin: 0; }
+
+/* --- layout ------------------------------------------------------------ */
+.layout { flex: 1; min-height: 0; display: grid; grid-template-columns: 320px minmax(0, 1fr); }
+.list-pane { min-height: 0; display: flex; flex-direction: column; background: var(--panel); border-right: 1px solid var(--border); }
+.list-head { flex: none; display: flex; justify-content: space-between; gap: 8px; padding: 7px 14px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
+.lead-list { flex: 1; min-height: 0; overflow-y: auto; list-style: none; margin: 0; padding: 0; }
+.lead-row {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 9px 14px 10px 16px;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.lead-row:hover { background: var(--hover); }
+.lead-row:focus-visible { outline-offset: -2px; }
+.lead-row[aria-current='true'] { background: var(--selected); }
+.lead-row[aria-current='true']::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+.row-top { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.row-name { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--err); }
+.row-sub { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row-bottom { display: flex; align-items: center; gap: 7px; min-width: 0; margin-top: 3px; font-size: 12px; }
+.row-note { min-width: 0; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list-more { padding: 10px; text-align: center; }
+.list-empty { padding: 28px 16px; color: var(--muted); text-align: center; font-size: 13px; }
+.svc { flex: none; display: inline-flex; align-items: center; gap: 5px; padding: 1px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.svc b { font-variant-numeric: tabular-nums; }
+.svc-websites { background: var(--web-bg); color: var(--web-text); }
+.svc-automation { background: var(--auto-bg); color: var(--auto-text); }
+.svc-apps { background: var(--apps-bg); color: var(--apps-text); }
+
+.detail-pane { min-height: 0; overflow-y: auto; container-type: inline-size; }
+.detail-pane[aria-busy='true'] .lead { opacity: 0.6; transition: opacity 0.15s 0.12s; }
+.detail-pane:focus { outline: none; }
+.lead { padding: 0 22px 48px; max-width: 1360px; }
+.back-btn { display: none; }
+
+/* --- lead header ------------------------------------------------------- */
+.lead-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px 28px; padding: 16px 0 12px; }
+.head-main { flex: 1 1 380px; min-width: 0; display: grid; gap: 5px; align-content: start; }
+.title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.title-row h1 { font-size: 20px; line-height: 1.25; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.stage-badge { display: inline-flex; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: capitalize; color: var(--muted); background: var(--panel-2); border: 1px solid var(--border); }
+.st-pitched { color: var(--accent-text); background: var(--accent-weak); border-color: transparent; }
+.st-approved, .st-replied, .st-meeting, .st-won { color: var(--ok); background: var(--ok-bg); border-color: transparent; }
+.st-queued, .st-contacted { color: var(--web-text); background: var(--web-bg); border-color: transparent; }
+.st-suppressed { color: var(--err); background: var(--err-bg); border-color: transparent; }
+.skip-note { color: var(--muted); font-size: 12.5px; }
+.skip-note:empty { display: none; }
+.meta { display: flex; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+.meta > * { overflow-wrap: anywhere; }
+.meta > * + *::before { content: '\00b7'; margin: 0 7px; color: var(--faint); }
+.contact-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; }
+.contact-line select { max-width: min(520px, 100%); }
+.contact-sum, .contact-pick { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 0; min-width: 0; }
+.contact-sum > * { overflow-wrap: anywhere; }
+.contact-sum > * + *::before { content: '\00b7'; margin: 0 6px; color: var(--faint); }
+.contact-pick { gap: 4px 10px; }
+.status { display: inline-block; padding: 0 6px; border-radius: 4px; font-size: 11.5px; font-weight: 600; background: var(--panel-2); color: var(--muted); }
+.status.good { background: var(--ok-bg); color: var(--ok); }
+.status.meh { background: var(--warn-bg); color: var(--warn); }
+.status.bad { background: var(--err-bg); color: var(--err); }
+.warn-line { margin: 2px 0 0; padding: 5px 9px; border-radius: 6px; background: var(--warn-bg); color: var(--warn); font-size: 12.5px; font-weight: 500; }
+
+.scores { flex: 0 1 270px; min-width: 220px; display: grid; gap: 7px; align-content: start; padding-top: 4px; }
+.score-row { display: grid; grid-template-columns: 104px minmax(60px, 1fr) 26px; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.score-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.score-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.bar { position: relative; height: 6px; border-radius: 3px; background: var(--panel-2); box-shadow: inset 0 0 0 1px var(--border); }
+.bar-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--faint); opacity: 0.55; }
+.bar-tick { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--muted); opacity: 0.6; border-radius: 1px; }
+.score-row.primary { color: var(--text); font-weight: 600; }
+.score-row.primary .bar-fill { opacity: 1; }
+.score-row.primary[data-svc='websites'] .bar-fill { background: var(--web-bar); }
+.score-row.primary[data-svc='automation'] .bar-fill { background: var(--auto-bar); }
+.score-row.primary[data-svc='apps'] .bar-fill { background: var(--apps-bar); }
+.scores-note { margin: 0; color: var(--faint); font-size: 11px; }
+
+/* --- action bar -------------------------------------------------------- */
+.actionbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  padding: 9px 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.actions.move input { width: 170px; }
+.action-hint { flex-basis: 100%; margin: 0; font-size: 12.5px; color: var(--muted); }
+.action-hint:empty { display: none; }
+.action-hint.err { color: var(--err); }
+.action-hint.ok { color: var(--ok); }
+
+/* --- cards ------------------------------------------------------------- */
+.lead-grid { display: grid; gap: 16px; margin-top: 16px; }
+.lead-main, .lead-side { min-width: 0; display: grid; gap: 16px; align-content: start; }
+@container (min-width: 900px) {
+  .lead-grid { grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); align-items: start; }
+}
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px 16px; min-width: 0; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.card h2 { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.card > h2 { margin-bottom: 10px; }
+
+/* --- pitch editor ------------------------------------------------------ */
+.pitch-meta { display: flex; flex-wrap: wrap; margin: 0; color: var(--muted); font-size: 12.5px; }
+.pitch-meta > * + *::before { content: '\00b7'; margin: 0 6px; color: var(--faint); }
+.angle { margin: 8px 0 0; padding: 7px 10px; border-radius: 6px; background: var(--panel-2); font-size: 13px; }
+.angle .label { margin-right: 8px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+.preview-note { margin: 10px 0 0; padding: 7px 10px; border-radius: 6px; background: var(--warn-bg); color: var(--text); font-size: 12.5px; }
+.field { margin-top: 16px; }
+.field-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-bottom: 5px; }
+.field-head label { font-weight: 600; font-size: 13px; }
+.when { color: var(--faint); font-size: 12px; }
+.count { margin-left: auto; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.count.over-warn { color: var(--warn); font-weight: 600; }
+.count.over-err { color: var(--err); font-weight: 600; }
+.subject-input { width: 100%; padding: 8px 10px !important; font-size: 14px !important; font-weight: 500; }
+.subject-preview { margin: 0; padding: 8px 10px; border: 1px dashed var(--border-strong); border-radius: 7px; background: var(--panel-2); font-weight: 500; overflow-wrap: anywhere; }
+.email-body {
+  display: block;
+  width: 100%;
+  min-height: 7.5em;
+  padding: 10px 12px;
+  resize: vertical;
+  font: 13px/1.55 var(--mono);
+  tab-size: 2;
+  overflow-y: hidden;
+}
+.subject-input.dirty, .email-body.dirty { border-color: var(--warn); box-shadow: inset 3px 0 0 var(--warn); }
+.email-preview {
+  margin: 0;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 13px/1.55 var(--mono);
+  background: var(--panel-2);
+  border: 1px dashed var(--border-strong);
+  border-radius: 7px;
+}
+.alts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 7px; }
+.alt {
+  max-width: 100%;
+  padding: 2px 9px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12.5px;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.alt:hover { border-style: solid; border-color: var(--accent); color: var(--accent-text); }
+.issues { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 3px; font-size: 12.5px; }
+.issues:empty { display: none; }
+.issue { display: flex; align-items: baseline; gap: 6px; }
+.issue.err { color: var(--err); }
+.issue.warn { color: var(--warn); }
+.issue-icon { flex: none; width: 14px; text-align: center; font-weight: 800; }
+.issues.stale .issue { opacity: 0.5; }
+.issues.stale::after { content: 'Edited since the last check. Save to re-lint.'; color: var(--muted); font-size: 11.5px; }
+
+/* --- findings / facts / notes / history -------------------------------- */
+.f-group + .f-group { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.f-group h3 { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+.f-group summary { cursor: pointer; font-weight: 600; font-size: 13px; color: var(--muted); }
+.tag { padding: 0 6px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--accent-weak); color: var(--accent-text); }
+.f-kind h4 { margin: 10px 0 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--faint); }
+.f-kind h4 span { text-transform: none; letter-spacing: 0; font-weight: 500; }
+.f-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.finding { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 9px; align-items: start; }
+.weight { padding: 3px 0; border-radius: 5px; text-align: center; font: 700 11.5px/1.2 var(--mono); background: var(--accent-weak); color: var(--accent-text); }
+.finding.neg .weight { background: var(--panel-2); color: var(--muted); }
+.f-title { font-weight: 600; font-size: 13px; }
+.f-point { color: var(--muted); font-size: 12.5px; overflow-wrap: anywhere; }
+
+.facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 7px 14px; margin: 0; font-size: 13px; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.psi { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.psi b { font-variant-numeric: tabular-nums; }
+.pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.pill { padding: 0 7px; border-radius: 4px; background: var(--panel-2); border: 1px solid var(--border); font-size: 12px; }
+.card-foot { margin: 12px 0 0; color: var(--faint); font-size: 11.5px; overflow-wrap: anywhere; }
+
+.notes { display: block; width: 100%; min-height: 4.5em; padding: 8px 10px; resize: vertical; font-size: 13px; line-height: 1.5; overflow-y: hidden; }
+.notes.dirty { border-color: var(--warn); }
+
+.history { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; font-size: 12.5px; }
+.history li { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 1px 10px; }
+.history time { color: var(--faint); font-variant-numeric: tabular-nums; }
+.ev { font-weight: 500; }
+.ev-detail { grid-column: 2; color: var(--muted); overflow-wrap: anywhere; }
+
+.empty-state { max-width: 460px; margin: 12vh auto 0; padding: 0 24px; text-align: center; }
+.empty-state h2 { font-size: 18px; margin-bottom: 6px; }
+.empty-state p { color: var(--muted); margin: 0; }
+.fatal { max-width: 480px; margin: 18vh auto 0; padding: 0 24px; text-align: center; }
+.fatal p { color: var(--muted); }
+
+/* --- toasts and dialogs ------------------------------------------------ */
+.toasts { position: fixed; right: 16px; bottom: 16px; z-index: 60; display: grid; gap: 8px; justify-items: end; max-width: min(440px, calc(100vw - 32px)); }
+.toast {
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  white-space: pre-line;
+  cursor: pointer;
+  animation: toast-in 0.16s ease-out;
+}
+.toast.ok { border-left: 4px solid #2fb877; }
+.toast.warn { border-left: 4px solid #e9a23b; }
+.toast.error { background: var(--danger-fill); color: #fff; }
+.toast.leaving { opacity: 0; transform: translateY(4px); transition: opacity 0.2s, transform 0.2s; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+dialog {
+  width: min(460px, calc(100vw - 24px));
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
+.dlg { display: grid; gap: 12px; padding: 18px; }
+.dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.dlg h2 { font-size: 16px; }
+.dlg p { margin: 0; }
+.dlg-field { display: grid; gap: 5px; font-size: 13px; font-weight: 500; }
+.dlg-field input { width: 100%; padding: 8px 10px; font-size: 14px; font-weight: 400; }
+.dlg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -4px; }
+.dlg-error { color: var(--err); font-size: 13px; }
+.dlg-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.keys { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 0; font-size: 13px; }
+.keys dt { white-space: nowrap; }
+.keys dd { margin: 0; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* --- small screens: one column, list first, back button to return ------ */
+@media (max-width: 760px) {
+  .topbar { padding: 8px 12px 0; }
+  .brand-sub { display: none; }
+  .filters { order: 3; flex-basis: 100%; }
+  .segmented { flex: none; }
+  .search { flex: 1 1 160px; }
+  .search input { width: 100%; }
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .list-pane { border-right: 0; }
+  body:not(.show-detail) .detail-pane { display: none; }
+  body.show-detail .list-pane, body.show-detail .filters, body.show-detail .funnel { display: none; }
+  .back-btn { display: inline-flex; margin: 10px 0 0 -8px; }
+  .lead { padding: 0 12px 40px; }
+  .lead-head { padding-top: 6px; }
+  .scores { flex-basis: 100%; }
+  .actions.move input { width: 100%; flex: 1 1 140px; }
+  .banner { padding: 7px 12px; }
+  input[type='text'], input[type='search'], select, textarea, .email-body, .email-preview { font-size: 16px; }
+  .toasts { left: 12px; right: 12px; bottom: 12px; max-width: none; justify-items: stretch; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="top-row">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <strong>Mockingbird</strong>
+      <span class="brand-sub" id="business-name"></span>
+    </div>
+    <div class="filters">
+      <div class="segmented" id="service-filter" role="group" aria-label="Filter by service"></div>
+      <div class="search">
+        <label class="sr-only" for="search">Search leads</label>
+        <input id="search" type="search" placeholder="Search name, domain, email, city" autocomplete="off" spellcheck="false">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="export-wrap">
+        <button type="button" class="btn" id="export-btn" aria-expanded="false" aria-controls="export-panel">Export <span aria-hidden="true">&#9662;</span></button>
+        <div class="popover" id="export-panel" role="dialog" aria-label="Export" hidden></div>
+      </div>
+      <button type="button" class="btn icon" id="help-btn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
+    </div>
+  </div>
+  <nav class="funnel" id="funnel" aria-label="Pipeline stages"></nav>
+</header>
+<div class="banner" id="banner" role="status" hidden></div>
+<main class="layout">
+  <section class="list-pane" aria-label="Leads">
+    <div class="list-head"><span id="list-count">Loading&hellip;</span><span>best score first</span></div>
+    <ul class="lead-list" id="lead-list" aria-label="Leads"></ul>
+  </section>
+  <section class="detail-pane" id="detail" aria-label="Selected lead" tabindex="-1"></section>
+</main>
+<div class="toasts" id="toasts"></div>
+
+<dialog id="help" aria-labelledby="help-title">
+  <div class="dlg">
+    <div class="dlg-head">
+      <h2 id="help-title">Keyboard shortcuts</h2>
+      <button type="button" class="btn subtle icon" id="help-close" aria-label="Close">&#10005;</button>
+    </div>
+    <dl class="keys">
+      <dt><kbd>j</kbd> <kbd>&darr;</kbd></dt><dd>Next lead</dd>
+      <dt><kbd>k</kbd> <kbd>&uarr;</kbd></dt><dd>Previous lead</dd>
+      <dt><kbd>a</kbd></dt><dd>Approve (saves your edits first)</dd>
+      <dt><kbd>x</kbd></dt><dd>Skip, with an optional reason</dd>
+      <dt><kbd>p</kbd></dt><dd>Toggle the &ldquo;as sent&rdquo; preview</dd>
+      <dt><kbd>e</kbd></dt><dd>Edit the first email</dd>
+      <dt><kbd>o</kbd></dt><dd>Open the prospect&rsquo;s website</dd>
+      <dt><kbd>/</kbd></dt><dd>Search</dd>
+      <dt><kbd>r</kbd></dt><dd>Refresh counts and list</dd>
+      <dt><kbd id="save-key">Ctrl+S</kbd></dt><dd>Save copy and notes (works while typing)</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Leave a text field, close a dialog</dd>
+      <dt><kbd>?</kbd></dt><dd>This help</dd>
+    </dl>
+    <p class="muted small">Shortcuts pause while you type in a field. Moving to another lead saves your edits.</p>
+  </div>
+</dialog>
+<dialog id="dialog"></dialog>
+
+<script nonce="__MB_NONCE__">
+(() => {
+  'use strict';
+
+  const TOKEN = document.querySelector('meta[name="mb-token"]')?.content ?? '';
+  const SIDE_STAGES = ['skipped', 'suppressed', 'lost'];
+  const DONE_STAGES = ['queued', 'contacted', 'replied', 'meeting', 'won'];
+  const DEMO_TOKEN = '[DEMO_LINK]';
+  const LIST_CHUNK = 300;
+  const IS_MAC = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform || navigator.platform || '');
+  const SAVE_KEY = IS_MAC ? '⌘S' : 'Ctrl+S';
+  const narrowQuery = window.matchMedia('(max-width: 760px)');
+  const isNarrow = () => narrowQuery.matches;
+
+  const els = {
+    business: $('#business-name'),
+    service: $('#service-filter'),
+    search: $('#search'),
+    exportBtn: $('#export-btn'),
+    exportPanel: $('#export-panel'),
+    helpBtn: $('#help-btn'),
+    funnel: $('#funnel'),
+    banner: $('#banner'),
+    listCount: $('#list-count'),
+    list: $('#lead-list'),
+    detail: $('#detail'),
+    toasts: $('#toasts'),
+    help: $('#help'),
+    dialog: $('#dialog'),
+  };
+
+  const state = {
+    summary: null,
+    stage: 'pitched', // '' means every stage
+    service: '',
+    q: '',
+    leads: [],
+    shown: LIST_CHUNK,
+    selectedId: null,
+    lead: null,
+    preview: false,
+  };
+
+  // Handles into the lead on screen. Editable fields are built once per lead
+  // and never overwritten while you type; everything else is redrawn from
+  // state.lead after each save.
+  let refs = {};
+  let detailSeq = 0;
+  let listSeq = 0;
+  let saving = null;
+  const exp = { busy: false };
+  let baseTitle = document.title;
+
+  // ------------------------------------------------------------- helpers
+
+  function $(selector, root = document) {
+    return root.querySelector(selector);
+  }
+
+  // Builds elements. Children that are strings become text nodes, so lead
+  // data (scraped from prospects' websites, untrusted) never becomes markup.
+  function h(tag, props, ...children) {
+    const el = document.createElement(tag);
+    for (const [key, value] of Object.entries(props ?? {})) {
+      if (value === undefined || value === null || value === false) continue;
+      if (key === 'class') el.className = value;
+      else if (key.startsWith('on')) el.addEventListener(key.slice(2), value);
+      else if (key === 'value' || key === 'checked' || key === 'disabled' || key === 'hidden' || key === 'selected') el[key] = value;
+      else el.setAttribute(key, value === true ? '' : String(value));
+    }
+    for (const child of children.flat(Infinity)) {
+      if (child === undefined || child === null || child === false || child === '') continue;
+      el.append(child instanceof Node ? child : String(child));
+    }
+    return el;
+  }
+
+  const kbd = (text) => h('kbd', { 'aria-hidden': 'true' }, text);
+  const enc = encodeURIComponent;
+  const fullName = (p) => [p?.firstName, p?.lastName].filter(Boolean).join(' ');
+  const place = (x) => [x.city, x.state].filter(Boolean).join(', ');
+  const plural = (n, word) => `${n} ${n === 1 ? word : `${word}s`}`;
+  const clamp = (n) => Math.max(0, Math.min(100, Number(n) || 0));
+  const serviceLabel = (key) => state.summary?.services?.[key] ?? key;
+  const norm = (text) => String(text ?? '').replace(/\r\n/g, '\n').trim();
+
+  function debounce(fn, ms) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), ms);
+    };
+  }
+
+  // Only http(s) links are ever made clickable: a "website" of
+  // javascript:… from a CSV import stays plain text.
+  function safeUrl(value) {
+    let raw = String(value ?? '').trim();
+    if (!raw) return null;
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = `https://${raw.replace(/^\/+/, '')}`;
+    try {
+      const url = new URL(raw);
+      return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function extLink(url, text) {
+    const href = safeUrl(url);
+    const label = text || String(url ?? '');
+    return href ? h('a', { href, class: 'ext', target: '_blank', rel: 'noopener noreferrer' }, label) : h('span', null, label);
+  }
+
+  function hostOf(url) {
+    try {
+      return new URL(safeUrl(url)).hostname.replace(/^www\./, '');
+    } catch {
+      return String(url ?? '');
+    }
+  }
+
+  const dateTimeFmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const dateFmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  const toDate = (iso) => {
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? null : d;
+  };
+  const fmtDateTime = (iso) => (toDate(iso) ? dateTimeFmt.format(toDate(iso)) : '');
+
+  function relTime(iso) {
+    const d = toDate(iso);
+    if (!d) return '';
+    const minutes = Math.round((Date.now() - d.getTime()) / 60000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.round(hours / 24);
+    return days < 7 ? `${days}d ago` : dateFmt.format(d);
+  }
+
+  // Same counting rule as lint.js, so the live number matches the check.
+  const wordCount = (text) => String(text ?? '').replace(DEMO_TOKEN, '').trim().split(/\s+/).filter(Boolean).length;
+
+  function prefs(update) {
+    try {
+      const current = JSON.parse(localStorage.getItem('mb-dashboard') || '{}') || {};
+      if (!update) return current;
+      localStorage.setItem('mb-dashboard', JSON.stringify({ ...current, ...update }));
+    } catch {
+      // Private windows can refuse storage; preferences just won't stick.
+    }
+    return {};
+  }
+
+  // ------------------------------------------------------------- server
+
+  async function api(method, path, body) {
+    let res;
+    try {
+      res = await fetch(path, {
+        method,
+        headers: body === undefined ? { 'x-mb-token': TOKEN } : { 'x-mb-token': TOKEN, 'content-type': 'application/json' },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        cache: 'no-store',
+      });
+    } catch {
+      throw Object.assign(new Error('Can’t reach the dashboard server. Is `mb dashboard` still running?'), { status: 0 });
+    }
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      const stale = res.status === 403 && /token/i.test(data?.error ?? '');
+      const err = new Error(stale ? 'This tab is out of date (the dashboard was restarted). Reload the page.' : data?.error || `Request failed (HTTP ${res.status})`);
+      err.status = res.status;
+      err.details = data?.details;
+      throw err;
+    }
+    return data;
+  }
+
+  function toast(message, kind = 'info') {
+    const el = h('div', { class: `toast ${kind}`, role: kind === 'error' ? 'alert' : 'status' }, message);
+    el.addEventListener('click', () => el.remove());
+    els.toasts.append(el);
+    while (els.toasts.childElementCount > 4) els.toasts.firstElementChild.remove();
+    setTimeout(() => {
+      el.classList.add('leaving');
+      setTimeout(() => el.remove(), 250);
+    }, kind === 'error' || kind === 'warn' ? 7000 : 3200);
+  }
+
+  // ------------------------------------------------------- top bar
+
+  async function loadSummary() {
+    state.summary = await api('GET', '/api/summary');
+    renderTop();
+  }
+
+  function renderTop() {
+    const s = state.summary;
+    els.business.textContent = s.business?.name ?? '';
+    baseTitle = `${s.business?.shortName || 'Mockingbird'} · Review`;
+    renderServiceFilter();
+    renderFunnel();
+    renderBanner();
+    updateExportPanel();
+    updateTitle();
+  }
+
+  function stageCount(stage) {
+    const s = state.summary;
+    if (!stage) return state.service ? s.byService?.[state.service] ?? 0 : s.total ?? 0;
+    return state.service ? s.byStageService?.[stage]?.[state.service] ?? 0 : s.byStage?.[stage] ?? 0;
+  }
+
+  function renderFunnel() {
+    const stages = state.summary.stages;
+    const chip = (stage, label, side = false) => {
+      const count = stageCount(stage);
+      return h('button', {
+        type: 'button',
+        class: `chip${side ? ' side' : ''}${count ? '' : ' empty'}`,
+        'aria-pressed': String(state.stage === stage),
+        onclick: () => chooseStage(stage),
+      }, h('span', { class: 'chip-label' }, label), h('span', { class: 'chip-count' }, String(count)));
+    };
+    const pipeline = stages.filter((st) => !SIDE_STAGES.includes(st));
+    const side = SIDE_STAGES.filter((st) => stages.includes(st));
+    els.funnel.replaceChildren(
+      chip('', 'All'),
+      h('span', { class: 'funnel-sep', 'aria-hidden': 'true' }),
+      pipeline.map((st, i) => [i ? h('span', { class: 'chev', 'aria-hidden': 'true' }, '›') : null, chip(st, st)]),
+      h('span', { class: 'funnel-sep', 'aria-hidden': 'true' }),
+      side.map((st) => chip(st, st, true)),
+    );
+  }
+
+  function renderServiceFilter() {
+    const options = [['', 'All'], ...Object.entries(state.summary.services ?? {})];
+    els.service.replaceChildren(...options.map(([key, label]) => h('button', {
+      type: 'button',
+      'aria-pressed': String(state.service === key),
+      onclick: () => chooseService(key),
+    }, label)));
+  }
+
+  function renderBanner() {
+    const blockers = state.summary.blockers ?? [];
+    els.banner.hidden = !blockers.length;
+    els.exportBtn.classList.toggle('has-flag', blockers.length > 0);
+    if (!blockers.length) return;
+    els.banner.replaceChildren(h('details', { open: !isNarrow() },
+      h('summary', null, h('strong', null, 'Exports are disabled'), ` until ${blockers.length === 1 ? 'this is' : 'these are'} fixed in mockingbird.config.js:`),
+      h('ul', null, blockers.map((b) => h('li', null, b)))));
+  }
+
+  function chooseStage(stage) {
+    if (state.stage === stage) return;
+    state.stage = stage;
+    state.shown = LIST_CHUNK;
+    renderFunnel();
+    reloadList();
+  }
+
+  function chooseService(service) {
+    if (state.service === service) return;
+    state.service = service;
+    state.shown = LIST_CHUNK;
+    renderServiceFilter();
+    renderFunnel();
+    reloadList();
+  }
+
+  function defaultStage() {
+    const s = state.summary;
+    if (s.byStage?.pitched) return 'pitched';
+    const order = [...s.stages.filter((st) => !SIDE_STAGES.includes(st)), ...SIDE_STAGES];
+    return order.find((st) => s.byStage?.[st]) ?? 'pitched';
+  }
+
+  // ---------------------------------------------------------- lead list
+
+  async function loadLeads() {
+    const params = new URLSearchParams();
+    if (state.stage) params.set('stage', state.stage);
+    if (state.service) params.set('service', state.service);
+    if (state.q) params.set('q', state.q);
+    const seq = ++listSeq;
+    const data = await api('GET', `/api/leads?${params}`);
+    if (seq !== listSeq) return false;
+    state.leads = data.leads ?? [];
+    renderList();
+    return true;
+  }
+
+  // Reload after a filter change: keep the open lead if it's still listed,
+  // otherwise open the first one.
+  async function reloadList() {
+    writeHash();
+    try {
+      if (!(await loadLeads())) return;
+    } catch (err) {
+      toast(err.message, 'error');
+      return;
+    }
+    if (state.selectedId && state.leads.some((l) => l.id === state.selectedId)) return;
+    await selectLead(state.leads[0]?.id ?? null);
+  }
+
+  function renderList() {
+    const visible = state.leads.slice(0, state.shown);
+    const rest = state.leads.length - visible.length;
+    els.list.replaceChildren(
+      ...visible.map(leadRow),
+      rest > 0
+        ? h('li', { class: 'list-more' }, h('button', {
+          type: 'button',
+          class: 'btn subtle small',
+          onclick: () => {
+            state.shown += LIST_CHUNK;
+            renderList();
+          },
+        }, `Show ${Math.min(rest, LIST_CHUNK)} more (${rest} left)`))
+        : null,
+      state.leads.length ? null : h('li', { class: 'list-empty' }, state.q ? `No leads match “${state.q}”.` : 'No leads in this view.'),
+    );
+    els.listCount.textContent = state.leads.length ? plural(state.leads.length, 'lead') : 'No leads';
+    markSelected();
+  }
+
+  function leadRow(item) {
+    const service = item.primaryService;
+    const score = service ? item.scores?.[service] : null;
+    const note = item.stage === 'skipped' && item.skipReason ? item.skipReason : item.topFinding;
+    const errors = item.lint?.errors ?? 0;
+    return h('li', { 'data-id': item.id }, h('button', { type: 'button', class: 'lead-row', onclick: () => selectLead(item.id, { show: true }) },
+      h('span', { class: 'row-top' },
+        h('span', { class: 'row-name' }, item.name),
+        errors ? h('span', { class: 'dot', title: plural(errors, 'lint error') }, h('span', { class: 'sr-only' }, plural(errors, 'lint error'))) : null),
+      h('span', { class: 'row-sub' }, [item.domain, place(item)].filter(Boolean).join(' · ') || 'no website'),
+      h('span', { class: 'row-bottom' },
+        service ? serviceBadge(service, score) : null,
+        note ? h('span', { class: 'row-note' }, note) : null)));
+  }
+
+  function serviceBadge(service, score) {
+    return h('span', { class: `svc svc-${service}` }, serviceLabel(service), score === null || score === undefined ? null : h('b', null, String(score)));
+  }
+
+  function rowFor(id) {
+    return id ? els.list.querySelector(`li[data-id="${CSS.escape(id)}"] > .lead-row`) : null;
+  }
+
+  function markSelected(focus = false) {
+    for (const row of els.list.querySelectorAll('.lead-row[aria-current]')) row.removeAttribute('aria-current');
+    const row = rowFor(state.selectedId);
+    if (!row) return;
+    row.setAttribute('aria-current', 'true');
+    row.scrollIntoView({ block: 'nearest' });
+    if (focus) row.focus({ preventScroll: true });
+  }
+
+  function replaceListItem(item) {
+    const i = state.leads.findIndex((l) => l.id === item.id);
+    if (i === -1) return;
+    state.leads[i] = item;
+    const li = rowFor(item.id)?.parentElement;
+    if (li) li.replaceWith(leadRow(item));
+    markSelected();
+  }
+
+  function matchesFilter(item) {
+    if (state.stage && !state.stage.split(',').includes(item.stage)) return false;
+    if (state.service && item.primaryService !== state.service) return false;
+    return true;
+  }
+
+  function move(delta) {
+    if (!state.leads.length) return;
+    const current = state.leads.findIndex((l) => l.id === state.selectedId);
+    const next = current === -1 ? 0 : Math.max(0, Math.min(state.leads.length - 1, current + delta));
+    if (next >= state.shown) {
+      state.shown = next + LIST_CHUNK;
+      renderList();
+    }
+    const id = state.leads[next].id;
+    if (id !== state.selectedId) selectLead(id, { focusRow: !document.body.classList.contains('show-detail') });
+  }
+
+  // ------------------------------------------------------- selection
+
+  async function selectLead(id, { show = false, focusRow = false } = {}) {
+    const previous = state.selectedId;
+    if (state.lead && state.lead.id !== id && hasUnsaved()) {
+      state.selectedId = id;
+      markSelected();
+      if (!(await saveAll({ via: 'navigate' }))) {
+        state.selectedId = previous;
+        markSelected();
+        return;
+      }
+      if (state.selectedId !== id) return; // another move happened while saving
+    }
+    state.selectedId = id;
+    markSelected(focusRow);
+    writeHash();
+    if (!id) {
+      detailSeq++;
+      state.lead = null;
+      refs = {};
+      renderEmptyDetail();
+      updateTitle();
+      return;
+    }
+    if (show) showDetail();
+    const seq = ++detailSeq;
+    els.detail.setAttribute('aria-busy', 'true');
+    try {
+      const lead = await api('GET', `/api/leads/${enc(id)}`);
+      if (seq !== detailSeq) return;
+      state.lead = lead;
+      renderLead();
+    } catch (err) {
+      if (seq !== detailSeq) return;
+      toast(err.message, 'error');
+      if (err.status === 404) {
+        state.leads = state.leads.filter((l) => l.id !== id);
+        renderList();
+        state.lead = null;
+        refs = {};
+        renderEmptyDetail(['Lead not found', 'It may have been deleted from the data folder.']);
+      }
+    } finally {
+      if (seq === detailSeq) els.detail.removeAttribute('aria-busy');
+    }
+  }
+
+  function showDetail() {
+    if (!isNarrow() || document.body.classList.contains('show-detail')) return;
+    document.body.classList.add('show-detail');
+    history.pushState({ detail: true }, '', location.hash);
+    els.detail.scrollTop = 0;
+    requestAnimationFrame(autosizeAll);
+  }
+
+  function hideDetail() {
+    if (history.state?.detail) history.back();
+    else document.body.classList.remove('show-detail');
+  }
+
+  window.addEventListener('popstate', () => {
+    const detail = Boolean(history.state?.detail);
+    document.body.classList.toggle('show-detail', detail);
+    if (detail) requestAnimationFrame(autosizeAll);
+    else markSelected();
+  });
+
+  function readHash() {
+    const p = new URLSearchParams(location.hash.slice(1));
+    return { stage: p.has('stage') ? p.get('stage') : null, service: p.get('service') ?? '', q: p.get('q') ?? '', lead: p.get('lead') };
+  }
+
+  // The view lives in the URL hash so a reload (or a restarted server) lands
+  // you back on the same lead.
+  function writeHash() {
+    const p = new URLSearchParams();
+    p.set('stage', state.stage);
+    if (state.service) p.set('service', state.service);
+    if (state.q) p.set('q', state.q);
+    if (state.selectedId) p.set('lead', state.selectedId);
+    history.replaceState(history.state, '', `#${p}`);
+  }
+
+  // ------------------------------------------------------- lead detail
+
+  function renderLead() {
+    const lead = state.lead;
+    refs = {};
+    els.detail.replaceChildren(h('article', { class: 'lead', 'aria-labelledby': 'lead-name' },
+      h('button', { type: 'button', class: 'btn subtle back-btn', onclick: hideDetail }, '← All leads'),
+      leadHeader(lead),
+      actionBar(),
+      h('div', { class: 'lead-grid' },
+        h('div', { class: 'lead-main' }, pitchCard(lead)),
+        h('div', { class: 'lead-side' }, findingsCard(lead), auditCard(lead), notesCard(lead), historyCard()))));
+    els.detail.scrollTop = 0;
+    updateDerived();
+    updateDirty();
+    autosizeAll();
+  }
+
+  function renderEmptyDetail(override) {
+    const s = state.summary;
+    let title;
+    let body;
+    if (override) [title, body] = override;
+    else if (!s?.total) {
+      title = 'No leads yet';
+      body = ['Source, audit, and draft outreach with ', h('code', null, 'mb run --icp <id>'), ', then review it here.'];
+    } else if (state.q) {
+      title = 'No matches';
+      body = `Nothing in this view matches “${state.q}”.`;
+    } else if (state.stage === 'pitched') {
+      const approved = s.byStage?.approved ?? 0;
+      title = 'All caught up';
+      body = ['No drafted pitches are waiting for review.', approved ? ` ${plural(approved, 'approved lead')} ready to export from the Export menu.` : ''];
+    } else {
+      title = state.stage ? `Nothing in “${state.stage}”` : 'Nothing here';
+      body = 'Pick another stage above.';
+    }
+    els.detail.replaceChildren(h('div', { class: 'empty-state' },
+      h('button', { type: 'button', class: 'btn subtle back-btn', onclick: hideDetail }, '← All leads'),
+      h('h2', null, title),
+      h('p', null, body)));
+  }
+
+  function leadHeader(lead) {
+    const s = state.summary;
+    const meta = [];
+    const website = lead.website || lead.domain;
+    if (website) meta.push(extLink(website, lead.domain || hostOf(website)));
+    else if (lead.socialUrl) meta.push(h('span', null, 'No website: ', extLink(lead.socialUrl, hostOf(lead.socialUrl))));
+    else meta.push(h('span', null, 'No website'));
+    if (place(lead)) meta.push(h('span', null, place(lead)));
+    if (lead.rating !== undefined && lead.rating !== null) {
+      const rating = `★ ${lead.rating}${lead.reviewCount !== undefined && lead.reviewCount !== null ? ` (${plural(lead.reviewCount, 'review')})` : ''}`;
+      meta.push(lead.mapsUrl ? extLink(lead.mapsUrl, rating) : h('span', null, rating));
+    }
+    if (lead.industry) meta.push(h('span', null, lead.industry));
+    if (lead.icp) meta.push(h('span', { title: lead.icp }, `ICP: ${s.icps?.[lead.icp] ?? lead.icp}`));
+    if (lead.phone) meta.push(h('span', null, lead.phone));
+    if (lead.demo?.url) meta.push(extLink(lead.demo.url, 'Concept demo'));
+
+    refs.stageBadge = h('span', { class: 'stage-badge' });
+    refs.skipNote = h('span', { class: 'skip-note' });
+    refs.contact = h('div', { class: 'contact-line' });
+    refs.exportWarn = h('p', { class: 'warn-line', hidden: true });
+    return h('header', { class: 'lead-head' },
+      h('div', { class: 'head-main' },
+        h('div', { class: 'title-row' }, h('h1', { id: 'lead-name' }, lead.name || lead.domain || lead.id), refs.stageBadge, refs.skipNote),
+        h('div', { class: 'meta' }, meta),
+        refs.contact,
+        refs.exportWarn),
+      scoresBlock(lead));
+  }
+
+  function scoresBlock(lead) {
+    const s = state.summary;
+    const rows = Object.entries(s.services ?? {}).map(([key, label]) => {
+      const score = lead.scores?.[key];
+      const fill = h('span', { class: 'bar-fill' });
+      fill.style.width = `${clamp(score)}%`;
+      const bar = h('span', { class: 'bar', 'aria-hidden': 'true' }, fill);
+      if (s.qualifyAt !== null && s.qualifyAt !== undefined) {
+        const tick = h('span', { class: 'bar-tick' });
+        tick.style.left = `${clamp(s.qualifyAt)}%`;
+        bar.append(tick);
+      }
+      return h('div', { class: `score-row${key === lead.primaryService ? ' primary' : ''}`, 'data-svc': key },
+        h('span', { class: 'score-label' }, label),
+        bar,
+        h('span', { class: 'score-val' }, score === undefined || score === null ? '–' : String(score)));
+    });
+    return h('div', { class: 'scores', role: 'group', 'aria-label': 'Opportunity scores' },
+      rows,
+      s.qualifyAt !== null && s.qualifyAt !== undefined ? h('p', { class: 'scores-note' }, `Tick = qualify line (${s.qualifyAt})`) : null);
+  }
+
+  function statusClass(status) {
+    if (/^verified$/i.test(status)) return 'good';
+    if (/unavailable|invalid|bounce/i.test(status)) return 'bad';
+    if (/guess|likely|extrapolat|unverified|catch/i.test(status)) return 'meh';
+    return '';
+  }
+
+  const statusLabel = (status) => String(status).replace(/_/g, ' ');
+
+  function contactExtras(p) {
+    return [
+      p.emailStatus ? h('span', { class: `status ${statusClass(p.emailStatus)}`, title: 'Email status' }, statusLabel(p.emailStatus)) : null,
+      p.linkedin ? extLink(p.linkedin, 'LinkedIn') : null,
+    ];
+  }
+
+  function renderContact() {
+    const lead = state.lead;
+    const contacts = lead.contacts ?? [];
+    const primaryId = lead.listItem?.contact?.id ?? null;
+    const primary = contacts.find((p) => p.id === primaryId) ?? null;
+    const hadFocus = refs.contact.contains(document.activeElement);
+    let body;
+    if (!contacts.length) {
+      body = h('span', { class: 'muted' }, lead.channel === 'phone' ? 'No email contact (phone only)' : 'No contact found yet');
+    } else if (contacts.length === 1) {
+      const p = contacts[0];
+      body = h('span', { class: 'contact-sum' },
+        h('strong', null, fullName(p) || '(no name)'),
+        p.title ? h('span', null, p.title) : null,
+        p.email ? h('span', { class: 'mono' }, p.email) : h('span', { class: 'muted' }, 'no email'),
+        contactExtras(p));
+    } else {
+      const text = (p) => [fullName(p) || '(no name)', p.title, p.email || 'no email', p.emailStatus && statusLabel(p.emailStatus)].filter(Boolean).join(' · ');
+      body = h('span', { class: 'contact-pick' },
+        h('select', { id: 'contact-select', onchange: (e) => changeContact(e.target.value) },
+          contacts.map((p) => h('option', { value: p.id, selected: p.id === primaryId }, text(p)))),
+        primary ? contactExtras(primary) : null);
+    }
+    refs.contact.replaceChildren(contacts.length > 1 ? h('label', { class: 'label', for: 'contact-select' }, 'Contact') : h('span', { class: 'label' }, 'Contact'), body);
+    if (hadFocus) $('#contact-select')?.focus();
+  }
+
+  function actionBar() {
+    refs.saveBtn = h('button', { type: 'button', class: 'btn', onclick: () => saveAll({ via: 'user' }) }, 'Save', kbd(SAVE_KEY));
+    refs.approveLabel = h('span', null, 'Approve');
+    refs.approveBtn = h('button', { type: 'button', class: 'btn primary', onclick: approveLead }, refs.approveLabel, kbd('A'));
+    refs.skipBtn = h('button', { type: 'button', class: 'btn', onclick: skipLead }, 'Skip', kbd('X'));
+    refs.stageSelect = h('select', { id: 'stage-select' }, state.summary.stages.map((st) => h('option', { value: st }, st)));
+    refs.stageNote = h('input', {
+      type: 'text',
+      id: 'stage-note',
+      placeholder: 'Note (optional)',
+      maxlength: '300',
+      autocomplete: 'off',
+      onkeydown: (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          moveStage();
+        }
+      },
+    });
+    refs.hint = h('p', { class: 'action-hint', 'aria-live': 'polite' });
+    return h('div', { class: 'actionbar' },
+      h('div', { class: 'actions' }, refs.saveBtn, refs.approveBtn, refs.skipBtn),
+      h('div', { class: 'actions move' },
+        h('label', { class: 'label', for: 'stage-select' }, 'Move to'),
+        refs.stageSelect,
+        h('label', { class: 'sr-only', for: 'stage-note' }, 'Note for the stage change'),
+        refs.stageNote,
+        h('button', { type: 'button', class: 'btn', onclick: moveStage }, 'Move'),
+        h('button', { type: 'button', class: 'btn danger-ghost', onclick: suppressDialog }, 'Suppress…')),
+      refs.hint);
+  }
+
+  function pitchCard(lead) {
+    const pitch = lead.pitch;
+    if (!pitch) {
+      return h('section', { class: 'card pitch' },
+        h('h2', null, 'Outreach'),
+        h('p', { class: 'muted' }, 'No sequence drafted yet. Leads get one once they have a reachable contact.'),
+        h('p', { class: 'muted small' }, 'Draft it from the terminal: ', h('code', null, `mb pitch --id ${lead.id}`)));
+    }
+    refs.previewBtn = h('button', { type: 'button', class: 'btn small', 'aria-pressed': 'false', onclick: togglePreview }, 'As sent', kbd('P'));
+    refs.pitchMeta = h('p', { class: 'pitch-meta' });
+    refs.generalIssues = h('ul', { class: 'issues' });
+    refs.previewNote = h('p', { class: 'preview-note', hidden: true },
+      'This preview is the last saved version; your unsaved edits aren’t in it. ',
+      h('button', { type: 'button', class: 'linkish', onclick: () => saveAll({ via: 'user' }) }, 'Save now'));
+    refs.subject = h('input', { type: 'text', id: 'subject', class: 'subject-input', autocomplete: 'off', spellcheck: 'true', oninput: onEdit });
+    refs.subject.value = pitch.subject ?? '';
+    refs.subjectCount = h('span', { class: 'count' });
+    refs.subjectPreview = h('p', { class: 'subject-preview', hidden: true });
+    refs.alts = [...(pitch.altSubjects ?? [])];
+    refs.altWrap = h('div', { class: 'alts' });
+    refs.subjectIssues = h('ul', { class: 'issues' });
+    refs.emails = (pitch.emails ?? []).map((email) => {
+      const ta = h('textarea', {
+        id: `email-${email.step}`,
+        class: 'email-body',
+        rows: '6',
+        spellcheck: 'true',
+        oninput: (e) => {
+          autosize(e.target);
+          onEdit();
+        },
+      });
+      ta.value = email.body ?? '';
+      return {
+        step: email.step,
+        delayDays: email.delayDays,
+        ta,
+        count: h('span', { class: 'count' }),
+        issues: h('ul', { class: 'issues' }),
+        preview: h('pre', { class: 'email-preview', hidden: true, tabindex: '0', 'aria-label': `Email ${email.step} as it will be sent` }),
+      };
+    });
+    renderAlts();
+    return h('section', { class: 'card pitch', 'aria-labelledby': 'pitch-title' },
+      h('div', { class: 'card-head' }, h('h2', { id: 'pitch-title' }, 'Outreach'), refs.previewBtn),
+      refs.pitchMeta,
+      pitch.angle ? h('p', { class: 'angle' }, h('span', { class: 'label' }, 'Angle'), pitch.angle) : null,
+      refs.generalIssues,
+      refs.previewNote,
+      h('div', { class: 'field' },
+        h('div', { class: 'field-head' }, h('label', { for: 'subject' }, 'Subject'), refs.subjectCount),
+        refs.subject,
+        refs.subjectPreview,
+        refs.altWrap,
+        refs.subjectIssues),
+      refs.emails.map((e) => h('div', { class: 'field' },
+        h('div', { class: 'field-head' },
+          h('label', { for: `email-${e.step}` }, `Email ${e.step}`),
+          h('span', { class: 'when' }, e.step === 1 ? 'sends first' : `+${e.delayDays ?? '?'} days, same thread`),
+          e.count),
+        e.ta,
+        e.preview,
+        e.issues)));
+  }
+
+  function renderAlts() {
+    refs.altWrap.replaceChildren(
+      refs.alts.length ? h('span', { class: 'label' }, 'Alternatives') : null,
+      refs.alts.map((alt, i) => h('button', {
+        type: 'button',
+        class: 'alt',
+        title: 'Use this subject (the current one becomes an alternative)',
+        onclick: () => useAlt(i),
+      }, alt)));
+    refs.altWrap.hidden = state.preview || !refs.alts.length;
+  }
+
+  function useAlt(i) {
+    const current = refs.subject.value.trim();
+    const chosen = refs.alts[i];
+    refs.alts.splice(i, 1, ...(current ? [current] : []));
+    refs.subject.value = chosen;
+    renderAlts();
+    onEdit();
+    refs.subject.focus();
+  }
+
+  function findingsCard(lead) {
+    const services = state.summary.services ?? {};
+    const primary = lead.pitch?.service ?? lead.primaryService;
+    const findings = lead.findings ?? [];
+    const order = [primary, ...Object.keys(services).filter((key) => key !== primary)].filter(Boolean);
+    const groups = order.map((service) => ({ service, items: findings.filter((f) => f.service === service) })).filter((g) => g.items.length);
+    if (!groups.length) {
+      return h('section', { class: 'card' }, h('h2', null, 'Findings'), h('p', { class: 'muted small' }, lead.audit ? 'Nothing notable found.' : 'Not audited yet.'));
+    }
+    return h('section', { class: 'card findings' }, h('h2', null, 'Findings'),
+      groups.map((g, i) => (i === 0
+        ? h('div', { class: 'f-group' },
+          h('h3', null, serviceLabel(g.service), g.service === lead.pitch?.service ? h('span', { class: 'tag' }, 'pitched') : null),
+          findingKinds(g.items))
+        : h('details', { class: 'f-group' }, h('summary', null, `${serviceLabel(g.service)} (${g.items.length})`), findingKinds(g.items)))));
+  }
+
+  function findingKinds(items) {
+    const strongest = (a, b) => b.weight - a.weight;
+    const observed = items.filter((f) => f.kind !== 'context').sort(strongest);
+    const context = items.filter((f) => f.kind === 'context').sort(strongest);
+    const block = (title, hint, list) => (list.length
+      ? h('div', { class: 'f-kind' }, h('h4', null, title, h('span', null, ` · ${hint}`)), h('ul', { class: 'f-list' }, list.map(findingItem)))
+      : null);
+    return [block('Observed', 'check these on the site', observed), block('Context', 'inferred from industry or size', context)];
+  }
+
+  function findingItem(f) {
+    const weight = Number(f.weight) || 0;
+    return h('li', { class: `finding${weight < 0 ? ' neg' : ''}` },
+      h('span', { class: 'weight', title: 'Points toward the opportunity score' }, weight > 0 ? `+${weight}` : String(weight)),
+      h('div', null, h('div', { class: 'f-title' }, f.title || f.id), f.point ? h('div', { class: 'f-point' }, f.point) : null));
+  }
+
+  function auditCard(lead) {
+    const a = lead.audit;
+    const head = h('h2', null, 'Audit facts');
+    if (!a) return h('section', { class: 'card' }, head, h('p', { class: 'muted small' }, 'Not audited yet.'));
+    const s = a.signals;
+    const rows = [];
+    const yesNo = (ok, yes = 'Yes', no = 'No') => h('span', { class: ok ? 'good' : 'bad' }, ok ? yes : no);
+
+    if (a.noWebsite) rows.push(['Website', lead.socialUrl ? h('span', null, 'None, only ', extLink(lead.socialUrl, hostOf(lead.socialUrl))) : 'None found']);
+    else if (a.blocked) rows.push(['Website', h('span', { class: 'meh' }, `Turned our check away (bot protection${a.status ? `, HTTP ${a.status}` : ''})`)]);
+    else if (a.reachable === false) rows.push(['Website', h('span', { class: 'bad' }, `Didn’t load (${a.error || 'no response'})`)]);
+
+    if (!a.noWebsite) {
+      let https;
+      if (a.sslError) https = h('span', { class: 'bad' }, `Certificate error (${a.sslError})`);
+      else if (a.https === false) https = h('span', { class: 'bad' }, 'No, Chrome shows “Not secure”');
+      else if (a.https && a.redirectsToHttps === false) https = h('span', { class: 'meh' }, 'Yes, but http:// doesn’t redirect');
+      else if (a.https) https = yesNo(true);
+      if (https) rows.push(['HTTPS', https]);
+    }
+    if (s) rows.push(['Mobile viewport', yesNo(Boolean(s.viewport))]);
+
+    if (a.psi) {
+      const grade = (n) => (n >= 90 ? 'good' : n >= 50 ? 'meh' : 'bad');
+      const score = (label, n) => (n === null || n === undefined ? null : h('span', null, `${label} `, h('b', { class: grade(n) }, String(n))));
+      const lcp = a.psi.lcpMs === null || a.psi.lcpMs === undefined
+        ? null
+        : h('span', null, 'LCP ', h('b', { class: a.psi.lcpMs <= 2500 ? 'good' : a.psi.lcpMs <= 4000 ? 'meh' : 'bad' }, `${(a.psi.lcpMs / 1000).toFixed(1)}s`));
+      rows.push(['PageSpeed (mobile)', h('span', { class: 'psi' },
+        score('Performance', a.psi.performance), score('SEO', a.psi.seo), score('Accessibility', a.psi.accessibility), lcp,
+        a.psi.fieldSpeed ? h('span', null, `Real users: ${String(a.psi.fieldSpeed).toLowerCase()}`) : null)]);
+    } else if (a.psiError) {
+      rows.push(['PageSpeed', h('span', { class: 'muted' }, a.psiError)]);
+    }
+
+    if (s) {
+      const labels = lead.techLabels ?? {};
+      const pills = (ids) => h('span', { class: 'pills' }, ids.map((id) => h('span', { class: 'pill' }, labels[id] ?? id)));
+      const tech = [
+        ['Builder', s.tech?.builder],
+        ['CMS', s.tech?.cms],
+        ['Framework', s.tech?.framework],
+        ['Chat', s.chat],
+        ['Booking', s.booking],
+        ['Analytics', s.analytics],
+        ['CRM', s.crm],
+        ['E-commerce', s.ecommerce],
+        ['Forms', s.formBuilders],
+      ].filter(([, ids]) => Array.isArray(ids) && ids.length);
+      if (tech.length) for (const [label, ids] of tech) rows.push([label, pills(ids)]);
+      else rows.push(['Tech', h('span', { class: 'muted' }, 'Nothing recognized')]);
+      if (!s.chat?.length) rows.push(['Chat', h('span', { class: 'muted' }, 'None found')]);
+      if (!s.booking?.length) rows.push(['Booking', h('span', { class: 'muted' }, 'None found')]);
+      if (s.tech?.jquery) rows.push(['jQuery', s.tech.jquery]);
+      if (s.tech?.legacy?.length) rows.push(['Legacy markup', s.tech.legacy.join(', ')]);
+      if (s.copyrightYear) rows.push(['Footer', `© ${s.copyrightYear}`]);
+    }
+    const emails = lead.siteEmails ?? s?.emails ?? [];
+    if (!a.noWebsite) rows.push(['Emails on site', emails.length ? h('span', { class: 'mono' }, emails.join(', ')) : h('span', { class: 'muted' }, 'None found')]);
+    if (s?.phones?.length) rows.push(['Phones on site', s.phones.join(', ')]);
+
+    const checked = [a.at ? `Checked ${fmtDateTime(a.at)}` : null, a.finalUrl && a.finalUrl !== a.url ? `final URL ${a.finalUrl}` : null].filter(Boolean).join(' · ');
+    return h('section', { class: 'card audit' }, head,
+      h('dl', { class: 'facts' }, rows.flatMap(([label, value]) => [h('dt', null, label), h('dd', null, value)])),
+      checked ? h('p', { class: 'card-foot' }, checked) : null);
+  }
+
+  function notesCard(lead) {
+    refs.notes = h('textarea', {
+      id: 'notes',
+      class: 'notes',
+      rows: '3',
+      placeholder: 'Private notes (never sent)',
+      oninput: (e) => {
+        autosize(e.target);
+        updateDirty();
+      },
+    });
+    refs.notes.value = lead.notes ?? '';
+    refs.notesBtn = h('button', { type: 'button', class: 'btn small', onclick: () => saveAll({ via: 'user' }) }, 'Save note');
+    return h('section', { class: 'card' }, h('div', { class: 'card-head' }, h('h2', null, h('label', { for: 'notes' }, 'Notes')), refs.notesBtn), refs.notes);
+  }
+
+  function historyCard() {
+    refs.history = h('ol', { class: 'history', reversed: true });
+    refs.historyMore = h('button', { type: 'button', class: 'btn subtle small', hidden: true, onclick: () => renderHistory(true) }, 'Show all');
+    return h('section', { class: 'card' }, h('div', { class: 'card-head' }, h('h2', null, 'History'), refs.historyMore), refs.history);
+  }
+
+  function eventLabel(event) {
+    if (String(event).startsWith('stage:')) return `→ ${event.slice(6)}`;
+    return { 'pitch:edited': 'Pitch edited', note: 'Notes updated', 'contact:primary': 'Primary contact changed', sourced: 'Sourced' }[event] ?? event;
+  }
+
+  function renderHistory(all = false) {
+    const events = [...(state.lead.history ?? [])].reverse();
+    const shown = all ? events : events.slice(0, 8);
+    refs.history.replaceChildren(...shown.map((ev) => h('li', null,
+      h('time', { datetime: ev.at, title: fmtDateTime(ev.at) }, relTime(ev.at)),
+      h('span', { class: 'ev' }, eventLabel(ev.event)),
+      ev.detail ? h('span', { class: 'ev-detail' }, ev.detail) : null)));
+    if (!events.length) refs.history.append(h('li', { class: 'muted' }, 'No history yet.'));
+    refs.historyMore.hidden = all || events.length <= shown.length;
+    refs.historyMore.textContent = `Show all ${events.length}`;
+  }
+
+  // Everything that depends on the saved record (not on what you're typing).
+  function updateDerived() {
+    const lead = state.lead;
+    if (!lead || !refs.stageBadge) return;
+    refs.stageBadge.textContent = lead.stage ?? 'unknown';
+    refs.stageBadge.className = `stage-badge st-${lead.stage}`;
+    refs.skipNote.textContent = lead.stage === 'skipped' && lead.skipReason ? lead.skipReason : '';
+    refs.stageSelect.value = lead.stage;
+    renderContact();
+    const blocker = lead.exportBlocker;
+    const warn = Boolean(blocker) && ['pitched', 'approved'].includes(lead.stage) && !/lint errors|no pitch/.test(blocker);
+    refs.exportWarn.hidden = !warn;
+    refs.exportWarn.textContent = warn ? `Won’t export: ${blocker}` : '';
+    if (lead.pitch && refs.subject) {
+      renderPitchMeta();
+      renderIssues();
+      renderPreview();
+      updateCounts();
+    }
+    renderHistory();
+    updateActions();
+  }
+
+  function renderPitchMeta() {
+    const lead = state.lead;
+    const p = lead.pitch;
+    const bits = [
+      p.source ? `Drafted by ${p.source}` : null,
+      p.at ? fmtDateTime(p.at) : null,
+      p.edited ? `edited ${p.editedAt ? relTime(p.editedAt) : ''}`.trim() : null,
+    ].filter(Boolean).map((text) => h('span', null, text));
+    if (p.service && lead.primaryService && p.service !== lead.primaryService) {
+      bits.push(h('span', { class: 'warn-text' }, `written for ${serviceLabel(p.service)}; best score is now ${serviceLabel(lead.primaryService)}`));
+    }
+    refs.pitchMeta.replaceChildren(...bits);
+  }
+
+  const issueWhere = (issue) => (/subject/i.test(issue.message) ? 'Subject' : `Email ${issue.step}`);
+
+  function renderIssues() {
+    const lint = state.lead.pitch?.lint ?? [];
+    const subject = [];
+    const general = [];
+    const byStep = new Map(refs.emails.map((e) => [e.step, []]));
+    for (const issue of lint) {
+      if (/subject/i.test(issue.message)) subject.push(issue);
+      else if (byStep.has(issue.step)) byStep.get(issue.step).push(issue);
+      else general.push(issue);
+    }
+    fillIssues(refs.subjectIssues, subject);
+    for (const e of refs.emails) fillIssues(e.issues, byStep.get(e.step));
+    fillIssues(refs.generalIssues, general);
+  }
+
+  function fillIssues(list, issues) {
+    const sorted = [...issues].sort((a, b) => (a.level === b.level ? 0 : a.level === 'error' ? -1 : 1));
+    list.replaceChildren(...sorted.map((issue) => {
+      const error = issue.level === 'error';
+      return h('li', { class: `issue ${error ? 'err' : 'warn'}` },
+        h('span', { class: 'issue-icon', 'aria-hidden': 'true' }, error ? '✕' : '!'),
+        h('span', null, h('span', { class: 'sr-only' }, error ? 'Error: ' : 'Warning: '), issue.message));
+    }));
+  }
+
+  function updateCounts() {
+    if (!refs.subject) return;
+    const limits = state.summary.wordLimits ?? {};
+    for (const e of refs.emails) {
+      const words = wordCount(norm(e.ta.value));
+      const limit = limits[e.step] ?? 70;
+      e.count.textContent = `${words} / ${limit} words`;
+      e.count.className = `count${words > limit * 1.25 ? ' over-err' : words > limit ? ' over-warn' : ''}`;
+    }
+    const chars = refs.subject.value.trim().length;
+    refs.subjectCount.textContent = `${chars} / 60`;
+    refs.subjectCount.className = `count${chars > 60 ? ' over-warn' : ''}`;
+  }
+
+  function renderPreview() {
+    const rendered = state.lead.rendered ?? [];
+    refs.subjectPreview.textContent = state.lead.pitch?.subject || '(no subject)';
+    for (const e of refs.emails) e.preview.textContent = rendered.find((r) => r.step === e.step)?.text ?? '';
+    applyPreview();
+  }
+
+  function applyPreview() {
+    if (!refs.subject) return;
+    const on = state.preview;
+    refs.previewBtn.setAttribute('aria-pressed', String(on));
+    refs.subject.hidden = on;
+    refs.subjectPreview.hidden = !on;
+    refs.altWrap.hidden = on || !refs.alts.length;
+    for (const e of refs.emails) {
+      e.ta.hidden = on;
+      e.preview.hidden = !on;
+    }
+    refs.previewNote.hidden = !(on && pitchDirty());
+    if (!on) autosizeAll();
+  }
+
+  function togglePreview() {
+    if (!refs.subject) return;
+    state.preview = !state.preview;
+    applyPreview();
+  }
+
+  // ------------------------------------------------- edits and saving
+
+  const subjectDirty = () => refs.subject.value.trim() !== (state.lead.pitch?.subject ?? '');
+  const altsDirty = () => JSON.stringify(refs.alts.map((s) => s.trim()).filter(Boolean)) !== JSON.stringify(state.lead.pitch?.altSubjects ?? []);
+  const emailDirty = (e) => norm(e.ta.value) !== norm(state.lead.pitch?.emails?.find((x) => x.step === e.step)?.body);
+
+  function pitchDirty() {
+    return Boolean(state.lead?.pitch && refs.subject) && (subjectDirty() || altsDirty() || refs.emails.some(emailDirty));
+  }
+
+  function notesDirty() {
+    return Boolean(state.lead && refs.notes) && refs.notes.value !== (state.lead.notes ?? '');
+  }
+
+  const hasUnsaved = () => pitchDirty() || notesDirty();
+
+  function onEdit() {
+    updateCounts();
+    updateDirty();
+  }
+
+  function updateDirty() {
+    if (!state.lead || !refs.saveBtn) return;
+    if (refs.subject) {
+      const s = subjectDirty();
+      refs.subject.classList.toggle('dirty', s);
+      refs.subjectIssues.classList.toggle('stale', s);
+      for (const e of refs.emails) {
+        const d = emailDirty(e);
+        e.ta.classList.toggle('dirty', d);
+        e.issues.classList.toggle('stale', d);
+      }
+      refs.previewNote.hidden = !(state.preview && pitchDirty());
+    }
+    const notes = notesDirty();
+    refs.notes.classList.toggle('dirty', notes);
+    refs.notesBtn.disabled = !notes;
+    const any = pitchDirty() || notes;
+    refs.saveBtn.disabled = !any;
+    refs.saveBtn.classList.toggle('attn', any);
+    updateActions();
+    updateTitle();
+  }
+
+  function updateTitle() {
+    document.title = `${hasUnsaved() ? '• ' : ''}${state.lead ? `${state.lead.name || state.lead.id} – ` : ''}${baseTitle}`;
+  }
+
+  function updateActions() {
+    const lead = state.lead;
+    if (!lead || !refs.approveBtn) return;
+    const errors = (lead.pitch?.lint ?? []).filter((i) => i.level === 'error');
+    const dirty = pitchDirty();
+    let reason = null;
+    let tone = '';
+    if (!lead.pitch) reason = 'Nothing to approve yet: no sequence drafted.';
+    else if (lead.stage === 'suppressed') {
+      reason = 'On the do-not-contact list, so it can’t be approved.';
+      tone = 'err';
+    } else if (lead.stage === 'approved' && !dirty) {
+      reason = `Approved${lead.pitch.approvedAt ? ` ${fmtDateTime(lead.pitch.approvedAt)}` : ''}. Editing the copy sends it back to “pitched” for another look.`;
+      tone = 'ok';
+    } else if (DONE_STAGES.includes(lead.stage)) reason = `Already ${lead.stage}.`;
+    else if (errors.length && !dirty) {
+      reason = `Approve is blocked by ${plural(errors.length, 'lint error')}: ${errors.map((e) => `${issueWhere(e)}: ${e.message}`).join(' · ')}`;
+      tone = 'err';
+    }
+    refs.approveBtn.disabled = Boolean(reason);
+    refs.approveLabel.textContent = dirty && !reason ? 'Save & approve' : 'Approve';
+    refs.hint.textContent = reason ?? (dirty ? 'Unsaved edits. Approving saves them first, then re-checks the copy.' : '');
+    refs.hint.className = `action-hint${tone ? ` ${tone}` : ''}`;
+    refs.skipBtn.disabled = lead.stage === 'skipped' || lead.stage === 'suppressed';
+  }
+
+  function pitchPayload() {
+    return {
+      subject: refs.subject.value,
+      altSubjects: refs.alts.map((s) => s.trim()).filter(Boolean),
+      emails: refs.emails.map((e) => ({ step: e.step, body: e.ta.value })),
+    };
+  }
+
+  // One save at a time; a second Ctrl+S while one is in flight waits for it.
+  function saveAll(options) {
+    saving ??= doSave(options).finally(() => {
+      saving = null;
+    });
+    return saving;
+  }
+
+  async function doSave({ via = 'user' } = {}) {
+    const lead = state.lead;
+    if (!lead) return true;
+    const pitch = pitchDirty();
+    const notes = notesDirty();
+    if (!pitch && !notes) {
+      if (via === 'user') toast('Nothing to save');
+      return true;
+    }
+    try {
+      let updated = null;
+      if (pitch) updated = await api('PUT', `/api/leads/${enc(lead.id)}/pitch`, pitchPayload());
+      if (notes) updated = await api('PUT', `/api/leads/${enc(lead.id)}/notes`, { notes: refs.notes.value });
+      const reopened = lead.stage === 'approved' && updated.stage === 'pitched';
+      if (state.lead?.id === lead.id) applyUpdate(updated);
+      else replaceListItem(updated.listItem);
+      const errors = (updated.pitch?.lint ?? []).filter((i) => i.level === 'error').length;
+      if (reopened) toast(`Saved. ${updated.name} was edited after approval, so it’s back in “pitched”.`, 'warn');
+      else if (via === 'navigate') toast(`Saved your edits to ${updated.name || updated.id}`, errors ? 'warn' : 'ok');
+      else if (via === 'user') toast(errors ? `Saved, with ${plural(errors, 'lint error')} to fix` : 'Saved', errors ? 'warn' : 'ok');
+      return true;
+    } catch (err) {
+      toast(`Couldn’t save: ${err.message}`, 'error');
+      return false;
+    }
+  }
+
+  function applyUpdate(updated) {
+    const stageChanged = updated.stage !== state.lead?.stage;
+    state.lead = updated;
+    replaceListItem(updated.listItem);
+    updateDerived();
+    updateDirty();
+    if (stageChanged) loadSummary().catch(() => {});
+  }
+
+  // After approve / skip / a stage move: drop the lead from a list it no
+  // longer belongs in and carry on with the next one.
+  async function afterStageChange(updated, { advance = true } = {}) {
+    const index = state.leads.findIndex((l) => l.id === updated.id);
+    const stays = index !== -1 && matchesFilter(updated.listItem);
+    const listHadFocus = els.list.contains(document.activeElement);
+    state.lead = updated;
+    if (index !== -1) {
+      if (stays) state.leads[index] = updated.listItem;
+      else state.leads.splice(index, 1);
+      renderList();
+    }
+    await loadSummary().catch(() => {});
+    let next = null;
+    if (index !== -1) next = stays ? (advance ? state.leads[index + 1] : null) : state.leads[index] ?? state.leads[index - 1] ?? null;
+    if (next) return selectLead(next.id, { focusRow: listHadFocus });
+    if (index !== -1 && !stays) return selectLead(null);
+    updateDerived();
+    updateDirty();
+  }
+
+  async function approveLead() {
+    const lead = state.lead;
+    if (!lead || !refs.approveBtn || refs.approveBtn.disabled) return;
+    if (hasUnsaved() && !(await saveAll({ via: 'approve' }))) return;
+    if (state.lead?.id !== lead.id) return;
+    const errors = (state.lead.pitch?.lint ?? []).filter((i) => i.level === 'error');
+    if (errors.length) {
+      toast(`Not approved: ${plural(errors.length, 'lint error')} to fix first`, 'error');
+      return;
+    }
+    refs.approveBtn.disabled = true;
+    try {
+      const updated = await api('POST', `/api/leads/${enc(lead.id)}/approve`);
+      toast(`Approved ${updated.name || updated.id}`, 'ok');
+      await afterStageChange(updated);
+    } catch (err) {
+      if (err.status === 409 && Array.isArray(err.details) && state.lead?.id === lead.id) {
+        state.lead.pitch.lint = err.details;
+        updateDerived();
+      }
+      toast(err.message, 'error');
+      updateActions();
+    }
+  }
+
+  function skipLead() {
+    const lead = state.lead;
+    if (!lead || !refs.skipBtn || refs.skipBtn.disabled) return;
+    const reason = h('input', { type: 'text', id: 'skip-reason', maxlength: '300', autocomplete: 'off', placeholder: 'e.g. already has a good site' });
+    const quick = ['Not a fit', 'Site is already good', 'Chain or franchise', 'Wrong contact', 'Duplicate'];
+    openDialog({
+      title: `Skip ${lead.name || lead.id}?`,
+      body: [
+        h('p', { class: 'muted small' }, 'It moves to “skipped” and won’t be exported. The reason is saved on the lead.'),
+        h('label', { class: 'dlg-field', for: 'skip-reason' }, 'Reason (optional)', reason),
+        h('div', { class: 'dlg-chips' }, quick.map((text) => h('button', {
+          type: 'button',
+          class: 'alt',
+          onclick: () => {
+            reason.value = text;
+            reason.focus();
+          },
+        }, text))),
+      ],
+      submitLabel: 'Skip lead',
+      focus: reason,
+      onSubmit: async () => {
+        if (hasUnsaved() && !(await saveAll({ via: 'navigate' }))) return false;
+        const updated = await api('POST', `/api/leads/${enc(lead.id)}/stage`, { stage: 'skipped', note: reason.value.trim() });
+        toast(`Skipped ${updated.name || updated.id}`, 'ok');
+        await afterStageChange(updated);
+        return true;
+      },
+    });
+  }
+
+  async function moveStage() {
+    const lead = state.lead;
+    if (!lead) return;
+    const stage = refs.stageSelect.value;
+    if (stage === lead.stage) {
+      toast(`Already ${stage}`);
+      return;
+    }
+    // Approval goes through the lint check, never around it.
+    if (stage === 'approved') {
+      refs.stageSelect.value = lead.stage;
+      approveLead();
+      return;
+    }
+    if (stage === 'skipped') {
+      refs.stageSelect.value = lead.stage;
+      skipLead();
+      return;
+    }
+    try {
+      if (hasUnsaved() && !(await saveAll({ via: 'navigate' }))) return;
+      const updated = await api('POST', `/api/leads/${enc(lead.id)}/stage`, { stage, note: refs.stageNote.value.trim() });
+      toast(`Moved ${updated.name || updated.id} to ${stage}`, 'ok');
+      await afterStageChange(updated, { advance: false });
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+  }
+
+  async function changeContact(contactId) {
+    const lead = state.lead;
+    const before = lead.listItem?.contact?.id ?? '';
+    try {
+      const updated = await api('POST', `/api/leads/${enc(lead.id)}/contact`, { contactId });
+      if (state.lead?.id !== lead.id) return;
+      applyUpdate(updated);
+      // The copy was written for the old contact; catch a stale greeting.
+      const first = (updated.contacts ?? []).find((p) => p.id === contactId)?.firstName;
+      const greeted = /^\s*hi\s+([^\s,]+)/i.exec(refs.emails?.[0]?.ta.value ?? '')?.[1];
+      if (greeted && first && greeted.toLowerCase() !== first.toLowerCase()) toast(`Contact changed. The emails still say “Hi ${greeted}”; update the greeting for ${first}.`, 'warn');
+      else toast('Primary contact updated', 'ok');
+    } catch (err) {
+      toast(err.message, 'error');
+      const select = $('#contact-select');
+      if (select) select.value = before;
+    }
+  }
+
+  function suppressDialog() {
+    const lead = state.lead;
+    if (!lead) return;
+    const email = lead.listItem?.contact?.email;
+    const value = h('input', { type: 'text', id: 'suppress-value', autocomplete: 'off', spellcheck: 'false', value: email || lead.domain || '' });
+    const reason = h('input', { type: 'text', id: 'suppress-reason', autocomplete: 'off', maxlength: '200', placeholder: 'manual' });
+    const chip = (text, onPick) => h('button', { type: 'button', class: 'alt', onclick: onPick }, text);
+    openDialog({
+      title: 'Add to the do-not-contact list',
+      body: [
+        h('p', { class: 'muted small' }, 'Every lead with this email, or any email at this domain, moves to “suppressed” and is never exported again.'),
+        h('label', { class: 'dlg-field', for: 'suppress-value' }, 'Email address or domain', value),
+        h('div', { class: 'dlg-chips' }, [email, lead.domain].filter(Boolean).map((v) => chip(v, () => {
+          value.value = v;
+          value.focus();
+        }))),
+        h('label', { class: 'dlg-field', for: 'suppress-reason' }, 'Reason', reason),
+        h('div', { class: 'dlg-chips' }, ['unsubscribed', 'asked not to be contacted', 'bounced', 'existing client'].map((text) => chip(text, () => {
+          reason.value = text;
+          reason.focus();
+        }))),
+      ],
+      submitLabel: 'Suppress',
+      danger: true,
+      focus: value,
+      onSubmit: async () => {
+        const index = state.leads.findIndex((l) => l.id === lead.id);
+        const res = await api('POST', '/api/suppress', { value: value.value, reason: reason.value.trim() });
+        toast(`${res.value} is on the do-not-contact list. ${plural(res.affected.length, 'lead')} moved to suppressed.`, 'ok');
+        if (hasUnsaved() && res.affected.includes(lead.id)) await saveAll({ via: 'navigate' });
+        await Promise.all([loadSummary(), loadLeads()]);
+        if (!res.affected.includes(lead.id)) return true;
+        if (state.leads.some((l) => l.id === lead.id)) await selectLead(lead.id);
+        else await selectLead((state.leads[index] ?? state.leads[index - 1] ?? state.leads[0])?.id ?? null);
+        return true;
+      },
+    });
+  }
+
+  function openDialog({ title, body, submitLabel, danger = false, focus, onSubmit }) {
+    const dialog = els.dialog;
+    const error = h('p', { class: 'dlg-error', role: 'alert', hidden: true });
+    const submit = h('button', { type: 'submit', class: `btn ${danger ? 'danger' : 'primary'}` }, submitLabel);
+    const form = h('form', { class: 'dlg', novalidate: true },
+      h('h2', null, title),
+      body,
+      error,
+      h('div', { class: 'dlg-actions' }, h('button', { type: 'button', class: 'btn', onclick: () => dialog.close() }, 'Cancel'), submit));
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submit.disabled = true;
+      error.hidden = true;
+      try {
+        if ((await onSubmit()) !== false) dialog.close();
+      } catch (err) {
+        error.textContent = err.message;
+        error.hidden = false;
+      } finally {
+        submit.disabled = false;
+      }
+    });
+    dialog.replaceChildren(form);
+    dialog.showModal();
+    (focus ?? submit).focus();
+    if (focus?.select) focus.select();
+  }
+
+  // ------------------------------------------------------------ export
+
+  const FORMAT_LABELS = { instantly: 'Instantly', smartlead: 'Smartlead', csv: 'Plain CSV', calls: 'Call list' };
+
+  function buildExportPanel() {
+    const saved = prefs();
+    const formats = state.summary.formats ?? Object.keys(FORMAT_LABELS);
+    exp.format = formats.includes(saved.format) ? saved.format : formats[0];
+    const remember = () => prefs({ format: exp.format, html: exp.html.checked, markQueued: exp.queue.checked });
+    exp.html = h('input', { type: 'checkbox', checked: Boolean(saved.html), onchange: remember });
+    exp.queue = h('input', { type: 'checkbox', checked: saved.markQueued !== false, onchange: remember });
+    exp.note = h('p', { class: 'exp-note' });
+    exp.go = h('button', { type: 'button', class: 'btn primary', onclick: runExport }, 'Download CSV');
+    exp.result = h('div', { class: 'exp-result', 'aria-live': 'polite' });
+    els.exportPanel.replaceChildren(
+      h('h2', { class: 'pop-title' }, 'Export for your sending tool'),
+      h('fieldset', { class: 'radios' },
+        h('legend', null, 'Format'),
+        formats.map((format) => h('label', { class: 'radio' },
+          h('input', {
+            type: 'radio',
+            name: 'export-format',
+            value: format,
+            checked: format === exp.format,
+            onchange: () => {
+              exp.format = format;
+              remember();
+              updateExportPanel();
+            },
+          }),
+          h('span', null, FORMAT_LABELS[format] ?? format)))),
+      h('label', { class: 'check' }, exp.html, h('span', null, 'Line breaks as <br>'), h('small', null, 'For tools that expect HTML email bodies')),
+      h('label', { class: 'check' }, exp.queue, h('span', null, 'Mark exported leads as queued')),
+      exp.note,
+      h('div', null, exp.go),
+      exp.result);
+    updateExportPanel();
+  }
+
+  function updateExportPanel() {
+    if (!exp.go || !state.summary) return;
+    const blockers = state.summary.blockers ?? [];
+    const calls = exp.format === 'calls';
+    const blocked = !calls && blockers.length > 0;
+    exp.html.disabled = calls;
+    exp.queue.disabled = calls;
+    exp.go.disabled = blocked || exp.busy;
+    const approved = state.summary.byStage?.approved ?? 0;
+    exp.note.replaceChildren(blocked
+      ? h('span', { class: 'err-text' }, 'Disabled until mockingbird.config.js is fixed (see the banner). The call list still works.')
+      : calls
+        ? 'Phone-only leads (enriched, no email) with talking points for a call.'
+        : `${plural(approved, 'approved lead')}. Suppressed contacts and pitches with lint errors are left out.`);
+  }
+
+  function toggleExport(open = els.exportPanel.hidden) {
+    if (open && !exp.go) buildExportPanel();
+    els.exportPanel.hidden = !open;
+    els.exportBtn.setAttribute('aria-expanded', String(open));
+    if (open) {
+      updateExportPanel();
+      (els.exportPanel.querySelector('input[type=radio]:checked') ?? exp.go).focus();
+    }
+  }
+
+  async function runExport() {
+    const format = exp.format;
+    const markQueued = format !== 'calls' && exp.queue.checked;
+    exp.busy = true;
+    updateExportPanel();
+    exp.result.replaceChildren(h('p', { class: 'muted' }, 'Exporting…'));
+    try {
+      const res = await api('POST', '/api/export', { format, html: exp.html.checked, markQueued });
+      const filename = `mockingbird-${format}-${new Date().toISOString().slice(0, 10)}.csv`;
+      if (res.csv) download(res.csv, filename);
+      exp.result.replaceChildren(
+        h('p', { class: res.exported.length ? 'good' : 'muted' }, res.exported.length
+          ? `Downloaded ${filename} with ${plural(res.exported.length, 'lead')}${markQueued ? ', now marked queued' : ''}.`
+          : `Nothing to export${format === 'calls' ? '' : ': no approved leads are ready'}.`),
+        res.blocked.length ? h('p', null, h('strong', null, `Left out ${res.blocked.length}:`)) : null,
+        res.blocked.length ? h('ul', null, res.blocked.map((b) => h('li', null, `${b.name || b.id}: ${b.reason}`))) : null);
+      if (markQueued && res.exported.length) {
+        await Promise.all([loadSummary(), loadLeads()]);
+        if (state.lead && res.exported.includes(state.lead.id)) {
+          if (state.leads.some((l) => l.id === state.lead.id)) await selectLead(state.lead.id);
+          else await selectLead(state.leads[0]?.id ?? null);
+        }
+      }
+    } catch (err) {
+      const details = Array.isArray(err.details) ? err.details : [];
+      exp.result.replaceChildren(
+        h('p', { class: 'err-text' }, err.status === 412 ? 'Not ready to send:' : err.message),
+        details.length ? h('ul', null, details.map((d) => h('li', null, String(d)))) : null);
+    } finally {
+      exp.busy = false;
+      updateExportPanel();
+    }
+  }
+
+  function download(text, filename) {
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+    const link = h('a', { href: url, download: filename, hidden: true });
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  // ------------------------------------------------------ misc actions
+
+  function autosize(textarea) {
+    if (!textarea || textarea.offsetParent === null) return;
+    const scroller = els.detail;
+    const top = scroller.scrollTop;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight + (textarea.offsetHeight - textarea.clientHeight)}px`;
+    scroller.scrollTop = top;
+  }
+
+  function autosizeAll() {
+    for (const e of refs.emails ?? []) autosize(e.ta);
+    autosize(refs.notes);
+  }
+
+  function focusEmail() {
+    if (!refs.emails?.length) return;
+    if (state.preview) togglePreview();
+    showDetail();
+    const ta = refs.emails[0].ta;
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+  }
+
+  function openSite() {
+    const url = safeUrl(state.lead?.website || state.lead?.domain);
+    if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    else if (state.lead) toast('No website on file for this lead');
+  }
+
+  async function refresh({ quiet = false } = {}) {
+    try {
+      await Promise.all([loadSummary(), loadLeads()]);
+      const item = state.lead && state.leads.find((l) => l.id === state.lead.id);
+      // Pick up changes made from the CLI, unless you're mid-edit.
+      if (item && item.updatedAt !== state.lead.updatedAt && !hasUnsaved()) await selectLead(state.lead.id);
+      if (!quiet) toast('Refreshed');
+    } catch (err) {
+      if (!quiet) toast(err.message, 'error');
+    }
+  }
+
+  const isField = (el) => el instanceof HTMLElement && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
+
+  document.addEventListener('keydown', (e) => {
+    const mod = e.metaKey || e.ctrlKey;
+    if (mod && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      if (state.lead && !els.dialog.open) saveAll({ via: 'user' });
+      return;
+    }
+    if (e.defaultPrevented || e.isComposing) return;
+    if (els.help.open) {
+      if (e.key === '?') els.help.close();
+      return;
+    }
+    if (els.dialog.open) return;
+    if (!els.exportPanel.hidden) {
+      if (e.key === 'Escape') {
+        toggleExport(false);
+        els.exportBtn.focus();
+      }
+      return;
+    }
+    if (isField(e.target)) {
+      if (e.key === 'Escape') {
+        if (e.target === els.search && els.search.value) {
+          els.search.value = '';
+          els.search.dispatchEvent(new Event('input'));
+        } else e.target.blur();
+      }
+      return;
+    }
+    if (mod || e.altKey) return;
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    const actions = {
+      j: () => move(1),
+      ArrowDown: () => move(1),
+      k: () => move(-1),
+      ArrowUp: () => move(-1),
+      a: approveLead,
+      x: skipLead,
+      p: togglePreview,
+      e: focusEmail,
+      o: openSite,
+      r: () => refresh(),
+      '/': () => {
+        els.search.focus();
+        els.search.select();
+      },
+      '?': () => els.help.showModal(),
+      Escape: () => {
+        if (document.body.classList.contains('show-detail')) hideDetail();
+      },
+    };
+    const action = actions[key];
+    if (!action) return;
+    e.preventDefault();
+    action();
+  });
+
+  // ------------------------------------------------------------ wiring
+
+  els.search.addEventListener('input', debounce(() => {
+    const q = els.search.value.trim();
+    if (q === state.q) return;
+    state.q = q;
+    state.shown = LIST_CHUNK;
+    reloadList();
+  }, 180));
+
+  els.search.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      els.search.blur();
+      if (state.leads[0]) selectLead(state.leads[0].id, { show: true });
+    }
+  });
+
+  els.exportBtn.addEventListener('click', () => toggleExport());
+  document.addEventListener('pointerdown', (e) => {
+    if (!els.exportPanel.hidden && !e.target.closest('.export-wrap')) toggleExport(false);
+  });
+  els.helpBtn.addEventListener('click', () => els.help.showModal());
+  $('#help-close').addEventListener('click', () => els.help.close());
+  els.help.addEventListener('click', (e) => {
+    if (e.target === els.help) els.help.close();
+  });
+  $('#save-key').textContent = SAVE_KEY;
+
+  window.addEventListener('resize', debounce(autosizeAll, 150));
+  narrowQuery.addEventListener('change', () => requestAnimationFrame(autosizeAll));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && state.summary) refresh({ quiet: true });
+  });
+  window.addEventListener('beforeunload', (e) => {
+    if (!hasUnsaved()) return;
+    e.preventDefault();
+    e.returnValue = '';
+  });
+
+  function fatal(message) {
+    document.body.replaceChildren(h('div', { class: 'fatal' },
+      h('h1', null, 'Mockingbird'),
+      h('p', null, message),
+      h('button', { type: 'button', class: 'btn primary', onclick: () => location.reload() }, 'Reload')));
+  }
+
+  async function init() {
+    try {
+      await loadSummary();
+    } catch (err) {
+      fatal(err.message);
+      return;
+    }
+    const s = state.summary;
+    const fromHash = readHash();
+    state.stage = fromHash.stage !== null && (fromHash.stage === '' || s.stages.includes(fromHash.stage)) ? fromHash.stage : defaultStage();
+    state.service = s.services?.[fromHash.service] ? fromHash.service : '';
+    state.q = fromHash.q;
+    els.search.value = state.q;
+    renderTop();
+    if (history.state?.detail && isNarrow()) document.body.classList.add('show-detail');
+    try {
+      await loadLeads();
+    } catch (err) {
+      toast(err.message, 'error');
+    }
+    // A lead named in the URL opens even if it's no longer in this stage.
+    await selectLead(fromHash.lead || state.leads[0]?.id || null);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
