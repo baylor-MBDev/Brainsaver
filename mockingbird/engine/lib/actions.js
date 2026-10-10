@@ -57,8 +57,13 @@ export async function updatePitch(store, id, { subject, emails, altSubjects }, {
   return store.put(company);
 }
 
-export async function mark(store, id, stage, note) {
+export async function mark(store, id, stage, note, { config } = {}) {
   if (!STAGES.includes(stage)) throw new ActionError(`Unknown stage "${stage}". Use one of: ${STAGES.join(', ')}`);
+  // Approval has its own gate (lint must pass); don't let a stage change skip it.
+  if (stage === 'approved') {
+    if (!config) throw new ActionError('Use approve() to approve a pitch', { status: 409 });
+    return approve(store, id, { config });
+  }
   const company = await load(store, id);
   setStage(company, stage, note || undefined);
   if (stage === 'skipped') company.skipReason = note || 'skipped by reviewer';

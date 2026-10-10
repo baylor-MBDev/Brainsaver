@@ -64,10 +64,10 @@ export async function approveCmd({ store, config }, args) {
   }
 }
 
-export async function markCmd({ store }, args) {
+export async function markCmd({ store, config }, args) {
   const [id, stage] = args.positionals;
   if (!id || !stage) throw new Error(`Usage: mb mark <id> <stage> [--note "..."]\nStages: ${STAGES.join(', ')}`);
-  const co = await mark(store, id, stage, args.values.note);
+  const co = await mark(store, id, stage, args.values.note, { config });
   log.ok(`${co.id} → ${co.stage}`);
 }
 

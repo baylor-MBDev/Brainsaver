@@ -214,6 +214,7 @@ export default function siteCopy(config) {
         submit: 'Send me the check-up',
         success: 'Got it. Your check-up will arrive by email within one business day.',
       },
+      faqTitle: 'Questions about the check-up',
       faq: [
         { q: 'Is it really free?', a: 'Yes. No card, no call, and no obligation.' },
         { q: 'Is this an automated report?', a: 'No. A person reviews your site and writes up what they find. We use Google PageSpeed for the speed numbers.' },

@@ -4,6 +4,13 @@ import { bookLink } from './layout.js';
 
 const arrow = raw('<span class="arrow" aria-hidden="true">→</span>');
 
+/** "AI Automations" -> "AI automations": lowercase for mid-sentence use, keeping acronyms. */
+export const sentenceCase = (label) =>
+  String(label ?? '')
+    .split(' ')
+    .map((word) => (/^[A-Z0-9]{2,}$/.test(word) ? word : word.toLowerCase()))
+    .join(' ');
+
 export const formatDate = (iso) =>
   new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
 
@@ -26,7 +33,7 @@ ${phrase(s.key)}
 <p class="card-label">${s.label}</p>
 <h3><a href="${s.path}">${s.headline}</a></h3>
 <p>${s.summary}</p>
-<span class="card-more" aria-hidden="true">Explore ${s.label.toLowerCase()} ${arrow}</span>
+<span class="card-more" aria-hidden="true">Explore ${sentenceCase(s.label)} ${arrow}</span>
 </li>
 `,
 )}</ul>`;
@@ -148,7 +155,7 @@ export function birdNote({ title, text, links = [] }) {
 ${mark({ className: 'mark note-mark', size: 96 })}
 <h1>${title}</h1>
 <p class="lede">${text}</p>
-${links.length && html`<ul class="note-links" role="list">${links.map((l) => html`<li><a href="${l.href}">${l.label}</a></li>`)}</ul>`}
+${links.length > 0 && html`<ul class="note-links" role="list">${links.map((l) => html`<li><a href="${l.href}">${l.label}</a></li>`)}</ul>`}
 </div>
 </section>`;
 }

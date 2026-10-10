@@ -52,7 +52,7 @@ export function phrase(key, { className = 'phrase' } = {}) {
  * divider, sparingly. */
 export function songLine({ className = 'songline' } = {}) {
   const groups = Object.entries(PHRASES)
-    .map(([key, d], i) => `<path class="songline-${key}" transform="translate(${i * 44} 0)" d="${d}"/>`)
+    .map(([key, d], i) => `<path class="songline-${key}" transform="translate(${i * 44} 0)" d="${d}" pathLength="1"/>`)
     .join('');
   return raw(
     `<div class="${className}" aria-hidden="true"><svg viewBox="0 0 124 20" width="124" height="20" focusable="false"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${groups}</g></svg></div>`,

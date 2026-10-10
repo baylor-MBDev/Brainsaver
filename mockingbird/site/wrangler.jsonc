@@ -1,0 +1,69 @@
+// Cloudflare Workers config for the Mockingbird website.
+// Build first (`node site/build.js` from the repo root), then deploy from this
+// folder: `cd site && npx wrangler deploy`.
+{
+  "name": "mockingbird-site",
+
+  // Only /api/* reaches this code (see run_worker_first below); every other
+  // request is a static file served straight from ./dist.
+  "main": "worker/index.js",
+
+  // Pins Workers runtime behavior. Move it forward on purpose, after reading
+  // the compatibility-date changelog, not as a side effect of a deploy.
+  "compatibility_date": "2026-10-01",
+
+  // The static site written by site/build.js.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // Unknown paths get dist/404.html with a real 404 status.
+    "not_found_handling": "404-page",
+    // Run the Worker before asset lookup only for the API. Pages never wait
+    // on Worker code.
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Leads from the contact and free-audit forms (table: inbound_leads).
+  //   npx wrangler d1 create mockingbird            -> paste the id below
+  //   npx wrangler d1 migrations apply mockingbird --remote
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mockingbird",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Plain settings, visible in the dashboard. Secrets never go here; set them
+  // with `npx wrangler secret put <NAME>`:
+  //   TURNSTILE_SECRET_KEY  turns on spam checks (pair with config.site.turnstileSiteKey)
+  //   IP_HASH_SALT          any long random string; salts the stored IP hash
+  "vars": {
+    // Where lead alerts go and the address they come from. Used only when
+    // the NOTIFY binding below is enabled.
+    "NOTIFY_TO": "",
+    "NOTIFY_FROM": ""
+  },
+
+  // Email alerts for new leads (optional; leads are stored in D1 either way).
+  // This ships commented out because a deploy fails if destination_address
+  // isn't a verified Email Routing destination. To enable:
+  //   1. Cloudflare dashboard -> your domain -> Email -> Email Routing: turn it on.
+  //   2. Add the inbox you want alerts in as a destination address and click
+  //      the verification link Cloudflare emails you.
+  //   3. Uncomment the block below and put that verified address in
+  //      destination_address and in NOTIFY_TO. Set NOTIFY_FROM to an address
+  //      on your domain, e.g. "site@yourdomain.com".
+  //   4. Deploy. The Worker sends one plain-text email per lead, with
+  //      Reply-To set to the person who wrote in.
+  // "send_email": [
+  //   { "name": "NOTIFY", "destination_address": "you@yourdomain.com" }
+  // ],
+
+  // Workers Logs: keeps console output (failed emails, Turnstile rejections)
+  // searchable in the dashboard.
+  "observability": {
+    "enabled": true
+  }
+}

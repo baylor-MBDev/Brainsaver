@@ -9,7 +9,8 @@ const CLICHES = /\b(?:hope this (?:email )?finds you well|quick question|just ch
 const PLACEHOLDER = /\{\{[^}]*\}\}|\{[a-z_]+\}|\[(?:first ?name|company|name|your name)\]/i;
 const LINK = /https?:\/\/|www\.[a-z]/i;
 
-const LIMITS = { 1: 'maxWords', 2: 70, 3: 45 };
+/** Word limits per sequence step; step 1 comes from config.outreach.maxWords. */
+export const wordLimits = (maxWords = 110) => ({ 1: maxWords, 2: 70, 3: 45 });
 
 export function lintSequence(pitch, { maxWords = 110, demoLink = 'followup', allowCaps = [] } = {}) {
   const okCaps = new Set(['HVAC', 'HTTPS', 'HTML', 'SEO', 'CRM', 'LLC', 'PLLC', 'USA', 'ASAP', ...allowCaps.map((w) => w.toUpperCase())]);
@@ -34,7 +35,7 @@ export function lintSequence(pitch, { maxWords = 110, demoLink = 'followup', all
       add('error', step, 'Empty email');
       continue;
     }
-    const limit = LIMITS[step] === 'maxWords' ? maxWords : LIMITS[step] ?? 70;
+    const limit = wordLimits(maxWords)[step] ?? 70;
     const words = wordCount(body.replace(DEMO_TOKEN, ''));
     if (words > limit * 1.25) add('error', step, `${words} words; keep it under ${limit}`);
     else if (words > limit) add('warn', step, `${words} words; aim for under ${limit}`);

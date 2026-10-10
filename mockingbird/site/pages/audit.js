@@ -42,7 +42,7 @@ ${leadForm(ctx, { type: 'audit', fields, submit: f.submit, success: f.success })
 </div>
 </section>
 
-${faqSection({ id: 'audit-faq', title: 'Questions', items: c.faq })}`;
+${faqSection({ id: 'audit-faq', title: c.faqTitle, items: c.faq })}`;
 
   return {
     path: '/free-audit/',

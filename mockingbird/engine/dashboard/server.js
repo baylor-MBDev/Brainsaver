@@ -9,6 +9,7 @@ import { primaryContact, STAGES } from '../lib/store.js';
 import { normalizeDomain } from '../lib/util.js';
 import { renderEmail } from '../outreach/context.js';
 import { exportBlocker, FORMATS } from '../outreach/export.js';
+import { wordLimits } from '../outreach/lint.js';
 
 /*
  * Local review dashboard: a small JSON API over the lead store plus one page.
@@ -26,9 +27,6 @@ const MAX_BODY_BYTES = 1024 * 1024;
 const LOOPBACK = new Set(['127.0.0.1', 'localhost', '::1']);
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
-// Same per-step limits as outreach/lint.js, so the editor can count words live
-// against the numbers lint will hold the copy to.
-const wordLimits = (maxWords) => ({ 1: maxWords, 2: 70, 3: 45 });
 
 const BASE_HEADERS = {
   'cache-control': 'no-store',
@@ -206,7 +204,10 @@ function createApi({ store, config }) {
     {
       method: 'POST',
       path: /^\/api\/leads\/([^/]+)\/stage$/,
-      run: async ({ id, body }) => detail(await mark(store, id, requiredString(body.stage, 'stage'), optionalString(body.note, 'note')?.trim())),
+      run: async ({ id, body }) => {
+        const stage = requiredString(body.stage, 'stage');
+        return detail(await mark(store, id, stage, optionalString(body.note, 'note')?.trim(), { config }));
+      },
     },
     { method: 'PUT', path: /^\/api\/leads\/([^/]+)\/notes$/, run: async ({ id, body }) => detail(await addNote(store, id, optionalString(body.notes, 'notes') ?? '')) },
     {
@@ -275,10 +276,10 @@ export async function startDashboard({ store, config, port = 4400, host = '127.0
     return given.length === tokenBytes.length && timingSafeEqual(given, tokenBytes);
   };
 
+  let actualPort = port;
   const hostOk = (value) => {
-    const { port: actual } = server.address();
     const h = String(value ?? '').toLowerCase();
-    return h === `127.0.0.1:${actual}` || h === `localhost:${actual}` || (host === '::1' && h === `[::1]:${actual}`);
+    return h === `127.0.0.1:${actualPort}` || h === `localhost:${actualPort}` || (host === '::1' && h === `[::1]:${actualPort}`);
   };
 
   function sendPage(res) {
@@ -333,7 +334,7 @@ export async function startDashboard({ store, config, port = 4400, host = '127.0
 
   await new Promise((resolve, reject) => {
     const failed = (err) => {
-      reject(err.code === 'EADDRINUSE' ? new Error(`Port ${port} is already in use. Is the dashboard already running? Pick another port.`) : err);
+      reject(err.code === 'EADDRINUSE' ? new Error(`Port ${port} is already in use (is the dashboard already running?). Pick another with --port.`) : err);
     };
     server.once('error', failed);
     server.listen(port, host, () => {
@@ -342,7 +343,7 @@ export async function startDashboard({ store, config, port = 4400, host = '127.0
     });
   });
 
-  const actualPort = server.address().port;
+  actualPort = server.address().port;
   return {
     url: `http://${host === '::1' ? '[::1]' : host}:${actualPort}/`,
     token,

@@ -190,11 +190,12 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 .segmented button[aria-pressed='true'] { background: var(--accent-weak); color: var(--accent-text); font-weight: 600; }
 .segmented button:focus-visible { outline-offset: -2px; }
 .search { position: relative; display: flex; align-items: center; }
-.search input { width: 250px; padding-right: 30px; }
+.search input { width: 285px; padding-right: 30px; }
 .search kbd { position: absolute; right: 7px; pointer-events: none; }
 .top-actions { display: flex; align-items: center; gap: 6px; }
 .export-wrap { position: relative; }
-.export-flag { width: 7px; height: 7px; border-radius: 50%; background: var(--warn); }
+/* Export can't send while the config has blockers; a dot says so from anywhere. */
+.btn.has-flag::after { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--warn); }
 
 .funnel { display: flex; align-items: center; gap: 4px; overflow-x: auto; padding: 1px 1px 9px; scrollbar-width: thin; }
 .chip {
@@ -301,7 +302,7 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 
 /* --- lead header ------------------------------------------------------- */
 .lead-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px 28px; padding: 16px 0 12px; }
-.head-main { flex: 1 1 380px; min-width: 0; display: grid; gap: 5px; align-content: start; }
+.head-main { flex: 1 1 380px; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 5px; align-content: start; }
 .title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
 .title-row h1 { font-size: 20px; line-height: 1.25; letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .stage-badge { display: inline-flex; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: capitalize; color: var(--muted); background: var(--panel-2); border: 1px solid var(--border); }
@@ -311,15 +312,18 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 .st-suppressed { color: var(--err); background: var(--err-bg); border-color: transparent; }
 .skip-note { color: var(--muted); font-size: 12.5px; }
 .skip-note:empty { display: none; }
-.meta { display: flex; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
-.meta > * { overflow-wrap: anywhere; }
-.meta > * + *::before { content: '\00b7'; margin: 0 7px; color: var(--faint); }
+/* Dot-separated runs that wrap cleanly: each item carries its dot on the
+   left, and the wrapper clips the dot of whichever item starts a line. */
+.dots { overflow: hidden; padding: 2px 0; margin: -2px 0; }
+.dots-list { display: flex; flex-wrap: wrap; margin-left: -15px; }
+.dots-list > * { position: relative; min-width: 0; padding-left: 15px; overflow-wrap: anywhere; }
+.dots-list > *::before { content: '\00b7'; position: absolute; left: 5px; color: var(--faint); }
+.meta { color: var(--muted); font-size: 13px; }
 .contact-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; }
-.contact-line select { max-width: min(520px, 100%); }
-.contact-sum, .contact-pick { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 0; min-width: 0; }
-.contact-sum > * { overflow-wrap: anywhere; }
-.contact-sum > * + *::before { content: '\00b7'; margin: 0 6px; color: var(--faint); }
-.contact-pick { gap: 4px 10px; }
+.contact-sum { flex: 1 1 auto; min-width: 0; }
+.contact-sum .dots-list { align-items: center; row-gap: 2px; }
+.contact-pick { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.contact-pick select { flex: 0 1 auto; min-width: 0; max-width: 100%; }
 .status { display: inline-block; padding: 0 6px; border-radius: 4px; font-size: 11.5px; font-weight: 600; background: var(--panel-2); color: var(--muted); }
 .status.good { background: var(--ok-bg); color: var(--ok); }
 .status.meh { background: var(--warn-bg); color: var(--warn); }
@@ -372,8 +376,7 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
 .card > h2 { margin-bottom: 10px; }
 
 /* --- pitch editor ------------------------------------------------------ */
-.pitch-meta { display: flex; flex-wrap: wrap; margin: 0; color: var(--muted); font-size: 12.5px; }
-.pitch-meta > * + *::before { content: '\00b7'; margin: 0 6px; color: var(--faint); }
+.pitch-meta { color: var(--muted); font-size: 12.5px; }
 .angle { margin: 8px 0 0; padding: 7px 10px; border-radius: 6px; background: var(--panel-2); font-size: 13px; }
 .angle .label { margin-right: 8px; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
 .preview-note { margin: 10px 0 0; padding: 7px 10px; border-radius: 6px; background: var(--warn-bg); color: var(--text); font-size: 12.5px; }
@@ -510,12 +513,27 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
 .keys dt { white-space: nowrap; }
 .keys dd { margin: 0; color: var(--muted); }
 
+@media (hover: none) and (pointer: coarse) {
+  .btn kbd, .search kbd { display: none; }
+  .search input { padding-right: 9px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
+.more-btn { display: none; }
+
+@media (max-width: 1180px) {
+  .brand-sub { display: none; }
+  .search input { width: 255px; }
+}
+
 /* --- small screens: one column, list first, back button to return ------ */
 @media (max-width: 760px) {
+  .more-btn { display: inline-flex; }
+  .actionbar:not(.open) .actions.move { display: none; }
+  body.show-detail .banner { display: none; }
   .topbar { padding: 8px 12px 0; }
   .brand-sub { display: none; }
   .filters { order: 3; flex-basis: 100%; }
@@ -571,7 +589,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   </section>
   <section class="detail-pane" id="detail" aria-label="Selected lead" tabindex="-1"></section>
 </main>
-<div class="toasts" id="toasts"></div>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 
 <dialog id="help" aria-labelledby="help-title">
   <div class="dlg">
@@ -657,8 +675,16 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     return root.querySelector(selector);
   }
 
-  // Builds elements. Children that are strings become text nodes, so lead
-  // data (scraped from prospects' websites, untrusted) never becomes markup.
+  // Children may be nested arrays, null/false (skipped), nodes, or plain
+  // values. Plain values always become text nodes, so lead data (scraped from
+  // prospects' websites, untrusted) never becomes markup.
+  function nodes(children) {
+    return children
+      .flat(Infinity)
+      .filter((child) => child !== undefined && child !== null && child !== false && child !== '')
+      .map((child) => (child instanceof Node ? child : document.createTextNode(String(child))));
+  }
+
   function h(tag, props, ...children) {
     const el = document.createElement(tag);
     for (const [key, value] of Object.entries(props ?? {})) {
@@ -668,10 +694,12 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
       else if (key === 'value' || key === 'checked' || key === 'disabled' || key === 'hidden' || key === 'selected') el[key] = value;
       else el.setAttribute(key, value === true ? '' : String(value));
     }
-    for (const child of children.flat(Infinity)) {
-      if (child === undefined || child === null || child === false || child === '') continue;
-      el.append(child instanceof Node ? child : String(child));
-    }
+    el.append(...nodes(children));
+    return el;
+  }
+
+  function fill(el, ...children) {
+    el.replaceChildren(...nodes(children));
     return el;
   }
 
@@ -780,7 +808,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   }
 
   function toast(message, kind = 'info') {
-    const el = h('div', { class: `toast ${kind}`, role: kind === 'error' ? 'alert' : 'status' }, message);
+    const el = h('div', { class: `toast ${kind}` }, message);
     el.addEventListener('click', () => el.remove());
     els.toasts.append(el);
     while (els.toasts.childElementCount > 4) els.toasts.firstElementChild.remove();
@@ -827,7 +855,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     };
     const pipeline = stages.filter((st) => !SIDE_STAGES.includes(st));
     const side = SIDE_STAGES.filter((st) => stages.includes(st));
-    els.funnel.replaceChildren(
+    fill(els.funnel,
       chip('', 'All'),
       h('span', { class: 'funnel-sep', 'aria-hidden': 'true' }),
       pipeline.map((st, i) => [i ? h('span', { class: 'chev', 'aria-hidden': 'true' }, '›') : null, chip(st, st)]),
@@ -838,7 +866,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
 
   function renderServiceFilter() {
     const options = [['', 'All'], ...Object.entries(state.summary.services ?? {})];
-    els.service.replaceChildren(...options.map(([key, label]) => h('button', {
+    fill(els.service, ...options.map(([key, label]) => h('button', {
       type: 'button',
       'aria-pressed': String(state.service === key),
       onclick: () => chooseService(key),
@@ -850,7 +878,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     els.banner.hidden = !blockers.length;
     els.exportBtn.classList.toggle('has-flag', blockers.length > 0);
     if (!blockers.length) return;
-    els.banner.replaceChildren(h('details', { open: !isNarrow() },
+    fill(els.banner, h('details', { open: !isNarrow() },
       h('summary', null, h('strong', null, 'Exports are disabled'), ` until ${blockers.length === 1 ? 'this is' : 'these are'} fixed in mockingbird.config.js:`),
       h('ul', null, blockers.map((b) => h('li', null, b)))));
   }
@@ -911,7 +939,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   function renderList() {
     const visible = state.leads.slice(0, state.shown);
     const rest = state.leads.length - visible.length;
-    els.list.replaceChildren(
+    fill(els.list,
       ...visible.map(leadRow),
       rest > 0
         ? h('li', { class: 'list-more' }, h('button', {
@@ -990,7 +1018,16 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
 
   // ------------------------------------------------------- selection
 
-  async function selectLead(id, { show = false, focusRow = false } = {}) {
+  async function selectLead(id, { show = false, focusRow = false, reload = false } = {}) {
+    if (id && id === state.lead?.id && !reload) {
+      detailSeq++; // j then k: drop the fetch for the lead we just moved past
+      els.detail.removeAttribute('aria-busy');
+      state.selectedId = id;
+      markSelected(focusRow);
+      writeHash();
+      if (show) showDetail();
+      return;
+    }
     const previous = state.selectedId;
     if (state.lead && state.lead.id !== id && hasUnsaved()) {
       state.selectedId = id;
@@ -1029,7 +1066,8 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
         renderList();
         state.lead = null;
         refs = {};
-        renderEmptyDetail(['Lead not found', 'It may have been deleted from the data folder.']);
+        if (state.leads[0]) await selectLead(state.leads[0].id);
+        else renderEmptyDetail(['Lead not found', 'It may have been deleted from the data folder.']);
       }
     } finally {
       if (seq === detailSeq) els.detail.removeAttribute('aria-busy');
@@ -1077,7 +1115,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   function renderLead() {
     const lead = state.lead;
     refs = {};
-    els.detail.replaceChildren(h('article', { class: 'lead', 'aria-labelledby': 'lead-name' },
+    fill(els.detail, h('article', { class: 'lead', 'aria-labelledby': 'lead-name' },
       h('button', { type: 'button', class: 'btn subtle back-btn', onclick: hideDetail }, '← All leads'),
       leadHeader(lead),
       actionBar(),
@@ -1109,7 +1147,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
       title = state.stage ? `Nothing in “${state.stage}”` : 'Nothing here';
       body = 'Pick another stage above.';
     }
-    els.detail.replaceChildren(h('div', { class: 'empty-state' },
+    fill(els.detail, h('div', { class: 'empty-state' },
       h('button', { type: 'button', class: 'btn subtle back-btn', onclick: hideDetail }, '← All leads'),
       h('h2', null, title),
       h('p', null, body)));
@@ -1139,7 +1177,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     return h('header', { class: 'lead-head' },
       h('div', { class: 'head-main' },
         h('div', { class: 'title-row' }, h('h1', { id: 'lead-name' }, lead.name || lead.domain || lead.id), refs.stageBadge, refs.skipNote),
-        h('div', { class: 'meta' }, meta),
+        h('div', { class: 'meta dots' }, h('div', { class: 'dots-list' }, meta)),
         refs.contact,
         refs.exportWarn),
       scoresBlock(lead));
@@ -1149,9 +1187,9 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     const s = state.summary;
     const rows = Object.entries(s.services ?? {}).map(([key, label]) => {
       const score = lead.scores?.[key];
-      const fill = h('span', { class: 'bar-fill' });
-      fill.style.width = `${clamp(score)}%`;
-      const bar = h('span', { class: 'bar', 'aria-hidden': 'true' }, fill);
+      const level = h('span', { class: 'bar-fill' });
+      level.style.width = `${clamp(score)}%`;
+      const bar = h('span', { class: 'bar', 'aria-hidden': 'true' }, level);
       if (s.qualifyAt !== null && s.qualifyAt !== undefined) {
         const tick = h('span', { class: 'bar-tick' });
         tick.style.left = `${clamp(s.qualifyAt)}%`;
@@ -1194,11 +1232,11 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
       body = h('span', { class: 'muted' }, lead.channel === 'phone' ? 'No email contact (phone only)' : 'No contact found yet');
     } else if (contacts.length === 1) {
       const p = contacts[0];
-      body = h('span', { class: 'contact-sum' },
+      body = h('span', { class: 'contact-sum dots' }, h('span', { class: 'dots-list' },
         h('strong', null, fullName(p) || '(no name)'),
         p.title ? h('span', null, p.title) : null,
         p.email ? h('span', { class: 'mono' }, p.email) : h('span', { class: 'muted' }, 'no email'),
-        contactExtras(p));
+        contactExtras(p).filter(Boolean).map((node) => h('span', null, node))));
     } else {
       const text = (p) => [fullName(p) || '(no name)', p.title, p.email || 'no email', p.emailStatus && statusLabel(p.emailStatus)].filter(Boolean).join(' · ');
       body = h('span', { class: 'contact-pick' },
@@ -1206,7 +1244,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
           contacts.map((p) => h('option', { value: p.id, selected: p.id === primaryId }, text(p)))),
         primary ? contactExtras(primary) : null);
     }
-    refs.contact.replaceChildren(contacts.length > 1 ? h('label', { class: 'label', for: 'contact-select' }, 'Contact') : h('span', { class: 'label' }, 'Contact'), body);
+    fill(refs.contact, contacts.length > 1 ? h('label', { class: 'label', for: 'contact-select' }, 'Contact') : h('span', { class: 'label' }, 'Contact'), body);
     if (hadFocus) $('#contact-select')?.focus();
   }
 
@@ -1214,7 +1252,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     refs.saveBtn = h('button', { type: 'button', class: 'btn', onclick: () => saveAll({ via: 'user' }) }, 'Save', kbd(SAVE_KEY));
     refs.approveLabel = h('span', null, 'Approve');
     refs.approveBtn = h('button', { type: 'button', class: 'btn primary', onclick: approveLead }, refs.approveLabel, kbd('A'));
-    refs.skipBtn = h('button', { type: 'button', class: 'btn', onclick: skipLead }, 'Skip', kbd('X'));
+    refs.skipBtn = h('button', { type: 'button', class: 'btn', onclick: () => skipLead() }, 'Skip', kbd('X'));
     refs.stageSelect = h('select', { id: 'stage-select' }, state.summary.stages.map((st) => h('option', { value: st }, st)));
     refs.stageNote = h('input', {
       type: 'text',
@@ -1230,8 +1268,15 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
       },
     });
     refs.hint = h('p', { class: 'action-hint', 'aria-live': 'polite' });
-    return h('div', { class: 'actionbar' },
-      h('div', { class: 'actions' }, refs.saveBtn, refs.approveBtn, refs.skipBtn),
+    // Phones only: stage moves and suppress fold away so the sticky bar stays short.
+    const more = h('button', {
+      type: 'button',
+      class: 'btn subtle more-btn',
+      'aria-expanded': 'false',
+      onclick: () => more.setAttribute('aria-expanded', String(bar.classList.toggle('open'))),
+    }, 'More');
+    const bar = h('div', { class: 'actionbar' },
+      h('div', { class: 'actions' }, refs.saveBtn, refs.approveBtn, refs.skipBtn, more),
       h('div', { class: 'actions move' },
         h('label', { class: 'label', for: 'stage-select' }, 'Move to'),
         refs.stageSelect,
@@ -1240,6 +1285,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
         h('button', { type: 'button', class: 'btn', onclick: moveStage }, 'Move'),
         h('button', { type: 'button', class: 'btn danger-ghost', onclick: suppressDialog }, 'Suppress…')),
       refs.hint);
+    return bar;
   }
 
   function pitchCard(lead) {
@@ -1251,7 +1297,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
         h('p', { class: 'muted small' }, 'Draft it from the terminal: ', h('code', null, `mb pitch --id ${lead.id}`)));
     }
     refs.previewBtn = h('button', { type: 'button', class: 'btn small', 'aria-pressed': 'false', onclick: togglePreview }, 'As sent', kbd('P'));
-    refs.pitchMeta = h('p', { class: 'pitch-meta' });
+    refs.pitchMeta = h('div', { class: 'dots-list' });
     refs.generalIssues = h('ul', { class: 'issues' });
     refs.previewNote = h('p', { class: 'preview-note', hidden: true },
       'This preview is the last saved version; your unsaved edits aren’t in it. ',
@@ -1287,7 +1333,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     renderAlts();
     return h('section', { class: 'card pitch', 'aria-labelledby': 'pitch-title' },
       h('div', { class: 'card-head' }, h('h2', { id: 'pitch-title' }, 'Outreach'), refs.previewBtn),
-      refs.pitchMeta,
+      h('div', { class: 'pitch-meta dots' }, refs.pitchMeta),
       pitch.angle ? h('p', { class: 'angle' }, h('span', { class: 'label' }, 'Angle'), pitch.angle) : null,
       refs.generalIssues,
       refs.previewNote,
@@ -1308,7 +1354,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   }
 
   function renderAlts() {
-    refs.altWrap.replaceChildren(
+    fill(refs.altWrap,
       refs.alts.length ? h('span', { class: 'label' }, 'Alternatives') : null,
       refs.alts.map((alt, i) => h('button', {
         type: 'button',
@@ -1414,8 +1460,10 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
       ].filter(([, ids]) => Array.isArray(ids) && ids.length);
       if (tech.length) for (const [label, ids] of tech) rows.push([label, pills(ids)]);
       else rows.push(['Tech', h('span', { class: 'muted' }, 'Nothing recognized')]);
-      if (!s.chat?.length) rows.push(['Chat', h('span', { class: 'muted' }, 'None found')]);
-      if (!s.booking?.length) rows.push(['Booking', h('span', { class: 'muted' }, 'None found')]);
+      // Absences are talking points too, so say so rather than leave a gap.
+      for (const [label, ids] of [['Chat', s.chat], ['Booking', s.booking], ['Analytics', s.analytics]]) {
+        if (!ids?.length) rows.push([label, h('span', { class: 'muted' }, 'None found')]);
+      }
       if (s.tech?.jquery) rows.push(['jQuery', s.tech.jquery]);
       if (s.tech?.legacy?.length) rows.push(['Legacy markup', s.tech.legacy.join(', ')]);
       if (s.copyrightYear) rows.push(['Footer', `© ${s.copyrightYear}`]);
@@ -1460,7 +1508,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   function renderHistory(all = false) {
     const events = [...(state.lead.history ?? [])].reverse();
     const shown = all ? events : events.slice(0, 8);
-    refs.history.replaceChildren(...shown.map((ev) => h('li', null,
+    fill(refs.history, ...shown.map((ev) => h('li', null,
       h('time', { datetime: ev.at, title: fmtDateTime(ev.at) }, relTime(ev.at)),
       h('span', { class: 'ev' }, eventLabel(ev.event)),
       ev.detail ? h('span', { class: 'ev-detail' }, ev.detail) : null)));
@@ -1503,7 +1551,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     if (p.service && lead.primaryService && p.service !== lead.primaryService) {
       bits.push(h('span', { class: 'warn-text' }, `written for ${serviceLabel(p.service)}; best score is now ${serviceLabel(lead.primaryService)}`));
     }
-    refs.pitchMeta.replaceChildren(...bits);
+    fill(refs.pitchMeta, ...bits);
   }
 
   const issueWhere = (issue) => (/subject/i.test(issue.message) ? 'Subject' : `Email ${issue.step}`);
@@ -1525,7 +1573,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
 
   function fillIssues(list, issues) {
     const sorted = [...issues].sort((a, b) => (a.level === b.level ? 0 : a.level === 'error' ? -1 : 1));
-    list.replaceChildren(...sorted.map((issue) => {
+    fill(list, ...sorted.map((issue) => {
       const error = issue.level === 'error';
       return h('li', { class: `issue ${error ? 'err' : 'warn'}` },
         h('span', { class: 'issue-icon', 'aria-hidden': 'true' }, error ? '✕' : '!'),
@@ -1676,13 +1724,17 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     }
     try {
       let updated = null;
-      if (pitch) updated = await api('PUT', `/api/leads/${enc(lead.id)}/pitch`, pitchPayload());
-      if (notes) updated = await api('PUT', `/api/leads/${enc(lead.id)}/notes`, { notes: refs.notes.value });
+      const land = (result) => {
+        updated = result;
+        if (state.lead?.id === lead.id) applyUpdate(result);
+        else replaceListItem(result.listItem);
+      };
+      if (pitch) land(await api('PUT', `/api/leads/${enc(lead.id)}/pitch`, pitchPayload()));
+      if (notes) land(await api('PUT', `/api/leads/${enc(lead.id)}/notes`, { notes: refs.notes.value }));
       const reopened = lead.stage === 'approved' && updated.stage === 'pitched';
-      if (state.lead?.id === lead.id) applyUpdate(updated);
-      else replaceListItem(updated.listItem);
       const errors = (updated.pitch?.lint ?? []).filter((i) => i.level === 'error').length;
-      if (reopened) toast(`Saved. ${updated.name} was edited after approval, so it’s back in “pitched”.`, 'warn');
+      // "Save & approve" re-approves straight away, so the detour isn't news then.
+      if (reopened && via !== 'approve') toast(`Saved. ${updated.name} was edited after approval, so it’s back in “pitched”.`, 'warn');
       else if (via === 'navigate') toast(`Saved your edits to ${updated.name || updated.id}`, errors ? 'warn' : 'ok');
       else if (via === 'user') toast(errors ? `Saved, with ${plural(errors, 'lint error')} to fix` : 'Saved', errors ? 'warn' : 'ok');
       return true;
@@ -1747,10 +1799,10 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     }
   }
 
-  function skipLead() {
+  function skipLead(initialReason = '') {
     const lead = state.lead;
     if (!lead || !refs.skipBtn || refs.skipBtn.disabled) return;
-    const reason = h('input', { type: 'text', id: 'skip-reason', maxlength: '300', autocomplete: 'off', placeholder: 'e.g. already has a good site' });
+    const reason = h('input', { type: 'text', id: 'skip-reason', maxlength: '300', autocomplete: 'off', placeholder: 'e.g. already has a good site', value: initialReason });
     const quick = ['Not a fit', 'Site is already good', 'Chain or franchise', 'Wrong contact', 'Duplicate'];
     openDialog({
       title: `Skip ${lead.name || lead.id}?`,
@@ -1794,12 +1846,13 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     }
     if (stage === 'skipped') {
       refs.stageSelect.value = lead.stage;
-      skipLead();
+      skipLead(refs.stageNote.value.trim());
       return;
     }
     try {
       if (hasUnsaved() && !(await saveAll({ via: 'navigate' }))) return;
       const updated = await api('POST', `/api/leads/${enc(lead.id)}/stage`, { stage, note: refs.stageNote.value.trim() });
+      refs.stageNote.value = '';
       toast(`Moved ${updated.name || updated.id} to ${stage}`, 'ok');
       await afterStageChange(updated, { advance: false });
     } catch (err) {
@@ -1858,7 +1911,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
         if (hasUnsaved() && res.affected.includes(lead.id)) await saveAll({ via: 'navigate' });
         await Promise.all([loadSummary(), loadLeads()]);
         if (!res.affected.includes(lead.id)) return true;
-        if (state.leads.some((l) => l.id === lead.id)) await selectLead(lead.id);
+        if (state.leads.some((l) => l.id === lead.id)) await selectLead(lead.id, { reload: true });
         else await selectLead((state.leads[index] ?? state.leads[index - 1] ?? state.leads[0])?.id ?? null);
         return true;
       },
@@ -1887,7 +1940,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
         submit.disabled = false;
       }
     });
-    dialog.replaceChildren(form);
+    fill(dialog, form);
     dialog.showModal();
     (focus ?? submit).focus();
     if (focus?.select) focus.select();
@@ -1907,7 +1960,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     exp.note = h('p', { class: 'exp-note' });
     exp.go = h('button', { type: 'button', class: 'btn primary', onclick: runExport }, 'Download CSV');
     exp.result = h('div', { class: 'exp-result', 'aria-live': 'polite' });
-    els.exportPanel.replaceChildren(
+    fill(els.exportPanel,
       h('h2', { class: 'pop-title' }, 'Export for your sending tool'),
       h('fieldset', { class: 'radios' },
         h('legend', null, 'Format'),
@@ -1941,7 +1994,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
     exp.queue.disabled = calls;
     exp.go.disabled = blocked || exp.busy;
     const approved = state.summary.byStage?.approved ?? 0;
-    exp.note.replaceChildren(blocked
+    fill(exp.note, blocked
       ? h('span', { class: 'err-text' }, 'Disabled until mockingbird.config.js is fixed (see the banner). The call list still works.')
       : calls
         ? 'Phone-only leads (enriched, no email) with talking points for a call.'
@@ -1961,14 +2014,17 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   async function runExport() {
     const format = exp.format;
     const markQueued = format !== 'calls' && exp.queue.checked;
+    // Unsaved copy would otherwise ship as the old version. Saving an edited
+    // approved pitch sends it back to "pitched", so it sits this export out.
+    if (hasUnsaved() && !(await saveAll({ via: 'navigate' }))) return;
     exp.busy = true;
     updateExportPanel();
-    exp.result.replaceChildren(h('p', { class: 'muted' }, 'Exporting…'));
+    fill(exp.result, h('p', { class: 'muted' }, 'Exporting…'));
     try {
       const res = await api('POST', '/api/export', { format, html: exp.html.checked, markQueued });
       const filename = `mockingbird-${format}-${new Date().toISOString().slice(0, 10)}.csv`;
       if (res.csv) download(res.csv, filename);
-      exp.result.replaceChildren(
+      fill(exp.result,
         h('p', { class: res.exported.length ? 'good' : 'muted' }, res.exported.length
           ? `Downloaded ${filename} with ${plural(res.exported.length, 'lead')}${markQueued ? ', now marked queued' : ''}.`
           : `Nothing to export${format === 'calls' ? '' : ': no approved leads are ready'}.`),
@@ -1977,13 +2033,13 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
       if (markQueued && res.exported.length) {
         await Promise.all([loadSummary(), loadLeads()]);
         if (state.lead && res.exported.includes(state.lead.id)) {
-          if (state.leads.some((l) => l.id === state.lead.id)) await selectLead(state.lead.id);
+          if (state.leads.some((l) => l.id === state.lead.id)) await selectLead(state.lead.id, { reload: true });
           else await selectLead(state.leads[0]?.id ?? null);
         }
       }
     } catch (err) {
       const details = Array.isArray(err.details) ? err.details : [];
-      exp.result.replaceChildren(
+      fill(exp.result,
         h('p', { class: 'err-text' }, err.status === 412 ? 'Not ready to send:' : err.message),
         details.length ? h('ul', null, details.map((d) => h('li', null, String(d)))) : null);
     } finally {
@@ -2037,7 +2093,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
       await Promise.all([loadSummary(), loadLeads()]);
       const item = state.lead && state.leads.find((l) => l.id === state.lead.id);
       // Pick up changes made from the CLI, unless you're mid-edit.
-      if (item && item.updatedAt !== state.lead.updatedAt && !hasUnsaved()) await selectLead(state.lead.id);
+      if (item && item.updatedAt !== state.lead.updatedAt && !hasUnsaved()) await selectLead(state.lead.id, { reload: true });
       if (!quiet) toast('Refreshed');
     } catch (err) {
       if (!quiet) toast(err.message, 'error');
@@ -2144,7 +2200,7 @@ dialog::backdrop { background: rgba(8, 10, 14, 0.5); }
   });
 
   function fatal(message) {
-    document.body.replaceChildren(h('div', { class: 'fatal' },
+    fill(document.body, h('div', { class: 'fatal' },
       h('h1', null, 'Mockingbird'),
       h('p', null, message),
       h('button', { type: 'button', class: 'btn primary', onclick: () => location.reload() }, 'Reload')));

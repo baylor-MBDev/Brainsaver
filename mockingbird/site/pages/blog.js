@@ -1,5 +1,5 @@
 import { truncate } from '../../engine/lib/util.js';
-import { ctaBand, formatDate, pageHead, postCards, sectionHead } from '../lib/components.js';
+import { ctaBand, formatDate, pageHead, postCards, sectionHead, sentenceCase } from '../lib/components.js';
 import { html, raw } from '../lib/html.js';
 import { bookLink } from '../lib/layout.js';
 import { stripTags } from '../lib/posts.js';
@@ -102,8 +102,8 @@ ${raw(post.html)}
 ${post.tags.length > 0 && html`<ul class="tags" role="list" aria-label="Tags">${post.tags.map((t) => html`<li><a href="${tagPath(t.slug)}">${t.label}</a></li>`)}</ul>`}
 ${service && html`<aside class="post-cta" aria-labelledby="post-cta-title">
 <h2 id="post-cta-title">${c.postCtaTitle}</h2>
-<p>We build ${service.label.toLowerCase()} for businesses. A good place to start: ${service.offer}.</p>
-<div class="actions"><a class="btn btn-primary" href="${offerHref}">${copy.services[service.key]?.offerAction ?? copy.cta.book} <span class="arrow" aria-hidden="true">→</span></a><a class="btn btn-secondary" href="${service.path}">More about ${service.label.toLowerCase()}</a></div>
+<p>We build ${sentenceCase(service.label)} for businesses. A good place to start: ${service.offer}.</p>
+<div class="actions"><a class="btn btn-primary" href="${offerHref}">${copy.services[service.key]?.offerAction ?? copy.cta.book} <span class="arrow" aria-hidden="true">→</span></a><a class="btn btn-secondary" href="${service.path}">More about ${sentenceCase(service.label)}</a></div>
 </aside>`}
 </div>
 </div>

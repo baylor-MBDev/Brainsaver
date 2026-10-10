@@ -299,6 +299,11 @@ test('dashboard: approve passes a clean pitch and returns 409 with the lint issu
   assert.ok(Array.isArray(blocked.json.details));
   assert.ok(blocked.json.details.some((i) => i.level === 'error' && i.step === 1 && /placeholder/i.test(i.message)));
   assert.equal((await store.get('lakeviewdental.com')).stage, 'pitched');
+
+  // The stage endpoint can't be used to approve around the lint check.
+  const sideDoor = await call('/api/leads/lakeviewdental.com/stage', { method: 'POST', body: { stage: 'approved' } });
+  assert.equal(sideDoor.status, 409);
+  assert.equal((await store.get('lakeviewdental.com')).stage, 'pitched');
 });
 
 test('dashboard: stage changes keep the note, notes save, and the primary contact can change', async (t) => {

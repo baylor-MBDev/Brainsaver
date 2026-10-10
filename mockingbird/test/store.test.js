@@ -97,3 +97,17 @@ test('CLI: unknown commands and bad flags fail cleanly', async () => {
   assert.match(output, /Unknown option '--no-such-flag'/);
   assert.match(output, /Find and qualify leads/);
 });
+
+test('marking a lead "approved" still has to pass lint', async () => {
+  const { mark } = await import('../engine/lib/actions.js');
+  const config = (await import('../mockingbird.config.js')).default;
+  const store = await Store.open(await tempDir());
+  await store.upsertFromSource({ name: 'Acme', domain: 'acme.com', source: 'csv', contacts: [] });
+  await store.update('acme.com', (co) => {
+    co.pitch = { subject: 'hi', emails: [{ step: 1, body: 'Hi {{first_name}},\n\nBaylor' }], lint: [] };
+    return setStage(co, 'pitched');
+  });
+  await assert.rejects(mark(store, 'acme.com', 'approved', undefined, { config }), (err) => err.status === 409 && err.details.some((i) => /placeholder/.test(i.message)));
+  await assert.rejects(mark(store, 'acme.com', 'approved'), /approve\(\)/);
+  assert.equal((await store.get('acme.com')).stage, 'pitched');
+});
