@@ -61,10 +61,12 @@ function fallbackFaces(family) {
 
 const stack = (family, rest) => [`'${family}'`, FALLBACK_METRICS[family] ? `'${family} Fallback'` : null, rest].filter(Boolean).join(',');
 
+// Weight ranges, not lists: Google serves one variable file per family for a
+// range, so two families cost two font downloads.
 export function googleFontsUrl(brand) {
   const { display, body } = brand.fonts;
   const family = (name, weights) => `family=${encodeURIComponent(name).replace(/%20/g, '+')}:wght@${weights}`;
-  const families = display === body ? [family(body, '400;500;600')] : [family(body, '400;600'), family(display, '500;600')];
+  const families = display === body ? [family(body, '400..600')] : [family(body, '400..600'), family(display, '500..600')];
   return `https://fonts.googleapis.com/css2?${families.join('&')}&display=swap`;
 }
 
@@ -128,8 +130,4 @@ export function themeCss(brand) {
   ]
     .filter(Boolean)
     .join('\n');
-}
-
-export function themeColors(brand) {
-  return { light: brand.colors.paper, dark: brand.colors.ink };
 }

@@ -89,18 +89,19 @@ The site deploys as a Cloudflare Worker: static files, plus a small API for the 
    npx wrangler@4 deploy        # or `npm run mb -- site deploy` from mockingbird/
    ```
 4. In Workers & Pages → mockingbird-site → Settings → Domains & Routes, add your domain.
-5. **Spam protection (optional):**
+5. **Salt the stored IP hashes:** `npx wrangler@4 secret put IP_HASH_SALT` with any long random string. Submissions store a hash of the sender's IP, never the IP itself, and an unsalted hash of an IPv4 address can be reversed.
+6. **Spam protection (optional):**
    - create a Turnstile widget;
    - put the site key in `site.turnstileSiteKey` in the config;
    - set the secret: `npx wrangler@4 secret put TURNSTILE_SECRET_KEY`.
-6. **Email notifications for new inquiries (optional):**
+7. **Email notifications for new inquiries (optional):**
    - in Email Routing, add and verify the address that should receive notifications;
    - uncomment the `send_email` block in `site/wrangler.jsonc` with that address;
    - set `NOTIFY_TO` (that address) and `NOTIFY_FROM` (an address on your Cloudflare domain);
    - redeploy.
 
    Every submission is saved in D1 even without notifications. To read them: `npx wrangler@4 d1 execute mockingbird --remote --command "SELECT * FROM inbound_leads ORDER BY created_at DESC LIMIT 20"`.
-7. **Analytics (optional):** turn on Cloudflare Web Analytics and put its token in `site.analyticsToken`.
+8. **Analytics (optional):** turn on Cloudflare Web Analytics and put its token in `site.analyticsToken`.
 
 ### Deploy from GitHub instead
 

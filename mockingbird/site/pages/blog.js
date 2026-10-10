@@ -90,11 +90,7 @@ ${post.description && html`<p class="lede">${post.description}</p>`}
 </div>
 </header>
 <div class="wrap post-layout${showToc ? ' has-toc' : ''}">
-${showToc && html`<nav class="toc" aria-labelledby="toc-title">
-<h2 class="toc-title" id="toc-title">${c.onThisPage}</h2>
-<ol role="list">
-${post.toc.map((item) => html`<li><a href="#${item.id}">${item.text}</a></li>\n`)}</ol>
-</nav>`}
+${showToc && tableOfContents(post, c)}
 <div class="post-main">
 <div class="prose post-body">
 ${raw(post.html)}
@@ -131,6 +127,23 @@ ${ctaBand(ctx)}`;
       faqLd(post.faq.map((item) => ({ q: item.question, a: item.answer }))),
     ],
   };
+}
+
+// Two renderings of one list, picked by CSS: a collapsed disclosure on small
+// screens (so the article starts near the top) and an open sticky sidebar on
+// wide ones. CSS can't open or close <details>, hence the duplicate.
+function tableOfContents(post, c) {
+  const items = post.toc.map((item) => html`<li><a href="#${item.id}">${item.text}</a></li>\n`);
+  return html`<details class="toc-compact">
+<summary>${c.onThisPage}</summary>
+<ol role="list">
+${items}</ol>
+</details>
+<nav class="toc" aria-labelledby="toc-title">
+<h2 class="toc-title" id="toc-title">${c.onThisPage}</h2>
+<ol role="list">
+${items}</ol>
+</nav>`;
 }
 
 function tagPage(ctx, tag) {

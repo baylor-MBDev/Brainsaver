@@ -217,7 +217,7 @@ export default function siteCopy(config) {
       faqTitle: 'Questions about the check-up',
       faq: [
         { q: 'Is it really free?', a: 'Yes. No card, no call, and no obligation.' },
-        { q: 'Is this an automated report?', a: 'No. A person reviews your site and writes up what they find. We use Google PageSpeed for the speed numbers.' },
+        { q: 'Is this an automated report?', a: 'Not just that. We use tools, including Google PageSpeed, to measure speed and check the technical basics. Then a person looks at your site on a phone and a laptop and writes up what matters most.' },
         { q: 'My site is on Wix, Squarespace, or WordPress. Is that OK?', a: 'Yes. We review what your visitors see, whatever the site is built on.' },
         { q: 'What happens after I get the review?', a: 'Nothing, unless you want help. If you do, reply to the email and we’ll talk it through.' },
       ],
@@ -247,7 +247,6 @@ export default function siteCopy(config) {
       h1: 'Notes for busy owners',
       intro: 'Plain answers about websites, AI automation, and apps for people who run businesses.',
       empty: 'No posts yet. Check back soon.',
-      readMore: 'Read',
       tagTitle: (tag) => `Posts tagged “${tag}”`,
       newer: 'Newer posts',
       older: 'Older posts',

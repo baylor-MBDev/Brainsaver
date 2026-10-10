@@ -256,13 +256,24 @@ async function main() {
       }
     });
   };
-  const schedule = async (changed) => {
-    if (changed.includes(`${path.sep}worker${path.sep}`)) {
-      worker = (await import(`./worker/index.js?v=${Date.now()}`)).default;
-      log.ok('Reloaded the Worker');
-    }
+  let workerChanged = false;
+  // Editors often fire several events per save; act once they settle.
+  const schedule = (changed) => {
+    if (changed.includes(`${path.sep}worker${path.sep}`)) workerChanged = true;
     clearTimeout(timer);
-    timer = setTimeout(rebuild, 150);
+    timer = setTimeout(async () => {
+      if (workerChanged) {
+        workerChanged = false;
+        // Re-imports worker/index.js only; restart after editing a module it imports.
+        try {
+          worker = (await import(`./worker/index.js?v=${Date.now()}`)).default;
+          log.ok('Reloaded the Worker');
+        } catch (err) {
+          log.error(`Worker reload failed, keeping the previous version: ${err.message}`);
+        }
+      }
+      rebuild();
+    }, 150);
   };
   // Watch sources only. A recursive watch over site/ would include dist/,
   // which every build deletes and recreates under the watcher's feet.

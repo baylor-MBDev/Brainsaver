@@ -17,8 +17,6 @@ class SafeHtml {
 
 export const raw = (value) => new SafeHtml(String(value ?? ''));
 
-export const isSafe = (value) => value instanceof SafeHtml;
-
 function render(value) {
   if (value === null || value === undefined || typeof value === 'boolean') return '';
   if (Array.isArray(value)) return value.map(render).join('');

@@ -37,7 +37,7 @@
       UTM.forEach(function (key) { utm[key] = params.get(key) || ''; });
       sessionStorage.setItem('mb_utm', JSON.stringify(utm));
     }
-  } catch (err) {
+  } catch {
     // Storage can be blocked; attribution is a nice-to-have.
   }
 

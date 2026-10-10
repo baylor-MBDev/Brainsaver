@@ -32,35 +32,50 @@ export function renderDocument(ctx, page) {
   const handle = twitterHandle(business.social?.x);
   const article = page.article;
 
+  const head = [
+    html`<meta charset="utf-8">`,
+    html`<meta name="viewport" content="width=device-width, initial-scale=1">`,
+    html`<title>${title}</title>`,
+    html`<meta name="description" content="${page.description}">`,
+    !page.noCanonical && html`<link rel="canonical" href="${canonical}">`,
+    page.noindex && html`<meta name="robots" content="noindex, follow">`,
+    html`<meta property="og:type" content="${page.ogType ?? 'website'}">`,
+    html`<meta property="og:site_name" content="${business.name}">`,
+    html`<meta property="og:title" content="${page.title}">`,
+    html`<meta property="og:description" content="${page.description}">`,
+    !page.noCanonical && html`<meta property="og:url" content="${canonical}">`,
+    html`<meta property="og:locale" content="en_US">`,
+    ogImage && html`<meta property="og:image" content="${ogImage}">`,
+    article && html`<meta property="article:published_time" content="${article.published}">`,
+    article && html`<meta property="article:modified_time" content="${article.modified}">`,
+    ...(article?.tags ?? []).map((tag) => html`<meta property="article:tag" content="${tag}">`),
+    html`<meta name="twitter:card" content="${ogImage ? 'summary_large_image' : 'summary'}">`,
+    html`<meta name="twitter:title" content="${page.title}">`,
+    html`<meta name="twitter:description" content="${page.description}">`,
+    handle && html`<meta name="twitter:site" content="${handle}">`,
+    html`<link rel="icon" href="/favicon.svg" type="image/svg+xml">`,
+    html`<link rel="manifest" href="/site.webmanifest">`,
+    html`<meta name="theme-color" content="${config.brand.colors.paper}" media="(prefers-color-scheme: light)">`,
+    html`<meta name="theme-color" content="${config.brand.colors.ink}" media="(prefers-color-scheme: dark)">`,
+    html`<link rel="alternate" type="application/rss+xml" title="${business.shortName} blog" href="${ctx.url('/rss.xml')}">`,
+    html`<link rel="preconnect" href="https://fonts.googleapis.com">`,
+    html`<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>`,
+    html`<link rel="stylesheet" href="${ctx.assets.css}">`,
+    // Fonts load as a print stylesheet (never render-blocking) and switch to
+    // all media once loaded, via INLINE_SCRIPT. <noscript> covers no-JS.
+    html`<link rel="stylesheet" href="${fonts}" media="print" id="fonts">`,
+    html`<script>${raw(INLINE_SCRIPT)}</script>`,
+    html`<noscript><link rel="stylesheet" href="${fonts}"></noscript>`,
+    html`<script src="${ctx.assets.js}" defer></script>`,
+    page.turnstile && config.site?.turnstileSiteKey && html`<script src="${TURNSTILE_SCRIPT}" async defer></script>`,
+    ...(page.jsonLd ?? []).filter(Boolean).map(jsonLdScript),
+  ].filter(Boolean);
+
+  const analytics = config.site?.analyticsToken && html`<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="${JSON.stringify({ token: config.site.analyticsToken })}"></script>\n`;
+
   const doc = html`<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title}</title>
-<meta name="description" content="${page.description}">
-${!page.noCanonical && html`<link rel="canonical" href="${canonical}">\n`}${page.noindex && raw('<meta name="robots" content="noindex, follow">\n')}<meta property="og:type" content="${page.ogType ?? 'website'}">
-<meta property="og:site_name" content="${business.name}">
-<meta property="og:title" content="${page.title}">
-<meta property="og:description" content="${page.description}">
-${!page.noCanonical && html`<meta property="og:url" content="${canonical}">\n`}<meta property="og:locale" content="en_US">
-${ogImage && html`<meta property="og:image" content="${ogImage}">\n`}${article && html`<meta property="article:published_time" content="${article.published}">
-<meta property="article:modified_time" content="${article.modified}">
-${article.tags.map((tag) => html`<meta property="article:tag" content="${tag}">\n`)}`}<meta name="twitter:card" content="${ogImage ? 'summary_large_image' : 'summary'}">
-<meta name="twitter:title" content="${page.title}">
-<meta name="twitter:description" content="${page.description}">
-${handle && html`<meta name="twitter:site" content="${handle}">\n`}<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="${config.brand.colors.paper}" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="${config.brand.colors.ink}" media="(prefers-color-scheme: dark)">
-<link rel="alternate" type="application/rss+xml" title="${business.shortName} blog" href="${ctx.url('/rss.xml')}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="${ctx.assets.css}">
-<link rel="stylesheet" href="${fonts}" media="print" id="fonts">
-<script>${raw(INLINE_SCRIPT)}</script>
-<noscript><link rel="stylesheet" href="${fonts}"></noscript>
-<script src="${ctx.assets.js}" defer></script>
-${page.turnstile && config.site?.turnstileSiteKey && html`<script src="${TURNSTILE_SCRIPT}" async defer></script>\n`}${(page.jsonLd ?? []).filter(Boolean).map((data) => html`${jsonLdScript(data)}\n`)}</head>
+${head.map((tag) => html`${tag}\n`)}</head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 ${header(ctx, page)}
@@ -68,7 +83,7 @@ ${header(ctx, page)}
 ${page.body}
 </main>
 ${footer(ctx)}
-${config.site?.analyticsToken && html`<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon="${JSON.stringify({ token: config.site.analyticsToken })}"></script>\n`}</body>
+${analytics}</body>
 </html>
 `;
   return `<!doctype html>\n${doc}`;

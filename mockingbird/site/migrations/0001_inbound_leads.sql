@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS inbound_leads (
   id TEXT PRIMARY KEY,                  -- random UUID
   created_at TEXT NOT NULL,             -- ISO 8601, UTC
   type TEXT NOT NULL DEFAULT 'contact', -- contact | audit
-  status TEXT NOT NULL DEFAULT 'new',   -- stays 'new' until someone works the lead
+  status TEXT NOT NULL DEFAULT 'new',   -- 'new' until `mb inbound` imports it ('imported')
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   company TEXT,

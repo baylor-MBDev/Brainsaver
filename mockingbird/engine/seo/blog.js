@@ -2,6 +2,7 @@ import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
+import { parseFrontmatter } from '../../site/lib/frontmatter.js';
 import { ROOT } from '../lib/env.js';
 import { nowIso, slugify, wordCount } from '../lib/util.js';
 
@@ -25,15 +26,18 @@ export async function saveTopics(data, file = TOPICS_FILE) {
   await writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
 }
 
-/** Existing posts as { slug, title, service } from frontmatter. */
+/** Existing posts as { slug, title, service, draft }, read with the site's own frontmatter parser. */
 export async function existingPosts(dir = POSTS_DIR) {
   if (!existsSync(dir)) return [];
   const posts = [];
   for (const file of (await readdir(dir)).filter((f) => f.endsWith('.md'))) {
-    const text = await readFile(path.join(dir, file), 'utf8');
-    const front = text.match(/^---\n([\s\S]*?)\n---/)?.[1] ?? '';
-    const field = (key) => front.match(new RegExp(`^${key}:\\s*"?(.*?)"?\\s*$`, 'm'))?.[1] ?? null;
-    posts.push({ slug: field('slug') ?? file.replace(/\.md$/, ''), title: field('title') ?? file, service: field('service'), draft: field('draft') === 'true' });
+    let data = {};
+    try {
+      ({ data } = parseFrontmatter(await readFile(path.join(dir, file), 'utf8')));
+    } catch {
+      // A post with broken frontmatter still counts as taken; the site build reports the error.
+    }
+    posts.push({ slug: data.slug ?? file.replace(/\.md$/, ''), title: data.title ?? file, service: data.service ?? null, draft: data.draft === true });
   }
   return posts;
 }

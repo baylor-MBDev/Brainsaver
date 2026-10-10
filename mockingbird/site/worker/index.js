@@ -147,7 +147,9 @@ async function readBody(request) {
   if (Number(request.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) throw httpError(413, 'That’s more than this form accepts. Please shorten your message.');
   const contentType = (request.headers.get('content-type') ?? '').toLowerCase();
   if (contentType.includes('multipart/form-data')) {
-    const form = await request.formData();
+    const form = await request.formData().catch(() => {
+      throw httpError(400, 'We couldn’t read that submission.');
+    });
     return Object.fromEntries([...form].filter(([, v]) => typeof v === 'string'));
   }
   const body = await request.text();
@@ -212,7 +214,7 @@ async function notify(env, record) {
   }
 }
 
-export function subjectFor(record) {
+function subjectFor(record) {
   const clip = (value) => String(value ?? '').replace(/\s+/g, ' ').slice(0, 100);
   return record.type === 'audit' ? `Free audit request: ${clip(record.website)}` : `New inquiry: ${record.service} from ${clip(record.name)}`;
 }

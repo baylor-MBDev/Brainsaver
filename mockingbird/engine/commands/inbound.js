@@ -82,6 +82,7 @@ export async function inbound({ config, store }, args) {
       website: domain ? row.website : null,
       domain,
       serviceHint: ['websites', 'automation', 'apps'].includes(row.service) ? row.service : null,
+      industry: row.business_type || null,
       contacts: [contact],
     };
     const { company } = await store.upsertFromSource({ ...incoming, id: companyId({ domain, name: incoming.name }) });
@@ -110,5 +111,6 @@ export async function inbound({ config, store }, args) {
 
     if (!args.values['dry-run']) await d1Query("UPDATE inbound_leads SET status = 'imported' WHERE id = ?", [row.id]);
   }
-  log.ok(`${rows.length} inquiries imported. Reply personally; they're marked "replied" in the pipeline.`);
+  log.ok(`${rows.length} inquiries imported; they're marked "replied" in the pipeline.`);
+  log.info(c.dim('Reports are drafts: the site promises a person reviews each one, so open their site on a phone, check the report, and edit before sending.'));
 }

@@ -8,10 +8,12 @@ export function sameAs(business) {
   return Object.values(business.social ?? {}).filter((url) => typeof url === 'string' && /^https?:\/\//.test(url));
 }
 
-export function areaServed(business) {
-  const country = business.country ? { '@type': 'Country', name: business.country } : null;
-  if (!business.region) return country;
-  return [{ '@type': 'State', name: business.region }, country].filter(Boolean);
+/** Where the studio works: the local markets in config.seo.regions plus the
+ * home country. (business.region is where it's based, not its reach.) */
+export function areaServed(config) {
+  const places = (config.seo?.regions ?? []).filter(Boolean).map((name) => ({ '@type': 'Place', name }));
+  const country = config.business.country ? [{ '@type': 'Country', name: config.business.country }] : [];
+  return [...places, ...country];
 }
 
 export function postalAddress(business) {
@@ -36,7 +38,7 @@ export function organizationLd(ctx) {
     email: business.email,
     telephone: business.phone,
     address: postalAddress(business),
-    areaServed: areaServed(business),
+    areaServed: areaServed(ctx.config),
     sameAs: sameAs(business),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
@@ -63,7 +65,7 @@ export function serviceLd(ctx, service) {
     description: service.summary,
     url: ctx.url(service.path),
     provider: provider(ctx),
-    areaServed: areaServed(ctx.config.business),
+    areaServed: areaServed(ctx.config),
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: `${service.label}: what's included`,
