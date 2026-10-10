@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Lead data is personal data (names, emails). It never goes in git,
+# and this repo is public.
+data/
+*.leads.csv
+exports/
+
+site/dist/
+.wrangler/

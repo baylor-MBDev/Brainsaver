@@ -3,6 +3,10 @@ name: Deploy web build to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      # The Mockingbird growth system shares this repo but not this build.
+      - 'mockingbird/**'
+      - '.github/workflows/mockingbird*.yml'
   workflow_dispatch:
 
 permissions:

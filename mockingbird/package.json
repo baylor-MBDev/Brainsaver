@@ -1,0 +1,25 @@
+{
+  "name": "mockingbird-growth",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mockingbird Software Development's growth system: lead sourcing, website audits, AI-written outreach, prospect demo sites, an SEO blog, and the studio website.",
+  "type": "module",
+  "bin": {
+    "mb": "bin/mb.js"
+  },
+  "scripts": {
+    "mb": "node bin/mb.js",
+    "test": "node --test 'test/*.test.js'",
+    "dashboard": "node bin/mb.js dashboard",
+    "site:build": "node site/build.js",
+    "site:dev": "node site/dev.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "marked": "^18.1.0",
+    "zod": "^4.6.5"
+  }
+}

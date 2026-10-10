@@ -33,3 +33,7 @@ https://snack.expo.dev/@git/github.com/baylor-MBDev/Brainsaver
 - Paper `#EFEBFF`, Ink `#221C3A`, Rot `#FF5C38`, Growth `#2FB56B`, Zap `#FFD23F`
 - Archivo Black for shouting, Space Mono for anything typed or counted
 - Signature element: keycap UI. Every button is a keyboard key with a hard offset shadow that physically depresses
+
+## Also in this repo
+
+[`mockingbird/`](mockingbird/README.md) is Mockingbird Software Development's growth system: lead sourcing, website audits, AI-written outreach, prospect demo sites, an SEO blog, and the studio's website on Cloudflare. It's a separate Node project with its own `package.json` and doesn't affect the app build.

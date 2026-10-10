@@ -1,0 +1,547 @@
+{
+  "topics": [
+    {
+      "id": "t001",
+      "title": "How much does a small business website cost?",
+      "keyword": "small business website cost",
+      "secondary": [
+        "website design cost",
+        "custom website price"
+      ],
+      "intent": "commercial",
+      "service": "websites",
+      "audience": "owner-operators",
+      "angle": "Break cost into the decisions that drive it (pages, copy, integrations, who maintains it) instead of quoting one number.",
+      "outline": [
+        "What you're actually paying for",
+        "Builder vs template vs custom",
+        "The costs after launch",
+        "How to get an accurate quote",
+        "Red flags in website quotes"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t002",
+      "title": "Website redesign checklist for home service businesses",
+      "keyword": "website redesign checklist",
+      "secondary": [
+        "contractor website redesign",
+        "home service website"
+      ],
+      "intent": "informational",
+      "service": "websites",
+      "audience": "home service businesses",
+      "angle": "The same checks we run on prospects' sites, turned into a checklist an owner can use.",
+      "outline": [
+        "Measure before you start",
+        "The phone test",
+        "Speed",
+        "Make the next step obvious",
+        "Trust signals",
+        "Local SEO foundations",
+        "Technical housekeeping",
+        "After launch"
+      ],
+      "status": "published",
+      "slug": "website-redesign-checklist-home-service-businesses",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t003",
+      "title": "Wix vs a custom website: when it's time to switch",
+      "keyword": "wix vs custom website",
+      "secondary": [
+        "squarespace vs custom website",
+        "website builder limitations"
+      ],
+      "intent": "comparison",
+      "service": "websites",
+      "audience": "owner-operators",
+      "angle": "An honest look at when a builder is the right call and the specific signs you've outgrown it.",
+      "outline": [
+        "When a builder is the right choice",
+        "Speed and Core Web Vitals",
+        "SEO control",
+        "Ownership and lock-in",
+        "Costs over three years",
+        "How to migrate without losing rankings"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t004",
+      "title": "Why your website is slow on phones (and what it costs you)",
+      "keyword": "website slow on mobile",
+      "secondary": [
+        "improve mobile site speed",
+        "core web vitals small business"
+      ],
+      "intent": "informational",
+      "service": "websites",
+      "audience": "owner-operators",
+      "angle": "Translate PageSpeed jargon into the handful of fixes that matter for a small business site.",
+      "outline": [
+        "How to test it in two minutes",
+        "The usual culprits",
+        "What LCP, CLS, and INP mean",
+        "Quick fixes vs rebuilds",
+        "Keeping it fast"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t005",
+      "title": "What a contractor website needs to get more calls",
+      "keyword": "contractor website",
+      "secondary": [
+        "roofing website design",
+        "hvac website must haves"
+      ],
+      "intent": "commercial",
+      "service": "websites",
+      "audience": "home service businesses",
+      "angle": "Page-by-page breakdown of what turns a visitor into a call for trades businesses.",
+      "outline": [
+        "The homepage's one job",
+        "Service pages that rank",
+        "Service area pages done right",
+        "Photos and proof",
+        "Forms and call tracking",
+        "What to leave out"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t006",
+      "title": "How to read your Google PageSpeed score without a developer",
+      "keyword": "pagespeed score explained",
+      "secondary": [
+        "pagespeed insights",
+        "core web vitals explained"
+      ],
+      "intent": "informational",
+      "service": "websites",
+      "audience": "owner-operators",
+      "angle": "A plain-English walkthrough of the PageSpeed report and which numbers deserve attention.",
+      "outline": [
+        "Running the test",
+        "Lab data vs field data",
+        "The metrics that matter",
+        "What a 'good' score means",
+        "When to call a developer"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t007",
+      "title": "Local SEO basics for a service business website",
+      "keyword": "local seo for service business",
+      "secondary": [
+        "google business profile seo",
+        "service area pages"
+      ],
+      "intent": "informational",
+      "service": "websites",
+      "audience": "home service businesses",
+      "angle": "The on-site half of local SEO, without the gimmicks.",
+      "outline": [
+        "How local search works",
+        "Service pages",
+        "Service area pages",
+        "Business schema",
+        "Your Google Business Profile",
+        "Reviews"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t008",
+      "title": "Questions to ask before hiring a web design agency",
+      "keyword": "questions to ask web design agency",
+      "secondary": [
+        "how to choose a web designer",
+        "web design agency red flags"
+      ],
+      "intent": "commercial",
+      "service": "websites",
+      "audience": "owner-operators",
+      "angle": "The questions that reveal how an agency actually works, and the answers to listen for.",
+      "outline": [
+        "Ownership and access",
+        "Process and timeline",
+        "Performance and SEO",
+        "What happens after launch",
+        "Pricing structures"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t009",
+      "title": "Do dental offices need an AI receptionist?",
+      "keyword": "ai receptionist for dental offices",
+      "secondary": [
+        "dental answering service",
+        "ai phone answering dental"
+      ],
+      "intent": "commercial",
+      "service": "automation",
+      "audience": "dental practices",
+      "angle": "When it fits a practice, what it should and shouldn't handle, and how to roll it out without upsetting patients.",
+      "outline": [
+        "What it actually does",
+        "Signs your practice is a fit",
+        "What it shouldn't do",
+        "HIPAA and privacy",
+        "Integrations",
+        "Rolling it out",
+        "Measuring results"
+      ],
+      "status": "published",
+      "slug": "ai-receptionist-for-dental-offices",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t010",
+      "title": "AI receptionist vs answering service: cost, quality, and tradeoffs",
+      "keyword": "ai receptionist vs answering service",
+      "secondary": [
+        "virtual receptionist comparison",
+        "after hours answering service"
+      ],
+      "intent": "comparison",
+      "service": "automation",
+      "audience": "appointment-driven businesses",
+      "angle": "A side-by-side on cost structure, caller experience, and what each handles well.",
+      "outline": [
+        "How each works",
+        "Caller experience",
+        "Cost structures",
+        "Booking and integrations",
+        "When to use both"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t011",
+      "title": "Missed-call text back: the simplest automation for service businesses",
+      "keyword": "missed call text back",
+      "secondary": [
+        "missed call text back software",
+        "automatic text reply missed call"
+      ],
+      "intent": "informational",
+      "service": "automation",
+      "audience": "home service businesses",
+      "angle": "How it works, how to set it up properly (including texting rules), and how to measure it.",
+      "outline": [
+        "What it is",
+        "Why it works",
+        "Setting it up",
+        "Texting rules to follow",
+        "Measuring it"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t012",
+      "title": "5 back-office tasks small businesses should automate first",
+      "keyword": "business process automation small business",
+      "secondary": [
+        "what to automate in a small business",
+        "workflow automation examples"
+      ],
+      "intent": "informational",
+      "service": "automation",
+      "audience": "operations leaders",
+      "angle": "A way to pick automations by hours saved and risk, with five common starting points.",
+      "outline": [
+        "How to pick what to automate",
+        "Lead follow-up",
+        "Scheduling and reminders",
+        "Intake and data entry",
+        "Invoicing and payment reminders",
+        "Reporting"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t013",
+      "title": "How law firms can automate client intake without losing the personal touch",
+      "keyword": "law firm intake automation",
+      "secondary": [
+        "legal intake software",
+        "law firm lead follow up"
+      ],
+      "intent": "informational",
+      "service": "automation",
+      "audience": "law firms",
+      "angle": "Where automation helps intake and where a person has to stay in the loop.",
+      "outline": [
+        "Where intake breaks down",
+        "Instant response",
+        "Conflict checks and screening",
+        "Scheduling consultations",
+        "Keeping it personal",
+        "Ethics and confidentiality"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t014",
+      "title": "What does it cost to add AI to a small business?",
+      "keyword": "cost of ai automation for small business",
+      "secondary": [
+        "ai automation pricing",
+        "ai integration cost"
+      ],
+      "intent": "commercial",
+      "service": "automation",
+      "audience": "owner-operators",
+      "angle": "The cost drivers behind AI projects and how to start small enough to prove value first.",
+      "outline": [
+        "Off-the-shelf vs custom",
+        "What drives cost",
+        "Running costs",
+        "Starting with a pilot",
+        "Measuring payback"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t015",
+      "title": "Speed to lead: why the first few minutes decide who wins the job",
+      "keyword": "speed to lead",
+      "secondary": [
+        "lead response time",
+        "respond to leads faster"
+      ],
+      "intent": "informational",
+      "service": "automation",
+      "audience": "home service businesses",
+      "angle": "Practical ways to respond to every lead in minutes, even when the team is on jobs.",
+      "outline": [
+        "Why response time matters",
+        "Where leads go to wait",
+        "Instant replies that don't feel robotic",
+        "Routing to the right person",
+        "Tracking response time"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t016",
+      "title": "How to automate appointment reminders and cut no-shows",
+      "keyword": "automated appointment reminders",
+      "secondary": [
+        "reduce no shows",
+        "appointment reminder texts"
+      ],
+      "intent": "informational",
+      "service": "automation",
+      "audience": "appointment-driven businesses",
+      "angle": "A reminder cadence, the messages that work, and how to handle reschedules automatically.",
+      "outline": [
+        "Why people no-show",
+        "A reminder cadence",
+        "What to say",
+        "Two-way rescheduling",
+        "Compliance basics"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t017",
+      "title": "How much does it cost to build an app for a small business?",
+      "keyword": "cost to build an app for small business",
+      "secondary": [
+        "app development cost",
+        "mobile app price"
+      ],
+      "intent": "commercial",
+      "service": "apps",
+      "audience": "owner-operators",
+      "angle": "Cost explained through scope decisions, platform choices, and ongoing costs people forget.",
+      "outline": [
+        "What drives app cost",
+        "One codebase or two",
+        "Backend and integrations",
+        "App store and ongoing costs",
+        "Ways to start smaller"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t018",
+      "title": "Does my business need an app or just a better website?",
+      "keyword": "do i need an app for my business",
+      "secondary": [
+        "app vs website",
+        "should my business have an app"
+      ],
+      "intent": "comparison",
+      "service": "apps",
+      "audience": "owner-operators",
+      "angle": "A repeat-use test and a decision checklist, including the middle options most businesses skip.",
+      "outline": [
+        "The repeat-use test",
+        "What apps do better",
+        "What websites do better",
+        "The middle options",
+        "Costs and ongoing work",
+        "Decision checklist"
+      ],
+      "status": "published",
+      "slug": "app-or-better-website",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t019",
+      "title": "Gym app vs Mindbody: when a branded app makes sense",
+      "keyword": "custom gym app",
+      "secondary": [
+        "branded fitness app",
+        "gym app development"
+      ],
+      "intent": "comparison",
+      "service": "apps",
+      "audience": "gyms and fitness studios",
+      "angle": "When the booking platform's app is enough and when your own app pays off.",
+      "outline": [
+        "What platform apps do well",
+        "Where they fall short",
+        "What a branded app adds",
+        "Integrating with your booking system",
+        "Costs and timeline"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t020",
+      "title": "What it takes to launch an app on the App Store and Google Play",
+      "keyword": "how to publish an app",
+      "secondary": [
+        "app store submission",
+        "google play console"
+      ],
+      "intent": "informational",
+      "service": "apps",
+      "audience": "owner-operators",
+      "angle": "A step-by-step look at accounts, reviews, listings, and privacy forms.",
+      "outline": [
+        "Developer accounts",
+        "Builds and testing",
+        "Store listings",
+        "Privacy and data forms",
+        "Review and rejection reasons",
+        "Updates after launch"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t021",
+      "title": "Building an MVP: what to cut and what to keep",
+      "keyword": "mvp app development",
+      "secondary": [
+        "minimum viable product app",
+        "startup mvp"
+      ],
+      "intent": "informational",
+      "service": "apps",
+      "audience": "startup founders",
+      "angle": "A scoping method that keeps the first version small without making it useless.",
+      "outline": [
+        "Define the one job",
+        "Cut lists",
+        "What not to cut",
+        "Build vs buy pieces",
+        "Measuring the MVP"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t022",
+      "title": "Loyalty apps for restaurants and coffee shops: build or buy?",
+      "keyword": "restaurant loyalty app",
+      "secondary": [
+        "coffee shop app",
+        "custom loyalty program app"
+      ],
+      "intent": "comparison",
+      "service": "apps",
+      "audience": "restaurants",
+      "angle": "Compare POS loyalty add-ons with a custom app across cost, data, and customer experience.",
+      "outline": [
+        "What POS loyalty gives you",
+        "What a custom app adds",
+        "Ordering and payments",
+        "Owning your customer data",
+        "Making the call"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t023",
+      "title": "Internal tools: replacing spreadsheets with a simple custom app",
+      "keyword": "custom internal tools",
+      "secondary": [
+        "replace spreadsheets with app",
+        "internal business app"
+      ],
+      "intent": "informational",
+      "service": "apps",
+      "audience": "operations leaders",
+      "angle": "How to tell when a spreadsheet has become a system, and what a small internal app looks like.",
+      "outline": [
+        "Signs you've outgrown the spreadsheet",
+        "What an internal tool looks like",
+        "Data and permissions",
+        "Build vs no-code",
+        "Rolling it out"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    },
+    {
+      "id": "t024",
+      "title": "React Native vs native apps for a small business",
+      "keyword": "react native vs native",
+      "secondary": [
+        "cross platform app development",
+        "expo vs native"
+      ],
+      "intent": "comparison",
+      "service": "apps",
+      "audience": "startup founders",
+      "angle": "A practical comparison for business owners, not engineers.",
+      "outline": [
+        "What the choice really means",
+        "Speed to market",
+        "Performance and device features",
+        "Hiring and maintenance",
+        "When native is worth it"
+      ],
+      "status": "planned",
+      "createdAt": "2026-10-10T00:00:00.000Z"
+    }
+  ]
+}

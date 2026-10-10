@@ -1,0 +1,80 @@
+name: Mockingbird weekly blog post
+
+# Every Monday, Claude writes the next planned post from
+# mockingbird/content/topics.json and opens a pull request. Nothing is
+# published until a human merges it. Needs the ANTHROPIC_API_KEY secret and
+# "Allow GitHub Actions to create and approve pull requests" (Settings →
+# Actions → General); without them it skips or leaves the branch for you.
+
+on:
+  schedule:
+    - cron: '17 14 * * 1'
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: 'Topic id from content/topics.json (blank = next planned)'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: mockingbird-blog
+  cancel-in-progress: false
+
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    defaults:
+      run:
+        working-directory: mockingbird
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for an API key
+        id: key
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skipping: add the ANTHROPIC_API_KEY repository secret to turn on weekly posts."
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.key.outputs.ok == 'true'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mockingbird/package-lock.json
+      - if: steps.key.outputs.ok == 'true'
+        run: npm ci
+      - name: Plan more topics if the queue is empty
+        if: steps.key.outputs.ok == 'true'
+        run: |
+          if ! node -e "process.exit(require('./content/topics.json').topics.some((t) => t.status === 'planned') ? 0 : 1)"; then
+            node bin/mb.js blog plan --count 6
+          fi
+      - name: Write the post
+        if: steps.key.outputs.ok == 'true'
+        env:
+          TOPIC: ${{ github.event.inputs.topic }}
+        run: node bin/mb.js blog write --publish ${TOPIC:+--topic "$TOPIC"}
+      - name: Open a pull request
+        if: steps.key.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE=$(node -e "const t = require('./content/topics.json').topics.filter((x) => x.writtenAt).sort((a, b) => b.writtenAt.localeCompare(a.writtenAt))[0]; console.log(t ? t.title : 'New post')")
+          BRANCH="blog/$(date -u +%Y-%m-%d)-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add content/
+          git commit -m "Blog post: $TITLE"
+          git push origin "$BRANCH"
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BRANCH" \
+            --title "Blog post: $TITLE" \
+            --body "Written by \`mb blog write\` from the topic queue. Read it before merging: check facts, tone, and links. Preview locally with \`npm run site:dev -- --drafts\` inside mockingbird/." \
+            || echo "::warning::Couldn't open the PR automatically (enable 'Allow GitHub Actions to create and approve pull requests'). The post is on branch $BRANCH."
