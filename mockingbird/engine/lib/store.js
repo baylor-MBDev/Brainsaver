@@ -193,13 +193,13 @@ export class Store {
   /** Returns the reason a company must not be contacted, or null. */
   isSuppressed(company, list) {
     const domain = normalizeDomain(company.domain);
-    if (domain && list.domains[domain]) return `domain on do-not-contact list (${list.domains[domain].reason})`;
+    if (domain && list.domains[domain]) return `${domain} is on the do-not-contact list (${list.domains[domain].reason})`;
     for (const person of company.contacts ?? []) {
       const email = person.email?.toLowerCase();
       if (!email) continue;
-      if (list.emails[email]) return `${email} on do-not-contact list (${list.emails[email].reason})`;
+      if (list.emails[email]) return `${email} is on the do-not-contact list (${list.emails[email].reason})`;
       const emailDomain = email.split('@')[1];
-      if (list.domains[emailDomain]) return `${emailDomain} on do-not-contact list`;
+      if (list.domains[emailDomain]) return `${emailDomain} is on the do-not-contact list (${list.domains[emailDomain].reason})`;
     }
     return null;
   }
